@@ -16,10 +16,22 @@ Interactive web companion to Charles Platt's *Make: Electronics, 3rd Edition*. 3
 - Install: `npm install`
 - Dev:     `npm run dev`
 - Test:    `npm test`
+- E2E:     `npm run test:e2e` (Playwright walks all routes, asserts no console errors / no 404s, screenshots each)
 - Build:   `npm run build` (produces static `./out`)
 - Lint:    `npm run lint`
 - Typecheck: `npm run typecheck`
 - Vendor CircuitJS: `bash scripts/vendor-circuitjs.sh` (needs only `curl`; no JDK/Ant — pulls the prebuilt GWT bundle from falstad.com)
+
+## Verification protocol (load-bearing — don't skip)
+Any order that touches UI MUST run `npm run test:e2e` before being marked complete.
+Vitest tests verify code-level correctness; only a real browser catches:
+- Missing iframe resources (CircuitJS bundle 404s)
+- Broken external embeds (Wokwi placeholder slugs)
+- Server/client boundary errors that manifest only in the browser
+- Visual regressions
+
+Screenshots land at `tests/playtest/screenshots/` — review these as the
+visual report for any UI-touching order.
 
 ## CLI overrides
 - Implementer: codex (default)

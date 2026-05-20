@@ -21,6 +21,13 @@ If a server component needs to hand a client component behavior, pass a string i
 
 **How to apply:** Any Brief-like schema describing UI behavior must be JSON-serializable. Code in `lib/` exposes registries keyed by ids. See [[decisions/server-client-rehydration]] and [[failures/function-prop-rsc-boundary]].
 
+## ui-orders-need-real-browser-verification
+`npm test` and `npm run build` passing means nothing about whether the page actually works in a browser. Always run Playwright smoke before marking a UI-touching order complete.
+
+**Why:** Two orders shipped the electronics-tutorial with broken CircuitJS embeds (4-7 missing assets per page, 404ing in the iframe) and broken Wokwi embeds (placeholder slugs that don't resolve). Vitest unit tests + `npm run build` were green throughout. The bugs only appeared when the operator opened a browser and asked "why is nothing showing." A single Playwright walk would have caught both on day one. We now have `npm run test:e2e` + a `tests/playtest/smoke.spec.ts` harness that walks every route, asserts zero failed requests, and screenshots each page.
+
+**How to apply:** For any project with a CLAUDE.md declaring a UI surface, the order's plan MUST include a final verification step that invokes a real browser. `/foundry:playtest web` is the canonical foundry path; for projects that already have their own Playwright setup, `npm run test:e2e` is the local hook. Code-level tests verify code; only a browser verifies pages. See [[failures/skipped-browser-verification]].
+
 ## visualize-not-simulate-split
 Visualization components and simulators serve different jobs and should be separate components — don't conflate.
 

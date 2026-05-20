@@ -42,6 +42,7 @@ An interactive companion to Charles Platt's *Make: Electronics, 3rd Edition* —
 - [[failures/function-prop-rsc-boundary]]
 - [[failures/pdf-extraction-count-mismatch]]
 - [[failures/implementer-pivot-on-missing-prereq]]
+- [[failures/skipped-browser-verification]] — `npm test` ≠ "the page works"
 
 ## Tried & rejected
 - *(none yet)*

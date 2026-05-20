@@ -29,3 +29,4 @@
 - [function-prop-rsc-boundary](failures/function-prop-rsc-boundary.md)
 - [pdf-extraction-count-mismatch](failures/pdf-extraction-count-mismatch.md)
 - [implementer-pivot-on-missing-prereq](failures/implementer-pivot-on-missing-prereq.md)
+- [skipped-browser-verification](failures/skipped-browser-verification.md)
