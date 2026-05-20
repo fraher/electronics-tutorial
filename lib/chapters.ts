@@ -1,5 +1,6 @@
 // Chapter structure mirrors Make: Electronics 3e — see .project-memory/entities/Chapter.md.
-// Stub experiment ID arrays: real content lands in Sprint 3.
+// Authoritative experiment-to-chapter mapping lives in the brief YAML files
+// (`chapter:` field of each); this table mirrors those groupings for routing.
 
 export type ChapterMeta = {
   id: string;
@@ -8,11 +9,11 @@ export type ChapterMeta = {
 };
 
 export const CHAPTERS: ChapterMeta[] = [
-  { id: '1', title: 'Discovery', experimentIds: range(1, 11) },
-  { id: '2', title: 'Switching', experimentIds: range(12, 15) },
-  { id: '3', title: 'Getting Somewhere', experimentIds: range(16, 24) },
-  { id: '4', title: 'Logic', experimentIds: range(25, 31) },
-  { id: '5', title: 'What Next', experimentIds: range(32, 36) },
+  { id: '1', title: 'Experience Electricity', experimentIds: range(1, 5) },
+  { id: '2', title: 'Switching Basics', experimentIds: range(6, 11) },
+  { id: '3', title: 'Getting Somewhere', experimentIds: range(12, 14) },
+  { id: '4', title: 'Logic & Timers', experimentIds: range(15, 23) },
+  { id: '5', title: 'Going Further (incl. Arduino)', experimentIds: range(24, 36) },
 ];
 
 function range(start: number, end: number): string[] {

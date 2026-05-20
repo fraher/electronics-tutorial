@@ -27,7 +27,10 @@ export type FormulaSliderProps = {
 function formatPrecision(value: number, precision = 3): string {
   if (!Number.isFinite(value)) return String(value);
   if (value === 0) return '0';
-  return Number(value.toPrecision(precision)).toString();
+  // toPrecision requires 1..100; treat 0 as "round to integer".
+  if (precision <= 0) return String(Math.round(value));
+  const p = Math.min(100, Math.max(1, Math.floor(precision)));
+  return Number(value.toPrecision(p)).toString();
 }
 
 export function FormulaSlider({
