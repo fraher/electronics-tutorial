@@ -1,0 +1,66 @@
+id: exp-30
+number: 30
+chapter: 5
+title: "Nicer Dice"
+slug: "nicer-dice"
+learning_objective: |
+  Rebuild the dice circuit of Experiment 23 in software on an Arduino, learning variables, if/else, the
+  random() function, button input with INPUT_PULLUP, and the millis() system-clock approach to
+  non-blocking timing.
+paraphrased_summary: |
+  The hardware dice of Experiment 23 — 555 + counter + decoder + LEDs — collapses to about twenty lines of
+  Arduino C. Seven LEDs are wired to four output pins of the Arduino (pin 1 powers the centre LED, pin 2
+  the centre-row pair, pin 3 two corner LEDs, pin 4 the other two corner LEDs), arranged on a breadboard
+  to display the spots of a die face. A tactile button is wired between pin 0 and GND, with the pin
+  configured as INPUT_PULLUP so it idles HIGH and goes LOW when pressed. The sketch lights up a random
+  face every 20 ms in the main loop, using random(1,7) to pick a value 1-6 and then turning on the
+  combination of pins that displays that face. The button is debounced in software: when pressed, the
+  program waits 50 ms, then watches for the release, then waits another 50 ms, then ignores further
+  presses for two seconds (via millis() comparison) so the player can read the result. This experiment
+  introduces variables, for-loops (to clear all LEDs in one line), if statements, random number
+  generation, and the millis()-based "set a deadline and watch for it" idiom that replaces blocking
+  delay() calls.
+parts:
+  - "Arduino Uno (or Nano)"
+  - "USB cable"
+  - "Solderless breadboard"
+  - "Generic LEDs (×7)"
+  - "Resistors 470Ω (×7)"
+  - "Tactile pushbutton"
+  - "Hookup wire jumpers"
+formulas:
+  - id: pin-source-current
+    latex: "I_{total} = N \\cdot V_{pin} / (R + R_{LED})"
+    vars:
+      - { name: N,      min: 1, max: 7, step: 1, default: 2, unit: "LEDs on one pin" }
+      - { name: V_pin,  min: 0, max: 5, step: 0.1, default: 5, unit: "V" }
+      - { name: R,      min: 100, max: 1000, step: 10, default: 470, unit: "Ω" }
+      - { name: R_LED,  min: 50, max: 200, step: 10, default: 100, unit: "Ω (dynamic)" }
+    solve_for: { name: I_total, unit: "A", precision: 4 }
+    description: "Total current drawn from a digital pin when it drives several LEDs in parallel — each LED needs its own series resistor; keep total well under 40 mA."
+  - id: dice-uniformity
+    latex: "P_{face} = 1/6"
+    vars:
+      - { name: faces, min: 6, max: 6, step: 1, default: 6, unit: "" }
+    solve_for: { name: P_face, unit: "probability", precision: 4 }
+    description: "Each face of a fair die should appear with probability 1/6 ≈ 0.167. The Arduino's random() function is good enough for this with no seeding ritual."
+schematic_description: |
+  Pin 0 (with INPUT_PULLUP) → tactile button → GND. Pins 1, 2, 3, 4 each drive a group of LEDs that
+  together make up one die face: pin 1 → centre LED only; pin 2 → the two centre-row LEDs (positions for
+  face values 6); pin 3 → two diagonally opposite corner LEDs; pin 4 → the other two corners. Each LED has
+  its own 470 Ω resistor to GND. Decoding logic for which pins fire per face: face 1 → pin 1; face 2 →
+  pin 3; face 3 → pins 1+3; face 4 → pins 3+4; face 5 → pins 1+3+4; face 6 → pins 2+3+4. (Other valid
+  pin/face groupings work — the key is that the sketch knows the mapping.)
+suggested_falstad_circuit: |
+  N/A — microcontroller project. Use Wokwi instead.
+suggested_wokwi_project_id: "arduino-dice"
+takeaways:
+  - "random(min, max) returns an int in [min, max); use random(1, 7) for a six-sided die."
+  - "INPUT_PULLUP enables the ATmega's internal pull-up so no external resistor is needed."
+  - "Debounce in software by waiting a few ms after the first edge."
+  - "millis() returns elapsed time since boot; compare against a stored target for non-blocking timing."
+  - "The same project in hardware (Experiment 23) used 4 chips; in software it's one chip and 20 lines of code."
+notes_for_implementer: |
+  An embedded Wokwi simulation showing the full circuit and a clickable button is the strongest
+  interactive. Include the complete sketch as a copy-pasteable code block. The face-mapping diagram
+  (which pins light which LEDs for each face) is the visual that ties hardware and software together.

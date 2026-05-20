@@ -1,0 +1,63 @@
+id: exp-19
+number: 19
+chapter: 4
+title: "Learning Logic"
+slug: "learning-logic"
+learning_objective: |
+  Introduce the four fundamental Boolean logic gates (AND, OR, NAND, NOR) as packaged 74HC-series ICs,
+  verify their truth tables empirically with LEDs, and understand voltage thresholds for HIGH and LOW.
+paraphrased_summary: |
+  Logic gates take one or two binary inputs and produce a single binary output according to a Boolean
+  function. The 74HC00 (quad 2-input NAND), 74HC02 (quad 2-input NOR), 74HC08 (quad 2-input AND), and
+  74HC32 (quad 2-input OR) are introduced as 14-pin DIP chips that operate from 2 V to 6 V (with 5 V as the
+  classic working voltage). Each gate's inputs are tied through 10 kΩ pulldown resistors to ground and
+  switched HIGH with pushbuttons to +5V, while the output drives an LED through a 470 Ω current limiter.
+  The learner systematically tries all input combinations and tabulates whether the LED lights, building
+  each gate's truth table by hand. Voltage-threshold concepts are introduced: a 74HC input is reliably HIGH
+  above about 3.5 V (at Vcc=5V) and LOW below about 1.5 V; floating inputs are forbidden because they pick
+  up noise and may oscillate. Unused gate inputs must be tied to either rail. The relationship between
+  hardware logic and Boolean algebra is sketched: AND = multiplication, OR = addition (saturating), NOT =
+  complement. The 74HC04 hex inverter is mentioned in passing.
+parts:
+  - "5V regulated supply (LM7805 or 4×AA)"
+  - "Solderless breadboard"
+  - "Logic gate ICs: 74HC00, 74HC02, 74HC08, 74HC32 (and optionally 74HC04)"
+  - "Generic LED (×4) + 470Ω each"
+  - "Resistors 10kΩ (×4) for pulldowns"
+  - "Tactile pushbuttons (×4)"
+  - "Decoupling cap 0.1µF per IC"
+formulas:
+  - id: logic-thresholds
+    latex: "V_{IH} \\geq 0.7 \\cdot V_{CC}"
+    vars:
+      - { name: V_CC, min: 2, max: 6, step: 0.1, default: 5, unit: "V" }
+    solve_for: { name: V_IH, unit: "V", precision: 2 }
+    description: "Minimum input voltage guaranteed to be interpreted as HIGH by a 74HC-family gate."
+  - id: logic-low
+    latex: "V_{IL} \\leq 0.3 \\cdot V_{CC}"
+    vars:
+      - { name: V_CC, min: 2, max: 6, step: 0.1, default: 5, unit: "V" }
+    solve_for: { name: V_IL, unit: "V", precision: 2 }
+    description: "Maximum input voltage guaranteed to be interpreted as LOW by a 74HC-family gate."
+schematic_description: |
+  Each gate is wired with two pushbuttons providing inputs A and B. Each input pin is tied to ground
+  through a 10 kΩ pulldown so the input rests LOW; pressing the button connects the input pin to +5V,
+  driving it HIGH. The single output pin drives an LED through a 470 Ω resistor to ground. Vcc (pin 14)
+  and GND (pin 7) of each 14-pin DIP are connected to the rails with a 0.1 µF decoupling capacitor across
+  them. Spare input pins of unused gates in the same package are tied to either ground or Vcc — never left
+  floating.
+suggested_falstad_circuit: |
+  TBD — CircuitJS has built-in AND/OR/NAND/NOR/XOR gate elements. Wire each to two SPDT switches and an
+  LED output. Encourage a side-by-side display of the four gates with a shared input panel so the learner
+  can compare truth tables at a glance.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Logic gates compute Boolean functions of binary inputs."
+  - "74HC ICs operate from 2 V to 6 V; thresholds are about 70% (HIGH) and 30% (LOW) of Vcc."
+  - "Inputs must always be tied HIGH or LOW — never left floating."
+  - "Decoupling capacitors (0.1 µF) belong on every logic IC's Vcc pin."
+  - "AND = product, OR = sum, NAND/NOR = inverted versions of those."
+notes_for_implementer: |
+  A truth-table widget where the learner clicks input buttons and sees the output LED update for each gate
+  type is the canonical interactive. Display all four truth tables side by side; this is how the relations
+  between gates (especially NAND vs AND, NOR vs OR) become memorable.

@@ -1,0 +1,58 @@
+id: exp-21
+number: 21
+chapter: 4
+title: "The Button Blocker"
+slug: "the-button-blocker"
+learning_objective: |
+  Build a "first-press wins" lockout circuit using cross-coupled NAND gates as an SR latch — the first
+  exposure to digital memory, where the state of the output depends on past inputs as well as current ones.
+paraphrased_summary: |
+  In a quiz-show buzzer, only the first contestant's press should register; subsequent presses must be
+  blocked until a reset. The classic solution is the SR (set/reset) latch: two NAND gates cross-coupled so
+  each gate's output feeds back into the other's input. Pressing any contestant's button drives one gate's
+  output low, which locks the other gates high through the feedback, ignoring any further button presses
+  until the master reset is asserted. Each contestant has their own latch in cascade with a global
+  "anyone-pressed" signal so that only the first input is acknowledged. The experiment uses 74HC00 quad
+  NAND chips; the truth table of the SR latch is investigated by deliberately stepping the inputs through
+  their four combinations and observing the output. The forbidden state (both inputs LOW for an active-LOW
+  SR latch) is discussed. Active-HIGH vs active-LOW latches are compared, and the chain of reasoning
+  generalizes to flip-flops (clocked latches) used throughout digital electronics.
+parts:
+  - "5V supply"
+  - "Solderless breadboard"
+  - "74HC00 quad NAND ICs (×2 for a 4-contestant version)"
+  - "Tactile pushbuttons (×4 contestants + 1 reset)"
+  - "Generic LEDs (×4) + 470Ω each"
+  - "Resistors 10kΩ (×5) for pull-ups (active-LOW inputs)"
+  - "Decoupling caps 0.1µF"
+formulas:
+  - id: sr-latch-set
+    latex: "Q' = \\overline{S \\cdot \\overline{R} \\cdot Q}"
+    vars:
+      - { name: S, min: 0, max: 1, step: 1, default: 0, unit: "" }
+      - { name: R, min: 0, max: 1, step: 1, default: 1, unit: "" }
+      - { name: Q, min: 0, max: 1, step: 1, default: 0, unit: "" }
+    solve_for: { name: Q_prime, unit: "bit", precision: 0 }
+    description: "Next-state Boolean expression for an active-LOW NAND SR latch — useful for tracing behavior cycle by cycle."
+schematic_description: |
+  One latch per contestant: NAND1 has inputs A (the S input, active-LOW, pulled high through 10 kΩ and
+  driven LOW by the contestant's pushbutton) and the output of NAND2 (the cross-coupling feedback).
+  NAND2's inputs are R (the global reset, active-LOW) and NAND1's output. The output Q (NAND1's output)
+  is HIGH when the latch is reset and LOW when the latch has been set; an LED through 470Ω indicates the
+  set state. Four such latches share a common active-LOW reset bus; a master reset pushbutton between the
+  reset bus and ground clears all latches simultaneously. A global "first-press" gate (additional NAND) is
+  optionally added so that once any latch is set, the other contestants' buttons are ignored.
+suggested_falstad_circuit: |
+  TBD — CircuitJS has NAND elements; build a 2-input NAND SR latch first, verify its truth table, then
+  cascade four of them with a shared reset.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Two cross-coupled NAND gates form an SR latch — the simplest one-bit memory."
+  - "An active-LOW NAND latch sets when S goes LOW and resets when R goes LOW."
+  - "Both inputs LOW at once is forbidden — the latch state is undefined."
+  - "Cascading SR latches with a shared reset produces a quiz-show 'first-press wins' system."
+  - "All clocked flip-flops are extensions of this basic latch idea."
+notes_for_implementer: |
+  Use a step-by-step interactive truth-table walker: click S or R, see the latch state flip, watch the
+  cross-coupled signals propagate. Showing the feedback loops as animated highlighted wires when a state
+  change happens drives home why memory is possible.

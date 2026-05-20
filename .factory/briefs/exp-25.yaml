@@ -1,0 +1,62 @@
+id: exp-25
+number: 25
+chapter: 5
+title: "Tabletop Power Generation"
+slug: "tabletop-power-generation"
+learning_objective: |
+  Demonstrate electromagnetic induction by moving a magnet through a coil and producing a measurable
+  voltage — the principle behind every generator, alternator, microphone, and dynamic pickup.
+paraphrased_summary: |
+  Faraday's law of induction says that a changing magnetic flux through a coil induces an EMF (voltage)
+  across the coil's terminals. The experiment makes this tangible: a small but strong neodymium magnet is
+  dropped through a hand-wound coil of fine magnet wire wrapped around a cardboard or PVC tube, while the
+  multimeter (set to DC volts or AC millivolts) records the brief spike of induced voltage. A faster
+  motion gives a larger reading because dΦ/dt is larger. Reversing the magnet's polarity reverses the sign
+  of the induced voltage. The same coil and magnet can be used as a primitive generator by oscillating the
+  magnet through it manually; the induced AC voltage can light a low-current LED if the coil has enough
+  turns. Lenz's law (the induced current opposes the change that produced it) is observed as a noticeable
+  drag on the falling magnet. Real-world consequences: power plants, bicycle dynamos, electric guitar
+  pickups, condenser microphones — all the same mechanism scaled up or down.
+parts:
+  - "Neodymium magnet, cylindrical, 8-12mm diameter"
+  - "Magnet wire, 30-36 AWG, ~50 meters"
+  - "Cardboard tube or PVC pipe, about 15mm inner diameter, 10-15cm long"
+  - "Sandpaper or knife (to strip enamel from magnet-wire ends)"
+  - "Digital multimeter set to DC mV (or AC mV)"
+  - "Optional: low-current LED to visualize the AC voltage"
+formulas:
+  - id: faraday-emf
+    latex: "\\varepsilon = -N \\cdot d\\Phi / dt"
+    vars:
+      - { name: N,       min: 1, max: 5000, step: 1, default: 1000, unit: "turns" }
+      - { name: dPhi_dt, min: 0, max: 0.01, step: 0.0001, default: 0.0005, unit: "Wb/s" }
+    solve_for: { name: ε, unit: "V", precision: 3 }
+    description: "Induced EMF — proportional to the rate of change of magnetic flux through the coil times the number of turns."
+  - id: induced-current
+    latex: "I = \\varepsilon / R_{coil}"
+    vars:
+      - { name: ε,      min: 0, max: 1, step: 0.001, default: 0.05, unit: "V" }
+      - { name: R_coil, min: 0.1, max: 1000, step: 0.1, default: 50, unit: "Ω" }
+    solve_for: { name: I, unit: "A", precision: 4 }
+    description: "Induced current when the coil drives a load — small for a hand-wound coil with significant wire resistance."
+schematic_description: |
+  The coil (e.g., 1000 turns of 32-AWG magnet wire wound on a cardboard tube) has its two enamel-stripped
+  ends soldered (or twisted) to the meter probes. The magnet is dropped axially through the tube while
+  the meter is set to DC mV or, better, to AC mV with autoranging. Each pass produces a transient pulse;
+  flipping the magnet reverses the sign. With a low-current LED across the coil terminals (in place of
+  the meter), rapidly shaking the magnet through the coil can produce visible blinks if the coil has
+  enough turns.
+suggested_falstad_circuit: |
+  TBD — Falstad doesn't simulate a moving magnet, but a sinusoidal AC source (representing the induced EMF)
+  feeding a coil + LED load can illustrate the post-induction electrical behavior.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A changing magnetic field through a coil induces a voltage (Faraday's law)."
+  - "The faster the change, the larger the induced voltage; the more turns, the larger as well."
+  - "The induced current opposes the change that caused it (Lenz's law) — felt as drag."
+  - "This single mechanism powers generators, dynamos, microphones, and pickups."
+  - "AC mode on the meter, or a low-current LED, makes the brief induced voltage easy to see."
+notes_for_implementer: |
+  A simple animation of a magnet sliding through a coil with a real-time voltage spike on a virtual scope
+  is the strongest interactive. Sliders for "number of turns" and "magnet velocity" should scale the
+  resulting EMF appropriately.

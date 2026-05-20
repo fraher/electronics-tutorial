@@ -1,0 +1,56 @@
+id: exp-12
+number: 12
+chapter: 3
+title: "Joining Two Wires Together"
+slug: "joining-two-wires-together"
+learning_objective: |
+  Learn the basics of soldering — heating a joint to the point where molten solder flows by capillary action
+  into a permanent, low-resistance electrical connection — and form good habits about iron temperature,
+  flux, joint cleanliness, and safety.
+paraphrased_summary: |
+  Soldering replaces the temporary alligator-clip connections of earlier experiments with permanent metallurgical
+  joints. A typical hobby setup uses a 25- to 40-watt iron with a clean, well-tinned chisel tip and rosin-core
+  60/40 (lead) or lead-free solder around 0.6 mm in diameter. The technique that beginners are taught is the
+  opposite of what their intuition suggests: do not melt solder onto the iron and drip it onto the joint;
+  instead, heat both pieces of metal first with the iron, then feed solder into the joint itself. Capillary
+  action draws molten solder into the crevices, producing a shiny concave fillet that is the hallmark of a
+  good joint. A "cold" joint — dull, grainy, blobby — happens when the metal was too cold when the solder was
+  applied. Safety topics: ventilation (flux fumes), eye protection, the iron's tip stand, and the avoidance
+  of breathing lead vapor with leaded solder. The learner practices by stripping the ends of two wires,
+  twisting them together, heating, applying solder, and inspecting. Heat-shrink tubing is introduced as the
+  modern alternative to electrical tape for insulating finished joints.
+parts:
+  - "Soldering iron, 25-40W (or temperature-controlled)"
+  - "Tip stand and damp sponge / brass-wool tip cleaner"
+  - "Rosin-core solder, 60/40 or lead-free, 0.6mm"
+  - "Hookup wire, 22 gauge, two colors"
+  - "Wire strippers"
+  - "Heat-shrink tubing assortment"
+  - "Safety glasses"
+formulas:
+  - id: joint-resistance
+    latex: "R_{joint} = \\rho \\cdot L / A"
+    vars:
+      - { name: ρ, min: 0.000000015, max: 0.0000001, step: 0.000000001, default: 0.0000000168, unit: "Ω·m" }
+      - { name: L, min: 0.0001, max: 0.01, step: 0.0001, default: 0.001, unit: "m" }
+      - { name: A, min: 0.0000001, max: 0.00001, step: 0.0000001, default: 0.000001, unit: "m²" }
+    solve_for: { name: R_joint, unit: "Ω", precision: 6 }
+    description: "Resistance of a conductive joint — for copper (ρ ≈ 1.68×10⁻⁸ Ω·m), even a millimeter-long joint is microhms; this is why a good solder joint adds essentially no resistance."
+schematic_description: |
+  No active circuit. The physical setup is: two stripped wire ends crossed and lightly twisted to make
+  mechanical contact; the iron tip placed against the joint to heat it; solder fed into the seam from the
+  opposite side until the joint is wet and shiny; iron removed; joint allowed to cool without moving;
+  heat-shrink slid into place and warmed to insulate.
+suggested_falstad_circuit: |
+  N/A — this is a process/manual-skill experiment with no circuit topology.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Heat the joint, not the solder; let capillary action pull the solder in."
+  - "A good joint is shiny and concave; a cold joint is dull and blobby."
+  - "Rosin core solder includes flux to clean oxidation; flux fumes need ventilation."
+  - "Tip cleanliness matters — wipe on a damp sponge or brass wool, then re-tin."
+  - "Heat-shrink tubing is the clean way to insulate finished joints."
+notes_for_implementer: |
+  Heavy on visuals — an annotated photo or SVG of a "good" vs "cold" joint side-by-side is the single most
+  useful illustration. Also include a labeled diagram of the iron tip, joint, and solder feed orientation.
+  Consider an embedded video or animated GIF showing the wetting moment.

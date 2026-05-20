@@ -1,0 +1,52 @@
+id: exp-1
+number: 1
+chapter: 1
+title: "Taste the Power"
+slug: "taste-the-power"
+learning_objective: |
+  Build an intuition that biological tissue conducts electricity and that conduction depends on resistance,
+  setting up the concepts of voltage, current, and resistance that the rest of the book formalizes.
+paraphrased_summary: |
+  The opening experiment is a sensory hook: a 9-volt alkaline battery is touched to the tip of a moistened tongue
+  so the learner physically feels a faint tingle. The tingle is the sensation of a tiny current passing through
+  living tissue between the two battery terminals. By drying the tongue with a tissue and repeating, the sensation
+  weakens because moisture has been removed, which raises resistance. The same body region is then probed with a
+  digital multimeter set to its resistance (ohms) range to put a number on what was felt — typically several
+  hundred kilohms when moist, much higher when dry. Varying the distance between the probes shows that resistance
+  scales with the length of the conducting path, while pressing harder shows that better contact lowers resistance.
+  The experiment introduces the multimeter, the omega symbol, the unit prefixes K and M, and the difference between
+  conductors and insulators. The safety boundary is firm: only a 9V battery is permitted, never anything that can
+  deliver more current. The takeaway is that electricity is not magic — it is a measurable quantity that depends on
+  the physical situation, and that the body itself is a (very poor) conductor whose resistance changes with
+  moisture, area of contact, and distance.
+parts:
+  - "9V alkaline battery"
+  - "Digital multimeter (with leads)"
+formulas:
+  - id: kilohm-conversion
+    latex: "R_K = R / 1000"
+    vars:
+      - { name: R, min: 100, max: 1000000, step: 100, default: 200000, unit: "Ω" }
+    solve_for: { name: R_K, unit: "kΩ", precision: 3 }
+    description: "Convert a resistance in ohms to kilohms — the unit prefix the meter most often displays for tongue readings."
+schematic_description: |
+  No formal circuit is built. Two scenarios are documented: (1) the two terminals of a 9V battery touched directly
+  to moistened skin (tongue), with the body completing the loop between + and -. (2) The multimeter, set to the
+  ohms range, with the red lead in the V/Ω socket and black in COM; the two probes pressed onto the skin a known
+  distance apart. The probes act as the two ends of an "unknown resistor" (the body region) and the meter reports
+  its resistance.
+suggested_falstad_circuit: |
+  TBD — implementer to construct a trivial schematic in CircuitJS showing a 9V source connected through a large
+  variable resistor (representing the body, e.g., 100kΩ–2MΩ) to demonstrate how the resulting current is tiny.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Living tissue conducts electricity, but poorly — it behaves like a very large resistor."
+  - "Moisture sharply lowers the resistance of skin and tongue."
+  - "Resistance grows with the distance current must travel and shrinks with contact area."
+  - "A multimeter set to ohms quantifies what the tongue feels qualitatively."
+  - "Never use a power source larger than a 9V battery for body-contact experiments."
+notes_for_implementer: |
+  Lean on the sensory framing — most readers have never thought about their own body as a circuit element.
+  A good interactive could let the learner slide a "moisture" parameter from dry (≈2MΩ) to wet (≈50kΩ) and watch
+  the resulting current (I = V/R at 9V) climb from microamps to a fraction of a milliamp. Reinforce the safety
+  rule prominently.

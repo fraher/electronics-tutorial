@@ -1,0 +1,66 @@
+id: exp-32
+number: 32
+chapter: 5
+title: "Analog Input"
+slug: "analog-input"
+learning_objective: |
+  Use the Arduino's built-in analog-to-digital converter (ADC) to read a continuously variable voltage
+  from a potentiometer, and use that reading to control LED brightness via PWM output.
+paraphrased_summary: |
+  The ATmega328P on an Arduino Uno includes a 10-bit ADC: any of the six analog pins (A0-A5) can convert a
+  0-5V input voltage into an integer 0-1023. A 10 kΩ potentiometer wired between +5V and GND, with its
+  wiper to A0, becomes a variable-voltage source whose position the program can read. The companion idea
+  is PWM output: digital pins marked with "~" on the board can produce a fast square wave whose duty cycle
+  is set by analogWrite(pin, value), with value in 0-255 (representing 0% to 100% on-time). To the eye,
+  high-frequency PWM looks like dimming — an LED driven from pin 9 via a 220 Ω resistor smoothly varies
+  brightness with the pot position. The mapping is convertible: map(adcReading, 0, 1023, 0, 255) scales
+  the 10-bit input to the 8-bit output. Concepts introduced: ADC resolution and reference voltage, the
+  Serial monitor for printing analog readings to the host, PWM as a digital approximation of analog
+  output, and the limit that PWM-based dimming is not true analog (audible whine on coils, flicker in
+  cameras). Supplemental material extending Experiment 29.
+parts:
+  - "Arduino Uno"
+  - "USB cable"
+  - "Solderless breadboard"
+  - "Generic LED + 220Ω resistor"
+  - "Potentiometer 10kΩ (linear taper)"
+  - "Hookup wire"
+formulas:
+  - id: adc-voltage
+    latex: "V = (raw / 1023) \\cdot V_{ref}"
+    vars:
+      - { name: raw,   min: 0, max: 1023, step: 1, default: 512, unit: "" }
+      - { name: V_ref, min: 1.1, max: 5, step: 0.1, default: 5, unit: "V" }
+    solve_for: { name: V, unit: "V", precision: 3 }
+    description: "Convert ADC raw reading back to an input voltage — the 10-bit converter divides V_ref into 1024 steps."
+  - id: pwm-duty
+    latex: "D = analogWrite / 255"
+    vars:
+      - { name: analogWrite, min: 0, max: 255, step: 1, default: 128, unit: "" }
+    solve_for: { name: D, unit: "ratio", precision: 3 }
+    description: "Duty cycle of an Arduino PWM output as a fraction of the period — value 128 produces ~50% duty."
+  - id: arduino-pwm-freq
+    latex: "f_{pwm} = 490"
+    vars:
+      - { name: f_pwm, min: 490, max: 980, step: 1, default: 490, unit: "Hz" }
+    solve_for: { name: f_pwm, unit: "Hz", precision: 0 }
+    description: "Default PWM frequency on most Uno pins is about 490 Hz (pins 5 and 6 run at 980 Hz). Fast enough to look like dimming to the eye."
+schematic_description: |
+  Pot: pin 1 of the 10kΩ pot to +5V, pin 3 to GND, wiper (pin 2) to Arduino A0. LED branch: Arduino pin 9
+  (a PWM-capable pin, marked with ~) to the anode of an LED, then through 220Ω to GND. In the sketch,
+  loop() calls value = analogRead(A0), then bright = map(value, 0, 1023, 0, 255), then
+  analogWrite(9, bright). Optional: Serial.print the value each pass so the learner can watch the ADC
+  reading change in the Serial Monitor.
+suggested_falstad_circuit: |
+  N/A — microcontroller project. Use Wokwi.
+suggested_wokwi_project_id: "arduino-pot-pwm-led"
+takeaways:
+  - "Arduino ADC: analogRead() returns 0-1023 representing the input voltage as a fraction of V_ref (default 5V)."
+  - "PWM output: analogWrite() takes 0-255; the average voltage seen by a slow load equals (value/255)·5V."
+  - "Use map() to convert between ranges (e.g., 10-bit ADC to 8-bit PWM)."
+  - "Default PWM frequency on Uno is ~490 Hz — fast enough to dim LEDs smoothly."
+  - "The Serial Monitor (115200 baud is convenient) is the standard tool for inspecting variables."
+notes_for_implementer: |
+  Wokwi simulation with a draggable virtual potentiometer and a brightness-following LED is the central
+  interactive. Show a live "ADC reading" and "PWM value" display alongside the LED. Briefly explain the
+  difference between PWM dimming and true analog dimming for the curious.

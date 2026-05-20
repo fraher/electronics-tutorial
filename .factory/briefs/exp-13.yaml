@@ -1,0 +1,53 @@
+id: exp-13
+number: 13
+chapter: 3
+title: "Roasting an LED"
+slug: "roasting-an-led"
+learning_objective: |
+  Reinforce the soldering-iron technique by deliberately overheating an LED — illustrating that semiconductors
+  have thermal limits, that flush mounting requires patience, and that a heat-sink clip protects sensitive
+  parts.
+paraphrased_summary: |
+  This short exercise pairs the soldering skill of Experiment 12 with the thermal sensitivity of
+  semiconductors. The learner solders an LED into a small piece of perfboard or directly to a couple of
+  wires, then deliberately lingers too long on one of the leads with a hot iron. The plastic case bubbles or
+  the semiconductor junction fails outright, demonstrating that a soldering iron at 350°C can ruin parts
+  rated for only 85°C ambient operation. The rule that emerges: solder fast, no more than a few seconds per
+  joint, with the LED leads trimmed to length first. A small alligator clip placed on the lead between the
+  iron and the LED body acts as a heat-sink, conducting heat away before it can reach the junction. Practice
+  on cheap red LEDs (which cost pennies) is encouraged. The experiment also revisits the polarity rules of
+  Experiment 2: even a freshly soldered LED won't light unless the longer/anode lead is on the positive side.
+parts:
+  - "Soldering iron"
+  - "Solder"
+  - "Several generic LEDs (sacrifice a few)"
+  - "Heat-sink clip or small alligator clip"
+  - "Hookup wire"
+  - "9V battery + 470Ω resistor for post-solder testing"
+formulas:
+  - id: max-junction-temp
+    latex: "T_J = T_A + P_D \\cdot R_{thJA}"
+    vars:
+      - { name: T_A,     min: 0, max: 50, step: 1, default: 25, unit: "°C" }
+      - { name: P_D,     min: 0, max: 1, step: 0.01, default: 0.05, unit: "W" }
+      - { name: R_thJA,  min: 50, max: 500, step: 10, default: 300, unit: "°C/W" }
+    solve_for: { name: T_J, unit: "°C", precision: 1 }
+    description: "Steady-state junction temperature of a small LED — ambient plus power-dissipation times thermal resistance from junction to air."
+schematic_description: |
+  No new electrical topology. After soldering, the LED + 470Ω + 9V test circuit of Experiment 2 is used to
+  check whether the part survived. Physically, the LED is held by a heat-sink clip on its lead near the
+  body; the iron contacts the very end of the same lead; solder is applied quickly; the clip is removed
+  after the joint has cooled.
+suggested_falstad_circuit: |
+  N/A — process experiment.
+suggested_wokwi_project_id: null
+takeaways:
+  - "LEDs (and all semiconductors) have thermal limits — too much soldering heat ruins them."
+  - "A heat-sink clip on the lead between iron and LED body conducts heat away during soldering."
+  - "Keep iron contact short — a few seconds per joint is plenty."
+  - "Trim leads to length before soldering, not after, to avoid unnecessary heat exposure."
+  - "Cheap LEDs make excellent practice subjects; expect to ruin a few while learning."
+notes_for_implementer: |
+  Short experiment. The interactive payoff is small — focus the page on a clear photo/SVG sequence of
+  good-clip placement and a "max contact time" rule of thumb. A short embedded video would carry this page
+  better than a circuit simulator.

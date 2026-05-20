@@ -1,0 +1,62 @@
+id: exp-35
+number: 35
+chapter: 5
+title: "Serial Communication"
+slug: "serial-communication"
+learning_objective: |
+  Send data between the Arduino and a host computer over the USB serial link, learning Serial.begin,
+  Serial.print, Serial.read, and the request-response and event-notification patterns that underlie all
+  microcontroller-to-host communication.
+paraphrased_summary: |
+  Until now the Arduino has only blinked LEDs and made beeps; this experiment opens a bidirectional
+  channel between the chip and the host computer. The USB cable that programs the Arduino also carries a
+  virtual serial port (typically at 9600 or 115200 baud), and the Serial library exposes it to the
+  sketch. Serial.begin(9600) in setup() opens the port; Serial.print() and Serial.println() send strings
+  or numbers to the host; Serial.available() tests whether incoming bytes are waiting; Serial.read()
+  consumes one byte from the input buffer. A simple sketch reads A0 once per second and prints the value
+  to the Serial Monitor — instant data logging. A second sketch listens for incoming characters and
+  responds to commands ("R\n" turns the LED on, "G\n" turns it off, "?\n" prints the current state),
+  demonstrating bidirectional control. The Serial Plotter (built into the IDE) is introduced as a way to
+  graph values in real time. Practical limits — buffer size (64 bytes), baud rate trade-offs, and the
+  fact that opening the Serial Monitor resets the Arduino — are noted. Supplemental material useful for
+  any project that needs to be observed or controlled from a laptop.
+parts:
+  - "Arduino Uno"
+  - "USB cable"
+  - "Solderless breadboard"
+  - "Generic LED + 470Ω resistor (for the command demo)"
+  - "Potentiometer 10kΩ (for the data-logging demo)"
+  - "Hookup wire"
+formulas:
+  - id: serial-throughput
+    latex: "B = baud / 10"
+    vars:
+      - { name: baud, min: 300, max: 1000000, step: 100, default: 9600, unit: "bps" }
+    solve_for: { name: B, unit: "bytes/s", precision: 0 }
+    description: "Approximate sustained byte throughput on the serial line — 10 bits transmitted per byte (1 start + 8 data + 1 stop) at the chosen baud rate."
+  - id: sample-period
+    latex: "t_{sample} = 1 / f_{log}"
+    vars:
+      - { name: f_log, min: 1, max: 1000, step: 1, default: 10, unit: "Hz" }
+    solve_for: { name: t_sample, unit: "s", precision: 3 }
+    description: "Time between consecutive samples when logging at a given rate — used in delay() between Serial.print calls."
+schematic_description: |
+  Data-logging demo: a 10kΩ pot wired between +5V and GND with its wiper to A0 (same as Experiment 32);
+  the sketch calls Serial.begin(9600) once and Serial.println(analogRead(A0)) inside loop() with a 100ms
+  delay. Open the Serial Monitor (or Plotter) to see values stream. Command demo: LED on pin 13 with a
+  470Ω current limit to GND; the sketch maintains a state variable, prints a prompt at start-up, then in
+  loop() checks Serial.available() and acts on each incoming command character.
+suggested_falstad_circuit: |
+  N/A — microcontroller project; the Serial link is to a host computer, not to other circuit elements.
+suggested_wokwi_project_id: "arduino-serial-monitor"
+takeaways:
+  - "Serial.begin(baud) opens the USB-emulated serial port; pick a baud rate the host can match."
+  - "Serial.print/println push data to the host; Serial.read pulls one byte from the input buffer."
+  - "Opening the Arduino IDE's Serial Monitor resets the board (the DTR line drops)."
+  - "The Serial Plotter graphs numerical lines in real time — instant scope-like visualization."
+  - "Throughput is roughly baud/10 bytes per second; budget your prints accordingly."
+notes_for_implementer: |
+  Wokwi includes a Serial Monitor, so the entire interaction can happen in-browser. Show two sketches
+  side by side — one for streaming data, one for accepting commands — with their respective Serial
+  Monitor screenshots. Reinforce the data-logging value proposition: this is how you debug everything
+  later.

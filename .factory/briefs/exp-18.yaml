@@ -1,0 +1,66 @@
+id: exp-18
+number: 18
+chapter: 4
+title: "Reflex Tester"
+slug: "reflex-tester"
+learning_objective: |
+  Combine a 555 monostable, a 555 astable, and digital counter chips to measure how long a user's
+  reaction takes — bridging analog timing to digital counting and display.
+paraphrased_summary: |
+  The reflex tester turns a random delay and a millisecond stopwatch into a game. A 555 in monostable mode
+  produces a random "go" pulse after the user presses a start button — random because the delay R is varied
+  by a potentiometer or because the trigger comes from a slow astable whose phase is unpredictable. When
+  the go pulse arrives, an LED lights and a second 555 in astable mode (configured to run at ~1 kHz) begins
+  pulsing into the clock input of a 4026 decade counter / seven-segment-display driver chip. The 4026
+  counts up on each pulse, displaying milliseconds (or tens of milliseconds) on a 7-segment LED display.
+  When the player slaps their reaction button, the gating is removed and counting stops. The displayed
+  number is the player's reaction time. The experiment introduces 7-segment displays (common-cathode vs
+  common-anode), counter ICs, and the principle of gating an oscillator into a counter to measure elapsed
+  time.
+parts:
+  - "9V battery + 5V regulator (or 5V supply)"
+  - "Solderless breadboard"
+  - "555 timer ICs (×2)"
+  - "CD4026 decade counter / 7-segment driver"
+  - "Common-cathode 7-segment LED display"
+  - "Resistors: 220Ω (×7 for segments), 1kΩ, 10kΩ, 100kΩ"
+  - "Capacitors: 0.01µF, 10µF"
+  - "Tactile pushbuttons (×2)"
+  - "Generic LED + 470Ω"
+formulas:
+  - id: reaction-time
+    latex: "t_{react} = N / f_{clock}"
+    vars:
+      - { name: N,        min: 1, max: 9999, step: 1, default: 250, unit: "counts" }
+      - { name: f_clock,  min: 100, max: 10000, step: 100, default: 1000, unit: "Hz" }
+    solve_for: { name: t_react, unit: "s", precision: 3 }
+    description: "Displayed count divided by the gating clock frequency gives the elapsed time."
+  - id: gate-clock
+    latex: "f_{clock} = 1.44 / ((R_A + 2 R_B) \\cdot C)"
+    vars:
+      - { name: R_A, min: 100, max: 100000, step: 100, default: 1000, unit: "Ω" }
+      - { name: R_B, min: 100, max: 100000, step: 100, default: 1000, unit: "Ω" }
+      - { name: C,   min: 0.000000001, max: 0.00001, step: 0.000000001, default: 0.0000005, unit: "F" }
+    solve_for: { name: f_clock, unit: "Hz", precision: 1 }
+    description: "Clock frequency from a 555 astable — same formula as Experiment 16; set this to 1 kHz for millisecond resolution."
+schematic_description: |
+  Block diagram: a "start" pushbutton triggers a first 555 (monostable, ~2-5 second pulse with random R via
+  a pot) whose output goes high to mark the "GO!" moment, lighting an indicator LED. The rising edge of
+  this output also opens an AND gate (or feeds the reset pin of the second 555). The second 555 (astable,
+  ~1 kHz) clocks the CD4026, which displays a count on the 7-segment LED. The user's "stop" pushbutton
+  resets the first 555 (or gates off the second 555), freezing the count. A third pushbutton resets the
+  4026's count to zero for a new round.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: two 555s with the AND-gated clock approach, feeding a 4026 model. The
+  4026 may need to be approximated with a generic counter element + 7-segment decoder in CircuitJS.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Gating an oscillator into a counter measures elapsed time."
+  - "Choose the clock frequency to match the desired time resolution (1 kHz → milliseconds)."
+  - "The CD4026 combines a decade counter with seven-segment decoder logic in one chip."
+  - "Random delays improve the test — preventing the user from anticipating the 'go' signal."
+  - "This is the basic architecture of nearly every digital frequency counter and stopwatch."
+notes_for_implementer: |
+  A live "press to start / press to stop" interactive with a simulated 7-segment readout makes the
+  measurement satisfying. The block diagram is more important than the schematic detail on this page —
+  emphasize the data flow: trigger → gate → clock → counter → display.

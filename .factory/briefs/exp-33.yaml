@@ -1,0 +1,64 @@
+id: exp-33
+number: 33
+chapter: 5
+title: "Sensing Light"
+slug: "sensing-light"
+learning_objective: |
+  Wire a photoresistor (LDR) or photodiode in a voltage-divider configuration so the Arduino's ADC can
+  measure ambient light, then use thresholding to switch an LED on at dusk — a digital night-light.
+paraphrased_summary: |
+  A photoresistor (light-dependent resistor, LDR) is a CdS device whose resistance falls when light hits
+  it — typical values range from tens of kilohms in the dark to a few hundred ohms in bright sunlight.
+  Pairing it with a fixed resistor in a voltage divider produces a node voltage that swings widely with
+  illumination, perfect for an ADC input. The Arduino reads this voltage on A0 and compares it against a
+  threshold; below the threshold (dark) the LED on pin 13 turns on, above it (light) the LED turns off.
+  Hysteresis is added by using two thresholds — a lower one to turn the LED on and a higher one to turn
+  it off — preventing rapid chatter at the transition. The same architecture works with photodiodes
+  (faster, more linear, but trickier to bias) and phototransistors (which give a current proportional to
+  light). The lesson introduces the voltage-divider equation in the context of a variable resistor, the
+  concept of a threshold with hysteresis (Schmitt-trigger behavior in software), and how analog sensors
+  are integrated with digital control. Supplemental material consolidating Chapter 5 ideas.
+parts:
+  - "Arduino Uno"
+  - "USB cable"
+  - "Solderless breadboard"
+  - "Photoresistor (LDR), GL5528 or similar"
+  - "Generic LED + 470Ω resistor"
+  - "Resistor 10kΩ (voltage-divider partner for the LDR)"
+  - "Hookup wire"
+formulas:
+  - id: voltage-divider
+    latex: "V_{out} = V_{in} \\cdot R_{fixed} / (R_{fixed} + R_{LDR})"
+    vars:
+      - { name: V_in,    min: 0, max: 5, step: 0.1, default: 5, unit: "V" }
+      - { name: R_fixed, min: 1000, max: 100000, step: 100, default: 10000, unit: "Ω" }
+      - { name: R_LDR,   min: 100, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+    solve_for: { name: V_out, unit: "V", precision: 3 }
+    description: "Voltage at the divider node when the LDR is the lower leg — V_out rises as the LDR's resistance falls (i.e., as light increases)."
+  - id: light-threshold
+    latex: "T_{on} < T_{off}"
+    vars:
+      - { name: T_on,  min: 0, max: 1023, step: 1, default: 300, unit: "" }
+      - { name: T_off, min: 0, max: 1023, step: 1, default: 400, unit: "" }
+    solve_for: { name: hysteresis_gap, unit: "ADC counts", precision: 0 }
+    description: "Hysteresis window — set T_off > T_on so the LED doesn't chatter at the threshold; the gap is the noise immunity."
+schematic_description: |
+  Voltage divider: +5V → 10kΩ → divider node → LDR → GND. The divider node also connects to Arduino pin
+  A0. (The LDR is in the bottom leg: when light is bright, R_LDR is small, so V_out is small; when dark,
+  R_LDR is large, so V_out is large. Swap the order if you prefer the opposite sense.) Output: Arduino
+  pin 13 → LED anode → 470Ω → GND. The sketch reads A0 each loop and turns pin 13 HIGH when the reading
+  exceeds T_on (i.e., dark) and LOW when it falls below T_off (i.e., light).
+suggested_falstad_circuit: |
+  N/A — microcontroller project. Use Wokwi (which has a photoresistor element).
+suggested_wokwi_project_id: "arduino-ldr-nightlight"
+takeaways:
+  - "An LDR plus a fixed resistor makes an analog light sensor readable by any ADC pin."
+  - "Photoresistor resistance falls as light rises — a few hundred Ω in sun, tens of kΩ in shade."
+  - "Hysteresis (two thresholds) prevents chatter when the input is noisy near the transition."
+  - "Photodiodes give faster, more linear response; phototransistors give higher current."
+  - "The voltage-divider equation V_out = V_in · R₂/(R₁+R₂) is a fundamental tool everywhere in electronics."
+notes_for_implementer: |
+  Wokwi has a built-in photoresistor with a slider for incident light — ideal for this experiment. Show
+  the ADC reading and the threshold lines on a small chart so learners see when the LED flips. The
+  hysteresis idea is best demonstrated with a noisy signal hovering at the threshold; the chart should
+  reveal why two thresholds are better than one.

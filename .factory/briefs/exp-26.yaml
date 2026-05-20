@@ -1,0 +1,59 @@
+id: exp-26
+number: 26
+chapter: 5
+title: "Loudspeaker Destruction"
+slug: "loudspeaker-destruction"
+learning_objective: |
+  Take apart a small loudspeaker to see the voice coil, magnet, and cone first-hand, and understand
+  loudspeakers, microphones, and generators as variations on the same coil-and-magnet theme.
+paraphrased_summary: |
+  A small cheap speaker is dissected to expose the components that make it work: a permanent magnet
+  attached to the chassis, a paper or plastic cone suspended by a flexible spider, and a thin cylindrical
+  "voice coil" of fine copper wire glued to the underside of the cone, suspended in the narrow gap of the
+  magnet. When AC current flows through the voice coil, the coil becomes an electromagnet that is
+  attracted to or repelled from the permanent magnet at the frequency of the audio signal; the cone moves
+  back and forth and pushes air, producing sound. The same parts run backwards make a microphone — sound
+  waves push the cone, which moves the coil through the field, which induces a voltage. The learner
+  removes the cone, examines the voice coil and pole pieces, and may experiment by holding the coil and
+  cone in a different magnet's field. Speaker impedance (usually 4 or 8 Ω) and the meaning of "watts" in
+  audio (peak vs RMS vs program power) are introduced.
+parts:
+  - "Cheap 2-3 inch speaker, 8Ω (sacrificial — will be destroyed)"
+  - "Small flat-blade screwdriver and craft knife"
+  - "Digital multimeter"
+  - "9V battery + 100Ω resistor (to drive the disassembled coil safely)"
+formulas:
+  - id: speaker-power
+    latex: "P = V^{2} / Z"
+    vars:
+      - { name: V, min: 0, max: 30, step: 0.1, default: 2, unit: "V (RMS)" }
+      - { name: Z, min: 2, max: 16, step: 1, default: 8, unit: "Ω" }
+    solve_for: { name: P, unit: "W", precision: 3 }
+    description: "Audio power dissipated by a speaker driven at V_RMS into impedance Z; for a 2V RMS signal into 8 Ω, P = 0.5 W."
+  - id: coil-force
+    latex: "F = B \\cdot I \\cdot L"
+    vars:
+      - { name: B, min: 0.1, max: 2, step: 0.01, default: 1, unit: "T" }
+      - { name: I, min: 0, max: 5, step: 0.01, default: 0.5, unit: "A" }
+      - { name: L, min: 0.1, max: 10, step: 0.1, default: 2, unit: "m" }
+    solve_for: { name: F, unit: "N", precision: 2 }
+    description: "Force on the voice coil — B is the flux density in the gap, I is the current, L is the total length of wire in the gap (turns × circumference)."
+schematic_description: |
+  No new circuit is drawn — the experiment is mechanical disassembly. Optionally, the salvaged voice coil
+  can be wired across a 9V battery through a 100Ω resistor and rapidly tapped to feel the pulse of force
+  as the coil tries to jump in the magnet's gap. Or, the intact speaker is driven from a 555 astable
+  (Experiment 16) and the cone is touched lightly while playing tones to feel the vibration.
+suggested_falstad_circuit: |
+  TBD — Falstad has an audio output element that can model speaker behavior; pair it with a 555 astable
+  for the cross-reference back to Experiment 16.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A speaker is a voice coil suspended in a magnetic gap, glued to a flexible cone."
+  - "Current through the coil produces force; force pushes the cone; the cone pushes air."
+  - "The same machine runs in reverse as a dynamic microphone."
+  - "Speaker impedance (4 or 8 Ω) sets how much current flows for a given drive voltage."
+  - "Audio power ratings are usually quoted in RMS watts — peak watts can be misleading."
+notes_for_implementer: |
+  Annotated cross-section photo or SVG of a speaker is the centerpiece — label cone, spider, voice coil,
+  pole pieces, magnet, basket. An optional animation of the coil oscillating in the gap as a sine wave
+  drives the input would tie it back to the audio context.

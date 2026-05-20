@@ -1,0 +1,69 @@
+id: exp-2
+number: 2
+chapter: 1
+title: "Go with the Flow"
+slug: "go-with-the-flow"
+learning_objective: |
+  Build the first real circuit (battery, resistor, LED) and learn to measure current, decode resistor color bands,
+  and use a datasheet to keep a component within its safe operating range.
+paraphrased_summary: |
+  The learner assembles a complete loop for the first time: a 9V battery, a series resistor, and a red LED held
+  together with alligator-clip test leads. Several resistor values (15Ω, 150Ω, 470Ω, 1.5kΩ) are tried in turn,
+  and the LED brightness changes dramatically — at the lowest values the LED burns out, demonstrating that a
+  component can be destroyed by excess current. The multimeter is then re-purposed to measure milliamps; it is
+  inserted in series with the circuit (so all current flows through the meter) rather than in parallel like the
+  voltmeter mode of Experiment 1. The reading at 1.5kΩ comes in near 5 mA, which is well under the LED's 20 mA
+  typical / 50 mA absolute maximum. This is the introduction to reading a real datasheet — the learner is shown
+  how "absolute maximum" differs from "typical" and why 470Ω is a good safe series resistor for a 9V supply with
+  a generic red LED. Resistor color codes are decoded for the first time using the 4- and 5-band schemes, and the
+  ideas of polarity (LED long lead = anode, positive side) and tolerance (gold = 5%, silver = 10%) are introduced.
+  The implicit but unstated message is Ohm's law: voltage divided by resistance sets the current, and the current
+  is what damages the LED.
+parts:
+  - "9V alkaline battery"
+  - "Resistor 15Ω (brown-green-black)"
+  - "Resistor 150Ω (brown-green-brown)"
+  - "Resistor 470Ω (yellow-violet-brown)"
+  - "Resistor 1.5kΩ (brown-green-red)"
+  - "Generic red LED (×2 — at least one will be sacrificed)"
+  - "Test leads with alligator clips"
+  - "Digital multimeter"
+formulas:
+  - id: led-current-estimate
+    latex: "I = (V_S - V_F) / R"
+    vars:
+      - { name: V_S, min: 1.5, max: 12, step: 0.1, default: 9, unit: "V" }
+      - { name: V_F, min: 1.7, max: 3.3, step: 0.1, default: 2.1, unit: "V" }
+      - { name: R, min: 100, max: 4700, step: 10, default: 1500, unit: "Ω" }
+    solve_for: { name: I, unit: "A", precision: 4 }
+    description: "Predicts current through an LED + series resistor; subtract the LED forward voltage from the supply, then divide by the resistance."
+  - id: resistor-3band
+    latex: "R = (10 \\cdot d_1 + d_2) \\cdot 10^{m}"
+    vars:
+      - { name: d_1, min: 0, max: 9, step: 1, default: 1, unit: "" }
+      - { name: d_2, min: 0, max: 9, step: 1, default: 5, unit: "" }
+      - { name: m,   min: 0, max: 6, step: 1, default: 2, unit: "" }
+    solve_for: { name: R, unit: "Ω", precision: 0 }
+    description: "Decodes a 4-band resistor (two value digits + a multiplier band) into an ohm value."
+schematic_description: |
+  A simple series loop: positive terminal of a 9V battery → one lead of the resistor (e.g., 1.5kΩ) → other lead
+  of the resistor connects to anode (long lead) of a red LED → cathode of the LED → negative terminal of the
+  battery. To measure current, the multimeter (set to mA, red lead in mA socket) is spliced into the loop in
+  series; either side of the LED works. To check resistor values out of circuit, the resistor is held between
+  the meter's two probes (probes do not need a particular polarity for resistance).
+suggested_falstad_circuit: |
+  TBD — implementer to construct in CircuitJS: a battery (9V) in series with a resistor (slider 100Ω–4.7kΩ) and
+  an LED (forward voltage ≈2.1V). Add an ammeter element in series to display current. Sweep the resistor to
+  show current dropping from ~50 mA (LED dies) at 150Ω down to ~5 mA at 1.5kΩ.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Current through a series circuit is the same at every point in the loop."
+  - "A resistor sized to the supply voltage protects the LED from over-current."
+  - "Datasheets give a typical operating current and an absolute maximum; design for the typical, not the limit."
+  - "Resistor color bands encode value + tolerance; a 4-band code has two digits, a multiplier, and a tolerance stripe."
+  - "LEDs are polarized — the longer lead goes to the positive side."
+notes_for_implementer: |
+  A slider for R with a live ammeter reading and a "LED state" indicator (off / dim / bright / burned-out at I > 50 mA)
+  is a strong intuition builder. The "burned-out" state is the pedagogical payoff — show the learner the limit before
+  they hit it. Encourage trying R = 150Ω so the simulated LED visibly dies (drop the LED brightness to zero and flag
+  "destroyed").

@@ -1,0 +1,67 @@
+id: exp-27
+number: 27
+chapter: 5
+title: "Making a Coil React"
+slug: "making-a-coil-react"
+learning_objective: |
+  Discover inductance — a coil's tendency to resist changes in current — and observe inductive reactance,
+  the AC-frequency-dependent impedance of an inductor, which makes coils useful as filters.
+paraphrased_summary: |
+  Just as a capacitor stores energy in an electric field and resists changes in voltage, an inductor (a
+  coil) stores energy in a magnetic field and resists changes in current. The unit is the henry (H), with
+  millihenries (mH) and microhenries (µH) common in practice. The experiment uses a hand-wound coil
+  (carried over from Experiment 25) or a commercial inductor of known value. Driving it from a 555 astable
+  through a small series resistor and watching the voltage across the inductor reveals exponential
+  build-up and decay, mirroring the RC curves of Experiment 9 but with τ = L/R instead of R·C. At higher
+  frequencies the inductor's impedance (X_L = 2π·f·L) grows, attenuating high-frequency signals — the
+  basis of a low-pass filter when an inductor sits in series with a load. Pairing an inductor with a
+  capacitor produces an LC tuned circuit that resonates at f = 1/(2π√(LC)) — the same idea exploited in
+  Experiment 28's crystal radio.
+parts:
+  - "9V battery (or function generator / 555 astable)"
+  - "Hand-wound coil from Experiment 25 (or 10mH commercial inductor)"
+  - "Resistors: 100Ω, 1kΩ"
+  - "Capacitor 0.1µF (for LC resonance demo)"
+  - "Multimeter and/or oscilloscope"
+formulas:
+  - id: rl-time-constant
+    latex: "\\tau = L / R"
+    vars:
+      - { name: L, min: 0.0001, max: 1, step: 0.0001, default: 0.01, unit: "H" }
+      - { name: R, min: 1, max: 10000, step: 1, default: 100, unit: "Ω" }
+    solve_for: { name: τ, unit: "s", precision: 5 }
+    description: "Time constant of an RL circuit — current grows or decays exponentially with this characteristic time."
+  - id: inductive-reactance
+    latex: "X_L = 2 \\pi f L"
+    vars:
+      - { name: f, min: 10, max: 1000000, step: 10, default: 1000, unit: "Hz" }
+      - { name: L, min: 0.000001, max: 1, step: 0.000001, default: 0.01, unit: "H" }
+    solve_for: { name: X_L, unit: "Ω", precision: 2 }
+    description: "AC impedance of an ideal inductor — proportional to frequency. At DC (f=0) it is zero; at high f it blocks current."
+  - id: lc-resonance
+    latex: "f_0 = 1 / (2 \\pi \\sqrt{L C})"
+    vars:
+      - { name: L, min: 0.000001, max: 0.1, step: 0.000001, default: 0.01, unit: "H" }
+      - { name: C, min: 0.000000001, max: 0.000001, step: 0.000000001, default: 0.0000001, unit: "F" }
+    solve_for: { name: f_0, unit: "Hz", precision: 1 }
+    description: "Resonant frequency of an LC tank — the frequency at which inductive and capacitive reactances cancel."
+schematic_description: |
+  Two test setups. (1) Time-domain: a square-wave source (555 astable) drives the series combination of a
+  100Ω resistor and a 10mH inductor; a scope probes the voltage across the inductor, showing the
+  exponential rise and decay each time the square wave transitions. (2) Frequency-domain: an LC parallel
+  tank (the same coil shunted by a 0.1µF cap) is driven through a series resistor from a variable-frequency
+  source; the voltage across the tank peaks at the resonant frequency.
+suggested_falstad_circuit: |
+  TBD — CircuitJS has inductor and AC-source elements; an LC tank with a frequency-sweep source is a
+  classic example that ships with the tool.
+suggested_wokwi_project_id: null
+takeaways:
+  - "An inductor opposes changes in current — the dual of a capacitor's voltage behavior."
+  - "RL time constant is L/R; the current grows or decays along an exponential."
+  - "Inductive reactance grows linearly with frequency (X_L = 2π·f·L)."
+  - "LC circuits resonate at f₀ = 1/(2π√(LC)) — a frequency-selective behavior."
+  - "Inductors are essential in filters, tuning circuits, transformers, and switching power supplies."
+notes_for_implementer: |
+  A scope-style display showing inductor voltage and current together as a square wave drives them is
+  high-value. A second pane showing X_L vs frequency, with a resonance peak when paired with a chosen C,
+  ties this experiment to the radio of Experiment 28.

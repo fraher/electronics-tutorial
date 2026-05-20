@@ -1,0 +1,77 @@
+id: exp-16
+number: 16
+chapter: 4
+title: "Set Your Tone"
+slug: "set-your-tone"
+learning_objective: |
+  Wire the 555 timer in astable mode so it generates a continuous square wave, drive a small speaker with the
+  output, and learn how the two timing resistors R_A and R_B set the on and off times independently.
+paraphrased_summary: |
+  In astable mode, the 555 timer has no stable state — it oscillates indefinitely as long as power is applied,
+  producing a square wave at pin 3. Two timing resistors and one capacitor set the rhythm: the timing cap
+  charges through R_A + R_B and discharges through R_B alone, which gives an inherently asymmetric duty cycle
+  (the high time is always longer than the low time). Tying the output through a 100Ω current-limit resistor
+  to a small 8Ω speaker turns the chip into a primitive tone generator; the learner can hear the pitch shift
+  dramatically as R_B is varied. For audible tones the timing cap is small (10 nF to 100 nF) and the
+  resistors are tens of kilohms. A potentiometer on R_B makes a manually swept "siren." The astable is the
+  workhorse 555 configuration — most flasher, beeper, and clock circuits use it.
+parts:
+  - "9V battery"
+  - "Solderless breadboard"
+  - "555 timer IC"
+  - "Resistors: 1kΩ (R_A), 10kΩ-100kΩ for R_B"
+  - "Potentiometer 100kΩ (optional, for tunable tone)"
+  - "Ceramic capacitors: 0.01µF, 0.1µF"
+  - "Electrolytic capacitor: 0.01µF (decoupling)"
+  - "Small 8Ω speaker (2-inch)"
+  - "Current-limit resistor: 100Ω"
+formulas:
+  - id: 555-astable-thigh
+    latex: "t_{high} = 0.693 \\cdot (R_A + R_B) \\cdot C"
+    vars:
+      - { name: R_A, min: 100, max: 1000000, step: 100, default: 1000, unit: "Ω" }
+      - { name: R_B, min: 100, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+      - { name: C,   min: 0.000000001, max: 0.001, step: 0.000000001, default: 0.0000001, unit: "F" }
+    solve_for: { name: t_high, unit: "s", precision: 6 }
+    description: "High-output time during one cycle — the cap charges through R_A + R_B from 1/3 to 2/3 of supply."
+  - id: 555-astable-tlow
+    latex: "t_{low} = 0.693 \\cdot R_B \\cdot C"
+    vars:
+      - { name: R_B, min: 100, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+      - { name: C,   min: 0.000000001, max: 0.001, step: 0.000000001, default: 0.0000001, unit: "F" }
+    solve_for: { name: t_low, unit: "s", precision: 6 }
+    description: "Low-output time during one cycle — the cap discharges through R_B alone."
+  - id: 555-astable-freq
+    latex: "f = 1.44 / ((R_A + 2 R_B) \\cdot C)"
+    vars:
+      - { name: R_A, min: 100, max: 1000000, step: 100, default: 1000, unit: "Ω" }
+      - { name: R_B, min: 100, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+      - { name: C,   min: 0.000000001, max: 0.001, step: 0.000000001, default: 0.0000001, unit: "F" }
+    solve_for: { name: f, unit: "Hz", precision: 1 }
+    description: "Output frequency — the inverse of t_high + t_low."
+  - id: 555-duty-cycle
+    latex: "D = (R_A + R_B) / (R_A + 2 R_B)"
+    vars:
+      - { name: R_A, min: 100, max: 1000000, step: 100, default: 1000, unit: "Ω" }
+      - { name: R_B, min: 100, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+    solve_for: { name: D, unit: "ratio", precision: 3 }
+    description: "Duty cycle — fraction of each period during which the output is high. Always >50% in the standard astable; 50% requires a diode trick."
+schematic_description: |
+  Pin 1 to ground. Pin 8 and pin 4 to +9V with 0.01µF decoupling. Pin 5 to ground through 0.01µF (noise
+  filter). Pins 2 and 6 tied together and connected to one side of the timing capacitor C; the other side
+  of C goes to ground. R_B is connected between pin 7 and pins 2/6. R_A is connected between +9V and pin 7.
+  Pin 3 drives the speaker through a 100Ω series resistor; the other speaker terminal goes to ground.
+suggested_falstad_circuit: |
+  TBD — CircuitJS has a built-in 555 astable example. Use sliders for R_A, R_B, C and add a virtual speaker
+  (Falstad has audio output via a buzzer/speaker element). Show the square-wave scope trace alongside.
+suggested_wokwi_project_id: null
+takeaways:
+  - "555 astable mode produces a continuous square wave; output is always asymmetric (D > 50%)."
+  - "Charge path is through R_A + R_B; discharge path is through R_B alone."
+  - "Frequency formula: f = 1.44 / ((R_A + 2·R_B)·C)."
+  - "A small speaker + series resistor on the output turns the 555 into a tone generator."
+  - "A potentiometer on R_B gives a sweepable pitch — the basis of sirens and effects."
+notes_for_implementer: |
+  This page benefits from in-browser audio: synthesize a square wave at the calculated frequency and let the
+  learner literally hear the result of moving the sliders. Pair with a real-time duty-cycle bar and an
+  oscilloscope-style waveform display.

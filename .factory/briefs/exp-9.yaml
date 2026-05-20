@@ -1,0 +1,77 @@
+id: exp-9
+number: 9
+chapter: 2
+title: "Time and Capacitors"
+slug: "time-and-capacitors"
+learning_objective: |
+  Build intuition for what a capacitor is, how it charges and discharges through a resistor, and how the
+  product R·C sets the timescale over which voltage on a capacitor changes.
+paraphrased_summary: |
+  A capacitor stores charge on two plates separated by an insulator. When it is connected to a voltage source
+  through a resistor, the voltage across the capacitor doesn't jump immediately to the supply; it rises along
+  an exponential curve whose time constant equals R times C (seconds = ohms × farads). After one time constant
+  the capacitor reaches about 63% of the supply voltage; after about five time constants it is effectively
+  fully charged. When the supply is removed and the capacitor is allowed to discharge through a resistor, the
+  voltage drops along a mirror-image exponential. The experiment makes this visible by using a large
+  electrolytic capacitor (e.g., 1000 µF) and a series resistor (e.g., 10 kΩ), giving a time constant of about
+  10 seconds — slow enough to watch in real time on a voltmeter or by observing the slow fade of an LED. The
+  polarity of electrolytic capacitors is introduced (the longer lead or the side without the stripe is
+  positive), along with their voltage rating and the consequence of reversing them (they can fail
+  destructively). Capacitor unit prefixes (µF, nF, pF) and the conversion 1 µF = 1000 nF = 1,000,000 pF are
+  established.
+parts:
+  - "9V battery"
+  - "Solderless breadboard"
+  - "Electrolytic capacitors: 100µF, 470µF, 1000µF"
+  - "Resistors: 1kΩ, 10kΩ, 100kΩ"
+  - "Generic red LED + 470Ω current-limit resistor"
+  - "SPDT slide switch"
+  - "Multimeter"
+formulas:
+  - id: rc-time-constant
+    latex: "\\tau = R \\cdot C"
+    vars:
+      - { name: R, min: 100, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+      - { name: C, min: 0.000001, max: 0.01, step: 0.000001, default: 0.001, unit: "F" }
+    solve_for: { name: τ, unit: "s", precision: 3 }
+    description: "Time constant — the time required for the capacitor voltage to rise to about 63% of its final value, or fall to about 37% of its initial value."
+  - id: cap-charge-curve
+    latex: "V_C(t) = V_S \\cdot (1 - e^{-t / (R C)})"
+    vars:
+      - { name: V_S, min: 1, max: 12, step: 0.1, default: 9, unit: "V" }
+      - { name: R,   min: 100, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+      - { name: C,   min: 0.000001, max: 0.01, step: 0.000001, default: 0.001, unit: "F" }
+      - { name: t,   min: 0, max: 60, step: 0.1, default: 10, unit: "s" }
+    solve_for: { name: V_C, unit: "V", precision: 3 }
+    description: "Voltage across the capacitor as a function of time while it is charging through a resistor from supply V_S."
+  - id: cap-discharge-curve
+    latex: "V_C(t) = V_0 \\cdot e^{-t / (R C)}"
+    vars:
+      - { name: V_0, min: 0, max: 12, step: 0.1, default: 9, unit: "V" }
+      - { name: R,   min: 100, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+      - { name: C,   min: 0.000001, max: 0.01, step: 0.000001, default: 0.001, unit: "F" }
+      - { name: t,   min: 0, max: 60, step: 0.1, default: 10, unit: "s" }
+    solve_for: { name: V_C, unit: "V", precision: 3 }
+    description: "Voltage across the capacitor as a function of time while it discharges through a resistor from initial voltage V_0."
+schematic_description: |
+  An SPDT switch selects between two states. In the "charge" position, the 9V supply is connected through a
+  series resistor (e.g., 10kΩ) to the positive lead of an electrolytic capacitor (e.g., 1000µF); the negative
+  lead returns to ground. In the "discharge" position, the supply is disconnected and the capacitor is shorted
+  across a second resistor (or an LED in series with a resistor) so it can release its charge. The multimeter,
+  in volts mode, sits permanently across the capacitor and shows V_C climbing or falling along an exponential.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: 9V source through 10kΩ to a 1000µF cap to ground, with a switch and an
+  LED+470Ω discharge path. Add an oscilloscope probe on V_C. Sweeping R or C should visibly change the
+  curve's timescale.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A capacitor stores charge; voltage across it can't change instantly."
+  - "The product R·C (in seconds) sets the timescale of charge and discharge."
+  - "After one time constant the cap is 63% charged; after five, essentially full."
+  - "Electrolytic capacitors are polarized; reversing them can be destructive."
+  - "Capacitance units: 1 µF = 1000 nF = 1,000,000 pF."
+notes_for_implementer: |
+  The charge/discharge graph is the centerpiece. A live plot of V_C(t) with sliders for R and C is the
+  single most valuable interactive in this experiment. Include a visual marker at t = τ to drive home the
+  "63%" rule. The LED fade-out during discharge is a great real-world demonstration if a discharge curve
+  can be paired with LED brightness.

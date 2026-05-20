@@ -1,0 +1,67 @@
+id: exp-17
+number: 17
+chapter: 4
+title: "An Alarming Idea"
+slug: "an-alarming-idea"
+learning_objective: |
+  Build a simple intrusion alarm by combining magnetic reed switches, a transistor-driven relay, and a
+  555-based audio output — and learn how a latching circuit holds an alarm on even after the triggering
+  event ends.
+paraphrased_summary: |
+  This project chains together the concepts of the previous experiments into a small home-defense gadget.
+  Reed switches (a pair of magnetically actuated contacts in a glass envelope) are placed on doors and
+  windows; a nearby magnet keeps them closed during normal operation. Each reed switch is wired in series
+  so the whole loop conducts while everything is closed. If any door opens, its reed switch opens, breaking
+  the loop. That break signals a transistor switch, which energizes a relay whose contacts latch the alarm
+  on by feeding the transistor's base from its own collector circuit — even if the door is closed again
+  immediately, the alarm stays on. The relay also enables a 555 astable circuit (from Experiment 16) that
+  drives a piezo or speaker to make a loud noise. A reset pushbutton breaks the latch and silences the
+  alarm. The experiment introduces normally-open vs normally-closed sensor wiring, the trade-off in alarm
+  design (a normally-closed loop is "supervised" — cutting a wire also triggers it), and the basic latch
+  pattern that recurs throughout digital electronics.
+parts:
+  - "9V battery"
+  - "Solderless breadboard"
+  - "Reed switches (×2) with small magnets"
+  - "2N3904 transistor"
+  - "DPDT 9VDC relay"
+  - "555 timer IC"
+  - "Resistors: 470Ω, 1kΩ, 10kΩ, 100kΩ"
+  - "Ceramic cap 0.1µF; electrolytic 10µF"
+  - "Passive piezo or 8Ω speaker"
+  - "Tactile reset pushbutton"
+  - "Hookup wire"
+formulas:
+  - id: alarm-current
+    latex: "I_{latch} = (V_S - V_{CE,sat}) / R_{coil}"
+    vars:
+      - { name: V_S,     min: 5, max: 12, step: 0.5, default: 9, unit: "V" }
+      - { name: V_CE,    min: 0.1, max: 0.5, step: 0.01, default: 0.2, unit: "V" }
+      - { name: R_coil,  min: 100, max: 2000, step: 10, default: 500, unit: "Ω" }
+    solve_for: { name: I_latch, unit: "A", precision: 3 }
+    description: "Current that flows through the relay coil once latched on — sets the standby power consumption of the armed alarm."
+schematic_description: |
+  Two reed switches in series form the "sensor loop" from +9V to the base of a 2N3904 through a 10kΩ
+  resistor. While all reeds are closed, the base is pulled high and the transistor is on. A reed opening
+  pulls the base low and turns the transistor off — and here the design inverts: to latch on the alarm
+  when a reed opens, the loop is wired in the normally-closed-with-bias style. The transistor collector
+  drives the relay coil between collector and +9V (with a flyback diode across the coil). Once the relay
+  energizes, one of its contacts shorts a "hold" wire that bypasses the sensor loop, latching the
+  transistor on. Another contact of the relay enables a 555 astable (per Experiment 16) wired to a
+  piezo/speaker, producing the alarm tone. A reset pushbutton breaks the hold path momentarily to clear
+  the latch.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: sensor loop using a switch, NPN driver, relay (or behavioral SPDT latch
+  model), 555 astable feeding a piezo, and a reset switch. Latching behavior may be easier to model with a
+  D-flip-flop than a relay in CircuitJS.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Reed switches are simple magnetic sensors — a magnet closes the contacts."
+  - "A normally-closed sensor loop is 'supervised': cutting a wire trips the alarm."
+  - "Latching with a relay's own contact holds the alarm on after the trigger ends."
+  - "A reset switch must break the latch — momentarily interrupt the hold path."
+  - "Pair a latch with a 555 astable for an audible alarm output."
+notes_for_implementer: |
+  This is a system-level page — show a block diagram (sensors → latch → tone generator → speaker) before
+  diving into the schematic. The interactive could let the learner click a "door open" toggle to trigger
+  the latch and a "reset" button to clear it, with an animated piezo icon producing sound while latched.

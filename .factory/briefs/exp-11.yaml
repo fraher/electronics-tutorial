@@ -1,0 +1,66 @@
+id: exp-11
+number: 11
+chapter: 2
+title: "Light and Sound"
+slug: "light-and-sound"
+learning_objective: |
+  Combine a transistor switch with a capacitor's exponential discharge to make an LED fade gracefully, and
+  pair the same idea with a passive piezo element to make a primitive audible alert.
+paraphrased_summary: |
+  This experiment chains the building blocks of the prior four lessons. A 2N3904 transistor acts as a switch
+  controlling an LED; the base of the transistor is fed not by a steady source but by the voltage across a
+  capacitor. When a pushbutton is pressed, the capacitor charges quickly through a small resistor; when the
+  button is released, the cap discharges slowly through a large resistor into the base. The resulting
+  exponential droop of base voltage produces a similarly tapering collector current, so the LED dims smoothly
+  rather than snapping off. Choosing different cap and resistor values changes the fade time, mirroring the
+  RC time-constant intuition from Experiment 9. The second half of the experiment uses a small passive piezo
+  transducer (essentially a thin ceramic disk that flexes when voltage is applied across it) tied across the
+  collector to ground. Driving the piezo from a relay oscillator (Experiment 8) or a transistor-switched
+  square wave produces an audible buzz. Active vs passive piezo elements are distinguished: a passive piezo
+  needs an AC signal to make sound, whereas an active "buzzer" has its own internal oscillator.
+parts:
+  - "9V battery"
+  - "Solderless breadboard"
+  - "2N3904 NPN transistor"
+  - "Generic red LED + 470Ω resistor"
+  - "Resistors: 1kΩ, 10kΩ, 100kΩ, 1MΩ"
+  - "Electrolytic capacitor: 100µF"
+  - "Tactile pushbutton"
+  - "Passive piezo transducer (audio alert disk)"
+formulas:
+  - id: fade-time
+    latex: "t_{fade} \\approx 5 \\cdot R \\cdot C"
+    vars:
+      - { name: R, min: 1000, max: 1000000, step: 100, default: 100000, unit: "Ω" }
+      - { name: C, min: 0.000001, max: 0.001, step: 0.000001, default: 0.0001, unit: "F" }
+    solve_for: { name: t_fade, unit: "s", precision: 2 }
+    description: "Approximate full fade-out time — five time constants is the conventional 'essentially zero' threshold."
+  - id: piezo-tone
+    latex: "f_{tone} = 1 / T"
+    vars:
+      - { name: T, min: 0.0001, max: 0.02, step: 0.0001, default: 0.001, unit: "s" }
+    solve_for: { name: f_tone, unit: "Hz", precision: 1 }
+    description: "Period T of the square wave driving a passive piezo sets the audible tone frequency."
+schematic_description: |
+  The fading-LED circuit: a 100µF electrolytic capacitor has its positive lead tied to the base of a 2N3904
+  through a 10kΩ "input" resistor; a 100kΩ "discharge" resistor sits permanently from base to ground. A
+  pushbutton between +9V and the input side of the 100µF cap charges the cap when pressed. The emitter of
+  the transistor is grounded; the collector drives a red LED through a 470Ω resistor up to +9V. Pressing the
+  button lights the LED instantly; releasing it produces a slow fade as the cap drains through the 100kΩ.
+  The piezo sound demo replaces the LED branch with a passive piezo across collector and ground, and feeds
+  the base from a square-wave source (the relay oscillator of Exp 8 or a transistor astable).
+suggested_falstad_circuit: |
+  TBD — implementer to construct both circuits: (a) RC-fade driving NPN driving LED, (b) square-wave source
+  driving NPN driving passive piezo. A slider for the discharge resistor controls fade time; a slider for
+  square-wave period controls pitch.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A transistor's base voltage decides the collector current — vary the base voltage smoothly and the load follows."
+  - "Pairing a capacitor with a transistor produces a smooth fade effect from a single push of a button."
+  - "Fade time is set by R·C on the discharge path; longer R·C means longer fade."
+  - "A passive piezo needs an AC drive to make noise; the frequency sets the pitch."
+  - "Active buzzers (with internal oscillators) take DC and make a fixed tone; passive piezos give you control."
+notes_for_implementer: |
+  This is a great fusion experiment — show both circuits on the same page if possible. The fade interactive
+  should plot V_base vs time and LED brightness simultaneously. For the piezo demo, an in-browser audio
+  element that plays a square wave at the user-selected frequency lets the learner literally hear the result.

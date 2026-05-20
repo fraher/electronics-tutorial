@@ -1,0 +1,57 @@
+id: exp-15
+number: 15
+chapter: 4
+title: "Emitting a Pulse"
+slug: "emitting-a-pulse"
+learning_objective: |
+  Meet the 555 timer integrated circuit in monostable mode — a one-shot pulse generator whose pulse width is
+  set by a single R·C network — and understand the basic anatomy of an 8-pin DIP IC.
+paraphrased_summary: |
+  The 555 timer, designed by Hans Camenzind in 1971, is the most popular analog IC in history. Inside its
+  8-pin DIP package are two voltage comparators, a flip-flop, and an output buffer arranged so that an
+  external R and C decide all timing. In monostable mode, the chip sits idle with its output low until a
+  short low-going pulse on the trigger pin (pin 2) flips the internal latch. The output (pin 3) goes high
+  and the threshold pin (pin 6, tied to a capacitor charging through an external resistor toward +V) is
+  watched. When the cap voltage reaches 2/3 of the supply, the latch resets, the output snaps low, and the
+  cap is discharged through pin 7 in preparation for the next trigger. Pulse width is set by t = 1.1·R·C —
+  a formula that holds across orders of magnitude. The experiment builds the canonical monostable circuit,
+  triggers it with a pushbutton, and observes the LED stay on for a duration controlled by R and C. Pin
+  layout, decoupling capacitors, and IC orientation (notch indicates pin 1) are introduced.
+parts:
+  - "9V battery"
+  - "Solderless breadboard"
+  - "555 timer IC (DIP-8)"
+  - "Generic red LED + 470Ω resistor"
+  - "Tactile pushbutton"
+  - "Resistors: 10kΩ, 100kΩ, 1MΩ"
+  - "Electrolytic capacitor: 10µF, 100µF"
+  - "Ceramic capacitor: 0.01µF (decoupling)"
+formulas:
+  - id: 555-monostable-width
+    latex: "t = 1.1 \\cdot R \\cdot C"
+    vars:
+      - { name: R, min: 1000, max: 10000000, step: 1000, default: 100000, unit: "Ω" }
+      - { name: C, min: 0.000000001, max: 0.001, step: 0.000000001, default: 0.00001, unit: "F" }
+    solve_for: { name: t, unit: "s", precision: 3 }
+    description: "Width of the output pulse in 555 monostable mode — the 1.1 factor comes from charging a cap to 2/3 of the supply."
+schematic_description: |
+  Pin 1 (GND) to ground. Pin 8 (V+) to +9V with a 0.01µF decoupling cap to ground. Pin 4 (RESET) tied to
+  +9V. Pin 5 (CTRL) connected to ground through a 0.01µF cap (noise filter). Pin 2 (TRIG) pulled high
+  through a 10kΩ to +9V; a pushbutton between TRIG and ground delivers the trigger. Pin 6 (THRESH) and pin 7
+  (DISCH) are tied together and connected to one side of the timing cap, whose other side is grounded.
+  The same junction is also pulled up to +9V through the timing resistor R. Pin 3 (OUT) drives an LED
+  through a 470Ω resistor to ground.
+suggested_falstad_circuit: |
+  TBD — implementer to construct the 555 monostable. CircuitJS has a built-in 555 model. Sliders for R and
+  C should let the learner observe pulse widths from milliseconds to several seconds.
+suggested_wokwi_project_id: null
+takeaways:
+  - "The 555 timer is a versatile analog-digital hybrid IC with hundreds of uses."
+  - "In monostable mode, one trigger produces one output pulse of width 1.1·R·C."
+  - "Pin 1 is identified by a notch or dot on the chip package; orient correctly."
+  - "Decoupling capacitors on V+ are essential for noise immunity in IC circuits."
+  - "555 outputs can sink or source up to 200 mA — enough to drive small loads directly."
+notes_for_implementer: |
+  Visualizing the internal block diagram (two comparators + flip-flop + output buffer) alongside the
+  external circuit is illuminating. A live pulse-width readout that updates as R and C change makes the
+  1.1·R·C relationship tangible.

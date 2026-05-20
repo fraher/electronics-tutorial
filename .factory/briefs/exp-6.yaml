@@ -1,0 +1,57 @@
+id: exp-6
+number: 6
+chapter: 2
+title: "Getting Connected"
+slug: "getting-connected"
+learning_objective: |
+  Master the vocabulary and behavior of switches — poles, throws, momentary vs alternate action — and learn to
+  reason about series and parallel switch combinations using a multimeter's continuity mode.
+paraphrased_summary: |
+  A switch is just a controlled metal contact, but the terminology surrounding switches is rich: pole means
+  the number of independent circuits the switch controls, throw means how many output positions each pole has.
+  The experiment uses small SPDT (single-pole, double-throw, abbreviated 1P2T) slide switches and the meter's
+  continuity-test mode (which beeps when the probes are connected through a low resistance). Wiring two
+  switches in series produces a circuit that conducts only when both are in a particular position — exactly
+  the behavior of a logical AND. Wiring switches in series-parallel can produce three-way switching, the
+  arrangement used in household staircase lighting where either of two switches can toggle the light. The
+  experiment also catalogs switch types (SPST, SPDT, DPDT, etc.), momentary vs alternate action, normally
+  open vs normally closed contacts, and arc/spark erosion (a reason to size switches for the load they
+  carry). Schematic conventions are introduced: the slide-switch symbol, the universal switch symbol, dot
+  notation for crossings vs connections, and the various ways of drawing power supplies and ground.
+parts:
+  - "9V battery"
+  - "Digital multimeter (with continuity mode)"
+  - "SPDT slide switches with 0.2-inch pin spacing (2)"
+  - "Generic red LED"
+  - "Resistor 470Ω"
+  - "Test leads (1 red, 1 black, 1 other color)"
+formulas:
+  - id: switch-combinations
+    latex: "N = P^{T}"
+    vars:
+      - { name: P, min: 2, max: 3, step: 1, default: 2, unit: "throws/switch" }
+      - { name: T, min: 1, max: 4, step: 1, default: 2, unit: "switches" }
+    solve_for: { name: N, unit: "combinations", precision: 0 }
+    description: "Total number of position combinations when T switches each having P positions are used together."
+schematic_description: |
+  The headline demonstration: two SPDT switches plus a 9V battery, a 470Ω resistor, and an LED, wired so that
+  flipping EITHER switch toggles the LED. Each switch has three terminals: a pole in the middle and two
+  throw contacts. Connect the pole of switch A to battery positive, the two throws of A to the two throws of
+  B (so a wire from A-throw1 goes to B-throw1 and a wire from A-throw2 goes to B-throw2), and the pole of
+  switch B to the LED anode. The LED's cathode goes through the 470Ω resistor back to battery negative. This
+  is the canonical three-way-switching circuit.
+suggested_falstad_circuit: |
+  TBD — implementer to construct in CircuitJS: 9V source, two SPDT switches in the staircase configuration,
+  470Ω, LED. Allow the learner to click each switch and observe that the LED toggles regardless of which
+  switch is flipped.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Switches are described by poles (independent circuits) and throws (positions)."
+  - "Continuity mode on a multimeter is a fast way to map an unfamiliar switch's pin functions."
+  - "Two SPDT switches wired series-parallel give 'three-way' switching used in staircases."
+  - "Momentary switches return to a default state; alternate-action switches stay where you leave them."
+  - "Switches are rated for current; sparking during contact damages cheap or underrated switches."
+notes_for_implementer: |
+  The interactive should let the learner click two virtual SPDT switches and watch the LED state. A truth
+  table panel showing all four position combinations updating live would reinforce the analogy with logic.
+  Also include a "switch zoo" callout showing SPST / SPDT / DPDT / 3PDT symbols.

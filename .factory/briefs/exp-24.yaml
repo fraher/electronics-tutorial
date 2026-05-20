@@ -1,0 +1,64 @@
+id: exp-24
+number: 24
+chapter: 5
+title: "Magnetism"
+slug: "magnetism"
+learning_objective: |
+  Investigate the magnetic field produced by current in a wire, the strengthening effect of coiling the
+  wire around an iron core, and observe magnetism as the bridge between electricity and motion.
+paraphrased_summary: |
+  An electric current creates a magnetic field around the conductor carrying it. By winding a length of
+  insulated copper wire around a steel bolt or large nail and applying a small DC voltage, the learner
+  produces a working electromagnet capable of picking up paper clips or moving a compass needle. The more
+  turns of wire and the higher the current, the stronger the field. The relationship is captured by
+  ampere-turns: H ∝ N·I. The experiment compares the same coil with and without the iron core to show how
+  the ferromagnetic material concentrates the field by orders of magnitude. The compass-needle deflection
+  test maps the field's direction (right-hand rule). Practical applications are surveyed: relays
+  (Experiment 7), solenoids, motors, speakers, and microphones all rely on this electromagnetism. The
+  inverse — moving a magnet near a coil to induce a voltage — is teased here and demonstrated in the next
+  experiment.
+parts:
+  - "9V battery"
+  - "Iron nail or steel bolt, 3-4 inches long"
+  - "Insulated copper wire, 22-30 AWG, several meters"
+  - "Tactile pushbutton or switch (to control current)"
+  - "Compass"
+  - "Paper clips (for the lifting test)"
+  - "Resistor 10Ω (to limit current through the coil)"
+formulas:
+  - id: ampere-turns
+    latex: "H = N \\cdot I / L"
+    vars:
+      - { name: N, min: 1, max: 1000, step: 1, default: 100, unit: "turns" }
+      - { name: I, min: 0, max: 5, step: 0.01, default: 0.5, unit: "A" }
+      - { name: L, min: 0.01, max: 0.5, step: 0.01, default: 0.1, unit: "m" }
+    solve_for: { name: H, unit: "A/m", precision: 1 }
+    description: "Magnetic field strength inside a solenoid in air — proportional to ampere-turns per unit length."
+  - id: flux-density
+    latex: "B = \\mu_0 \\cdot \\mu_r \\cdot H"
+    vars:
+      - { name: μ_r, min: 1, max: 5000, step: 1, default: 1000, unit: "" }
+      - { name: H,   min: 0, max: 10000, step: 10, default: 500, unit: "A/m" }
+    solve_for: { name: B, unit: "T", precision: 4 }
+    description: "Magnetic flux density — H times the permeability of free space (μ_0 = 4π×10⁻⁷ H/m) times the relative permeability of the core material."
+schematic_description: |
+  A coil of wire (e.g., 100 turns) wound around an iron nail. One end of the coil goes to the +9V supply
+  through a 10 Ω current-limit resistor and a momentary pushbutton; the other end goes to ground. When the
+  button is pressed, current flows through the coil (about 0.9 A — be brief to avoid heating the coil),
+  the iron core magnetizes, and paper clips near the tip stick to it. Releasing the button collapses the
+  field. A compass placed nearby visibly swings each time the button is pressed.
+suggested_falstad_circuit: |
+  TBD — Falstad has a magnetic field visualization in some examples but does not provide a full 3D
+  electromagnet simulator. Use a simplified RL circuit (resistor + inductor representing the coil) to
+  show current build-up vs supply, and link out to a separate field visualizer.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Any current-carrying conductor produces a magnetic field around it."
+  - "Coiling the wire concentrates the field along the axis of the coil."
+  - "An iron core multiplies the field by hundreds or thousands of times (relative permeability)."
+  - "Field strength scales linearly with the product of turns and current (ampere-turns)."
+  - "Electromagnets are reversible: motion of a magnet near a coil generates voltage."
+notes_for_implementer: |
+  Visualizing field lines around a coiled wire is high-value here. Consider a small canvas animation that
+  shows field-line density growing as the learner increases N or I. Also show paper-clip pickup as a
+  proxy for field strength.

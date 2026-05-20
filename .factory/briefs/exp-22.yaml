@@ -1,0 +1,65 @@
+id: exp-22
+number: 22
+chapter: 4
+title: "Flipping and Bouncing"
+slug: "flipping-and-bouncing"
+learning_objective: |
+  Understand mechanical switch contact bounce, see why it confuses digital logic, and learn the two common
+  cures — an SR-latch debouncer using a SPDT switch and an RC low-pass filter for SPST switches.
+paraphrased_summary: |
+  When a mechanical switch is pressed, its metal contacts don't make a single clean transition; they bounce
+  for several milliseconds, generating dozens of fast on-off pulses. Analog circuits don't care, but
+  digital logic does — a counter clocked by a bouncing switch will increment many times per press, and an
+  SR latch may be set and reset repeatedly during the bounce. The experiment demonstrates the problem by
+  feeding a noisy pushbutton into a counter and watching the count jump erratically. Two debouncing
+  techniques are then introduced: (1) Hardware SR-latch debounce using a SPDT switch — the switch's pole
+  alternates between two pull-up/pull-down ends, each tied to one input of a NAND SR latch. The first
+  contact (even if bouncing) sets the latch; further bouncing on the same side doesn't change anything.
+  (2) RC filter debounce for SPST switches — a small resistor (10 kΩ) and a small cap (100 nF) form a
+  low-pass filter that smooths the bouncing edge into a single slow transition; a Schmitt-trigger gate
+  (e.g., 74HC14) then snaps it cleanly. Modern microcontroller firmware also debounces in software by
+  waiting a few milliseconds after the first edge, but hardware debouncing remains common in mixed circuits.
+parts:
+  - "5V supply"
+  - "Solderless breadboard"
+  - "Tactile pushbuttons (one SPST + one SPDT — or two tactile + a slide switch)"
+  - "74HC00 quad NAND"
+  - "74HC14 hex Schmitt-trigger inverter"
+  - "CD4026 counter + 7-segment display (carried over from Exp 18)"
+  - "Resistors: 10kΩ (×3)"
+  - "Ceramic cap 0.1µF"
+formulas:
+  - id: debounce-rc
+    latex: "\\tau = R \\cdot C"
+    vars:
+      - { name: R, min: 1000, max: 1000000, step: 100, default: 10000, unit: "Ω" }
+      - { name: C, min: 0.000000001, max: 0.000001, step: 0.000000001, default: 0.0000001, unit: "F" }
+    solve_for: { name: τ, unit: "s", precision: 4 }
+    description: "RC time constant of the debounce filter — choose τ much longer than the bounce time (typically 5-20 ms) but much shorter than the fastest button press the user can produce."
+  - id: bounce-duration
+    latex: "t_{bounce} = 1 / f_{bounce}"
+    vars:
+      - { name: f_bounce, min: 100, max: 10000, step: 100, default: 1000, unit: "Hz" }
+    solve_for: { name: t_bounce, unit: "s", precision: 4 }
+    description: "Typical bounce period for a tactile switch — total bounce duration is usually 1-10 ms with dozens of edges in that window."
+schematic_description: |
+  SR-latch debouncer: a SPDT switch has its pole at ground; its two throws are wired to the two inputs of a
+  cross-coupled NAND SR latch (74HC00), each input also pulled HIGH through a 10 kΩ to +5V. Touching the
+  pole to either throw drives that input LOW, setting or resetting the latch cleanly. RC debouncer: a SPST
+  pushbutton's one terminal goes to ground; the other goes to the input of a 74HC14 Schmitt inverter and is
+  pulled HIGH through 10 kΩ to +5V. A 0.1 µF cap from the input to ground forms the low-pass filter. The
+  Schmitt's hysteresis suppresses the slow transition into a single clean digital edge at the output.
+suggested_falstad_circuit: |
+  TBD — implementer to construct both debouncers side by side. CircuitJS doesn't model bounce, but a behavioral
+  switch toggled rapidly between states can simulate the problem.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Mechanical switches bounce for ~1-10 ms after being pressed."
+  - "Bouncing causes digital counters and latches to register multiple events per press."
+  - "An SR-latch debouncer uses a SPDT switch and ignores bounce on the active side."
+  - "An RC + Schmitt-trigger debouncer smooths SPST bounce with a low-pass filter."
+  - "Software debouncing (delay-after-first-edge) is common in microcontroller firmware."
+notes_for_implementer: |
+  This page benefits enormously from a "bounce visualizer": click a button, see a waveform showing the
+  noisy raw signal, then the clean debounced output below it. Slider for τ shows the trade-off between
+  responsiveness and bounce immunity.
