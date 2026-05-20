@@ -55,3 +55,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* LiveWire moving-dots animation. The dasharray creates dots; we shift the
+   stroke offset to make them flow. Speed comes from a CSS variable set per
+   <line>; reduced-motion users get a static stroke (handled via Tailwind's
+   motion-safe / motion-reduce variants on the element). */
+@keyframes wire-flow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -32; }
+}
+.animate-wire-flow {
+  animation: wire-flow var(--wire-flow-duration, 1.5s) linear infinite;
+  animation-direction: var(--wire-flow-direction, normal);
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-wire-flow { animation: none; }
+}

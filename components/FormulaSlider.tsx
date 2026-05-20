@@ -21,6 +21,12 @@ export type FormulaSliderProps = {
   solveFor: { name: string; unit?: string; precision?: number };
   title?: string;
   className?: string;
+  /**
+   * Optional render-prop that draws a live mini-schematic above the formula,
+   * bound to the same variable state. Receives the current values keyed by
+   * variable name. When omitted, the component behaves exactly as before.
+   */
+  schematic?: (vars: Record<string, number>) => React.ReactNode;
 };
 
 /** Format a number to `precision` significant digits. */
@@ -40,6 +46,7 @@ export function FormulaSlider({
   solveFor,
   title,
   className,
+  schematic,
 }: FormulaSliderProps) {
   const [values, setValues] = React.useState<Record<string, number>>(() => {
     const init: Record<string, number> = {};
@@ -61,6 +68,15 @@ export function FormulaSlider({
       )}
     >
       {title ? <h3 className="text-sm font-semibold tracking-tight">{title}</h3> : null}
+
+      {schematic ? (
+        <div
+          className="rounded-md border bg-background/40 p-2"
+          data-testid="formula-slider-schematic"
+        >
+          {schematic(values)}
+        </div>
+      ) : null}
 
       <div className="flex justify-center py-2">
         <KatexInline math={formula} displayMode />
