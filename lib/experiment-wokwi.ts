@@ -5,21 +5,25 @@
  * exception to the offline-first rule per CLAUDE.md). Briefs 29-36 each link to
  * a public Wokwi project URL of the shape https://wokwi.com/projects/<id>.
  *
- * Each entry is annotated with a confidence note. "exact" = a curated public
- * project that closely matches the brief; "near" = a generic Wokwi starter
- * that demonstrates the same concept but with cosmetic differences (different
- * pin choice, additional features, etc.) — operator may wish to fork-and-edit
- * before shipping for real.
+ * **OPERATOR-PROVIDED IDS REQUIRED.** The slugs below (e.g., `arduino-blink`) are
+ * placeholders chosen for readability — Wokwi's public-project URLs use opaque
+ * numeric IDs (~18 digits), so these placeholders will 404 until the operator
+ * either: (a) creates a public Wokwi project for each experiment and pastes
+ * the numeric ID here, or (b) finds a canonical community project to point at.
+ * Until then, WokwiEmbed will show the offline-fallback card with a backup
+ * link — the site still functions, just without a live embed for Ch5.
  *
- * Project IDs below are well-known public Wokwi templates. If a specific ID
- * is unavailable in the operator's account, they can fork the closest
- * official Wokwi starter and swap in the right project id here.
+ * All entries are marked `match: 'placeholder'` to make the UI's confidence
+ * honest. Operator workflow:
+ *   1. Open https://wokwi.com/projects/new, build the project for one brief
+ *   2. Click "Share" → "Make Public" → copy the numeric ID from the URL
+ *   3. Replace the slug here, change match to 'verified'
  */
 
 export type WokwiEntry = {
   projectId: string;
-  /** "exact" if the linked project matches the brief; "near" otherwise. */
-  match: 'exact' | 'near';
+  /** 'placeholder' = slug not yet verified to resolve; 'verified' = operator confirmed public numeric ID. */
+  match: 'placeholder' | 'verified';
   /** Short note on why this project was chosen / what to look out for. */
   note?: string;
 };
@@ -34,51 +38,51 @@ const WOKWI: Record<number, WokwiEntry | null> = {
   // 29. Hardware Meets Software — canonical blink sketch.
   29: {
     projectId: 'arduino-blink',
-    match: 'exact',
+    match: 'placeholder',
     note: 'Classic on-board LED blink; the universal Arduino starter project.',
   },
   // 30. Nicer Dice — 7 LEDs + button on an Uno. No widely-known canonical;
   //     fall back to a generic 'led-array' starter and note the gap.
   30: {
     projectId: 'arduino-led-array',
-    match: 'near',
+    match: 'placeholder',
     note: 'Generic LED-array template; learner adapts to die-face mapping. Operator may fork into a dedicated dice project.',
   },
   // 31. Reading a Button — button-toggles-LED. Canonical Arduino lesson 2.
   31: {
     projectId: 'arduino-button-led',
-    match: 'exact',
+    match: 'placeholder',
     note: 'Tactile button toggling an LED via INPUT_PULLUP — exactly the brief.',
   },
   // 32. Analog Input — potentiometer dims an LED via PWM. Canonical lesson 3.
   32: {
     projectId: 'arduino-potentiometer-led',
-    match: 'exact',
+    match: 'placeholder',
     note: 'Pot on A0, analogRead→analogWrite to PWM pin. Wokwi starter.',
   },
   // 33. Sensing Light — LDR + threshold + LED.
   33: {
     projectId: 'arduino-photoresistor',
-    match: 'near',
+    match: 'placeholder',
     note: 'Photoresistor reading; learner adds the threshold + hysteresis logic.',
   },
   // 34. Tones and Music — piezo + tone() + melody.
   34: {
     projectId: 'arduino-melody',
-    match: 'near',
+    match: 'placeholder',
     note: 'Wokwi buzzer melody sketch — exact name may vary; closest public template.',
   },
   // 35. Serial Communication — Serial.print + monitor.
   35: {
     projectId: 'arduino-serial-monitor',
-    match: 'near',
+    match: 'placeholder',
     note: 'Generic serial-print example; Wokwi has a built-in monitor pane.',
   },
   // 36. Capstone — multi-peripheral integration. No canonical starter; suggest
   //     building from the photoresistor template.
   36: {
     projectId: 'arduino-photoresistor',
-    match: 'near',
+    match: 'placeholder',
     note: 'Capstone integrates LDR + LED + piezo + button; no public exact match. Operator should fork and add the extra peripherals.',
   },
 };

@@ -10,7 +10,7 @@ describe('experiment-wokwi registry', () => {
       const entry = getExperimentWokwi(n);
       expect(entry, `missing wokwi entry for brief ${n}`).not.toBeNull();
       expect(entry!.projectId).toMatch(/^[a-z0-9-]+$/i);
-      expect(entry!.match).toMatch(/^(exact|near)$/);
+      expect(entry!.match).toMatch(/^(placeholder|verified)$/);
     }
   });
 
