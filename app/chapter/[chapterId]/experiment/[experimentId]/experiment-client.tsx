@@ -5,6 +5,7 @@ import { ExperimentPage, type Formula, type ExperimentCircuit } from '@/componen
 import { KatexInline } from '@/components/katex-inline';
 import { getEvaluator } from '@/lib/formula-evaluators';
 import type { BriefVar } from '@/lib/briefs';
+import { recordLastVisited } from '@/components/ContinueCard';
 
 type SerializableFormula = {
   id: string;
@@ -37,6 +38,15 @@ export type ExperimentClientProps = {
 };
 
 export default function ExperimentClient(props: ExperimentClientProps) {
+  React.useEffect(() => {
+    recordLastVisited({
+      number: props.number,
+      chapter: props.chapter,
+      title: props.title,
+      href: `/chapter/${props.chapter}/experiment/${props.number}/`,
+    });
+  }, [props.number, props.chapter, props.title]);
+
   const liveFormulas: Formula[] = [];
   const staticFormulas: SerializableFormula[] = [];
   for (const f of props.formulas) {
