@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { LiveGate, computeGate } from './LiveGate';
 
@@ -50,6 +50,37 @@ describe('LiveGate / computeGate', () => {
     );
     const out = container.querySelector('[data-testid="g-out"]') as SVGElement;
     expect(out.getAttribute('data-state')).toBe('low');
+  });
+
+  it('renders interactive hit-boxes when onInputChange is provided', () => {
+    const onInputChange = () => {};
+    const { container } = wrap(
+      <LiveGate x={50} y={50} kind="and" inputs={[true, true]} onInputChange={onInputChange} testId="g" />,
+    );
+    expect(container.querySelector('[data-testid="g-in0-hit"]')).not.toBeNull();
+    expect(container.querySelector('[data-testid="g-in1-hit"]')).not.toBeNull();
+  });
+
+  it('omits hit-boxes when onInputChange is absent (read-only)', () => {
+    const { container } = wrap(
+      <LiveGate x={50} y={50} kind="and" inputs={[true, true]} testId="g" />,
+    );
+    expect(container.querySelector('[data-testid="g-in0-hit"]')).toBeNull();
+  });
+
+  it('clicking input 0 hit-box calls onInputChange with index 0 + negated value', async () => {
+    const { fireEvent } = await import('@testing-library/react');
+    const onInputChange = vi.fn();
+    const { container } = wrap(
+      <LiveGate x={50} y={50} kind="and" inputs={[true, false]} onInputChange={onInputChange} testId="g" />,
+    );
+    const hit0 = container.querySelector('[data-testid="g-in0-hit"]') as Element;
+    fireEvent.click(hit0);
+    expect(onInputChange).toHaveBeenCalledWith(0, false);
+
+    const hit1 = container.querySelector('[data-testid="g-in1-hit"]') as Element;
+    fireEvent.click(hit1);
+    expect(onInputChange).toHaveBeenCalledWith(1, true);
   });
 
   it('allows the operator to override output explicitly', () => {

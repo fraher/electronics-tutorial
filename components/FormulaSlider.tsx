@@ -24,9 +24,14 @@ export type FormulaSliderProps = {
   /**
    * Optional render-prop that draws a live mini-schematic above the formula,
    * bound to the same variable state. Receives the current values keyed by
-   * variable name. When omitted, the component behaves exactly as before.
+   * variable name plus an optional `onVarChange` so interactive primitives can
+   * write back into slider state. When omitted, the component behaves exactly
+   * as before.
    */
-  schematic?: (vars: Record<string, number>) => React.ReactNode;
+  schematic?: (
+    vars: Record<string, number>,
+    onVarChange?: (name: string, value: number | boolean) => void,
+  ) => React.ReactNode;
 };
 
 /** Format a number to `precision` significant digits. */
@@ -60,6 +65,16 @@ export function FormulaSlider({
   const precision = solveFor.precision ?? 3;
   const resultText = `${formatPrecision(result, precision)}${solveFor.unit ? ' ' + solveFor.unit : ''}`;
 
+  // Bidirectional bridge: interactive primitives in the schematic write back
+  // here. Booleans coerce to 0/1 since vars dict is numeric.
+  const handleVarChange = React.useCallback(
+    (name: string, next: number | boolean) => {
+      const num = typeof next === 'boolean' ? (next ? 1 : 0) : next;
+      setValues((prev) => (prev[name] === num ? prev : { ...prev, [name]: num }));
+    },
+    [],
+  );
+
   return (
     <div
       className={cn(
@@ -74,7 +89,7 @@ export function FormulaSlider({
           className="rounded-md border bg-background/40 p-2"
           data-testid="formula-slider-schematic"
         >
-          {schematic(values)}
+          {schematic(values, handleVarChange)}
         </div>
       ) : null}
 

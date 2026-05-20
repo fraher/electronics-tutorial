@@ -36,7 +36,19 @@ import {
 } from '@/components/schematic';
 
 export type SchematicVars = Record<string, number>;
-export type SchematicRender = (vars: SchematicVars) => React.ReactNode;
+export type SchematicVarChange = (name: string, value: number | boolean) => void;
+/**
+ * Per-experiment schematic render closure.
+ *
+ * The optional 2nd arg is a callback for bidirectional interactivity: a
+ * closure can wire e.g. `<LiveSwitch onChange={(c) => onVarChange?.('SW', c)} />`
+ * so clicking the SVG primitive writes back into the FormulaSlider's state.
+ * Closures that ignore the 2nd arg keep working — strictly additive.
+ */
+export type SchematicRender = (
+  vars: SchematicVars,
+  onVarChange?: SchematicVarChange,
+) => React.ReactNode;
 
 /** Convenience accessor: return v[name] if finite, else fallback. */
 function pick(v: SchematicVars, name: string, fallback: number): number {
@@ -49,7 +61,8 @@ function pick(v: SchematicVars, name: string, fallback: number): number {
  * -------------------------------------------------------------------------*/
 
 // 1. Taste the Power — body as a giant resistor between battery terminals.
-const sch1: SchematicRender = (v) => {
+// Interactive: drag the body resistor → updates R.
+const sch1: SchematicRender = (v, onVarChange) => {
   const R = pick(v, 'R', 200000);
   // Implied current at 9V; clamp to a sane visible range.
   const I = Math.min(0.001, 9 / Math.max(R, 1));
@@ -57,7 +70,18 @@ const sch1: SchematicRender = (v) => {
     <g>
       <LiveBattery x={80} y={120} voltage={9} />
       <LiveWire from={[110, 120]} to={[180, 120]} current={I} currentMax={0.001} />
-      <LiveResistor x={240} y={120} value={R} current={I} label={`Body ${(R / 1000).toFixed(0)}kΩ`} powerMax={0.01} />
+      <LiveResistor
+        x={240}
+        y={120}
+        value={R}
+        current={I}
+        label={`Body ${(R / 1000).toFixed(0)}kΩ`}
+        powerMax={0.01}
+        onChange={onVarChange ? (next) => onVarChange('R', next) : undefined}
+        min={1000}
+        max={1_000_000}
+        testId="sch1-R"
+      />
       <LiveWire from={[300, 120]} to={[370, 120]} current={I} currentMax={0.001} />
       <LiveWire from={[80, 180]} to={[370, 180]} current={I} currentMax={0.001} />
       <LiveWire from={[370, 120]} to={[370, 180]} current={I} currentMax={0.001} />
@@ -67,16 +91,34 @@ const sch1: SchematicRender = (v) => {
 };
 
 // 2. Go with the Flow — V_S → R → LED loop. Current from Ohm's-law analog.
-const sch2: SchematicRender = (v) => {
+// Interactive: drag the resistor → updates R; drag battery → V_S.
+const sch2: SchematicRender = (v, onVarChange) => {
   const VS = pick(v, 'V_S', 9);
   const VF = pick(v, 'V_F', 2.1);
   const R = pick(v, 'R', 1500);
   const I = Math.max(0, (VS - VF) / Math.max(R, 1));
   return (
     <g>
-      <LiveBattery x={80} y={120} voltage={VS} />
+      <LiveBattery
+        x={80}
+        y={120}
+        voltage={VS}
+        onChange={onVarChange ? (next) => onVarChange('V_S', next) : undefined}
+        min={0}
+        max={24}
+      />
       <LiveWire from={[110, 120]} to={[170, 120]} current={I} currentMax={0.05} />
-      <LiveResistor x={220} y={120} value={R} current={I} powerMax={0.25} />
+      <LiveResistor
+        x={220}
+        y={120}
+        value={R}
+        current={I}
+        powerMax={0.25}
+        onChange={onVarChange ? (next) => onVarChange('R', next) : undefined}
+        min={100}
+        max={10_000}
+        testId="sch2-R"
+      />
       <LiveWire from={[270, 120]} to={[320, 120]} current={I} currentMax={0.05} />
       <LiveDiode x={340} y={120} current={I} vF={VF} currentMax={0.05} />
       <LiveWire from={[360, 120]} to={[380, 120]} current={I} currentMax={0.05} />
@@ -112,15 +154,33 @@ const sch3: SchematicRender = (v) => {
 };
 
 // 4. Heat and Power — single R, glows red when P high.
-const sch4: SchematicRender = (v) => {
+// Interactive: drag the resistor → R; drag battery → V.
+const sch4: SchematicRender = (v, onVarChange) => {
   const I = pick(v, 'I', 0.02);
   const R = pick(v, 'R', 1000);
   const V = pick(v, 'V', I * R);
   return (
     <g>
-      <LiveBattery x={80} y={120} voltage={V} />
+      <LiveBattery
+        x={80}
+        y={120}
+        voltage={V}
+        onChange={onVarChange ? (next) => onVarChange('V', next) : undefined}
+        min={0}
+        max={24}
+      />
       <LiveWire from={[110, 120]} to={[180, 120]} current={I} currentMax={0.1} />
-      <LiveResistor x={240} y={120} value={R} current={I} powerMax={0.25} />
+      <LiveResistor
+        x={240}
+        y={120}
+        value={R}
+        current={I}
+        powerMax={0.25}
+        onChange={onVarChange ? (next) => onVarChange('R', next) : undefined}
+        min={1}
+        max={100_000}
+        testId="sch4-R"
+      />
       <LiveWire from={[300, 120]} to={[370, 120]} current={I} currentMax={0.1} />
       <LiveWire from={[80, 180]} to={[370, 180]} current={I} currentMax={0.1} />
       <LiveWire from={[80, 120]} to={[80, 180]} current={I} currentMax={0.1} />
@@ -164,19 +224,37 @@ const sch5: SchematicRender = (v) => {
  * -------------------------------------------------------------------------*/
 
 // 6. Two switches in series. Vars P, T are abstract — show two switches.
-const sch6: SchematicRender = (v) => {
+// Interactive: click each switch to toggle (drives synthetic vars SW1/SW2).
+const sch6: SchematicRender = (v, onVarChange) => {
   const P = Math.round(pick(v, 'P', 2));
   const T = Math.round(pick(v, 'T', 2));
   const combos = Math.pow(P, T);
-  // Both switches closed for demo
+  const sw1 = (v.SW1 ?? 1) > 0.5;
+  const sw2 = (v.SW2 ?? 1) > 0.5;
+  const closed = sw1 && sw2;
+  const I = closed ? 0.01 : 0;
   return (
     <g>
       <LiveBattery x={70} y={120} voltage={9} />
-      <LiveWire from={[100, 120]} to={[150, 120]} current={0.01} currentMax={0.05} />
-      <LiveSwitch x={180} y={120} closed={true} label="SW1" />
-      <LiveWire from={[210, 120]} to={[250, 120]} current={0.01} currentMax={0.05} />
-      <LiveSwitch x={280} y={120} closed={true} label="SW2" />
-      <LiveWire from={[310, 120]} to={[340, 120]} current={0.01} currentMax={0.05} />
+      <LiveWire from={[100, 120]} to={[150, 120]} current={I} currentMax={0.05} />
+      <LiveSwitch
+        x={180}
+        y={120}
+        closed={sw1}
+        label="SW1"
+        onChange={onVarChange ? (c) => onVarChange('SW1', c) : undefined}
+        testId="sch6-SW1"
+      />
+      <LiveWire from={[210, 120]} to={[250, 120]} current={I} currentMax={0.05} />
+      <LiveSwitch
+        x={280}
+        y={120}
+        closed={sw2}
+        label="SW2"
+        onChange={onVarChange ? (c) => onVarChange('SW2', c) : undefined}
+        testId="sch6-SW2"
+      />
+      <LiveWire from={[310, 120]} to={[340, 120]} current={I} currentMax={0.05} />
       <LiveResistor x={370} y={120} value={470} current={0.01} powerMax={0.25} />
       <LiveWire from={[70, 180]} to={[400, 180]} current={0.01} currentMax={0.05} />
       <LiveWire from={[70, 120]} to={[70, 180]} current={0.01} currentMax={0.05} />
@@ -188,18 +266,36 @@ const sch6: SchematicRender = (v) => {
   );
 };
 
-// 7. Relay = coil (inductor) + series R + flyback diode
-const sch7: SchematicRender = (v) => {
+// 7. Relay = coil (inductor) + series R + flyback diode.
+// Interactive: drag the coil resistance; click the energizing switch.
+const sch7: SchematicRender = (v, onVarChange) => {
   const Vcoil = pick(v, 'V_coil', 9);
   const Rcoil = pick(v, 'R_coil', 500);
   const I = Vcoil / Math.max(Rcoil, 1);
+  const sw = (v.SW ?? 1) > 0.5;
   return (
     <g>
       <LiveBattery x={70} y={140} voltage={Vcoil} />
-      <LiveWire from={[100, 140]} to={[160, 140]} current={I} currentMax={0.05} />
-      <LiveSwitch x={190} y={140} closed={true} />
-      <LiveWire from={[220, 140]} to={[260, 140]} current={I} currentMax={0.05} />
-      <LiveResistor x={300} y={140} value={Rcoil} current={I} powerMax={0.5} />
+      <LiveWire from={[100, 140]} to={[160, 140]} current={sw ? I : 0} currentMax={0.05} />
+      <LiveSwitch
+        x={190}
+        y={140}
+        closed={sw}
+        onChange={onVarChange ? (c) => onVarChange('SW', c) : undefined}
+        testId="sch7-SW"
+      />
+      <LiveWire from={[220, 140]} to={[260, 140]} current={sw ? I : 0} currentMax={0.05} />
+      <LiveResistor
+        x={300}
+        y={140}
+        value={Rcoil}
+        current={sw ? I : 0}
+        powerMax={0.5}
+        onChange={onVarChange ? (next) => onVarChange('R_coil', next) : undefined}
+        min={50}
+        max={5000}
+        testId="sch7-R"
+      />
       <LiveInductor x={360} y={140} inductance={0.1} current={I} currentMax={0.05} />
       <LiveDiode x={360} y={90} current={0} vF={0.7} orientation="horizontal" />
       <LiveWire from={[340, 90]} to={[340, 140]} current={0} currentMax={0.05} />
@@ -234,7 +330,8 @@ const sch8: SchematicRender = (v) => {
 };
 
 // 9. RC charge — battery → switch → R → C → ground
-const sch9: SchematicRender = (v) => {
+// Interactive: drag R; drag C; both update FormulaSlider state.
+const sch9: SchematicRender = (v, onVarChange) => {
   const R = pick(v, 'R', 10000);
   const C = pick(v, 'C', 0.001);
   const VS = pick(v, 'V_S', 9);
@@ -246,9 +343,29 @@ const sch9: SchematicRender = (v) => {
       <LiveWire from={[100, 120]} to={[150, 120]} current={I} currentMax={0.005} />
       <LiveSwitch x={180} y={120} closed={true} />
       <LiveWire from={[210, 120]} to={[250, 120]} current={I} currentMax={0.005} />
-      <LiveResistor x={290} y={120} value={R} current={I} powerMax={0.1} />
+      <LiveResistor
+        x={290}
+        y={120}
+        value={R}
+        current={I}
+        powerMax={0.1}
+        onChange={onVarChange ? (next) => onVarChange('R', next) : undefined}
+        min={100}
+        max={1_000_000}
+        testId="sch9-R"
+      />
       <LiveWire from={[330, 120]} to={[370, 120]} current={I} currentMax={0.005} />
-      <LiveCapacitor x={370} y={160} capacitance={C} voltage={VC} orientation="vertical" />
+      <LiveCapacitor
+        x={370}
+        y={160}
+        capacitance={C}
+        voltage={VC}
+        orientation="vertical"
+        onChange={onVarChange ? (next) => onVarChange('C', next) : undefined}
+        min={1e-9}
+        max={1e-2}
+        testId="sch9-C"
+      />
       <LiveWire from={[370, 175]} to={[370, 210]} current={0} currentMax={0.005} />
       <LiveWire from={[70, 210]} to={[370, 210]} current={I} currentMax={0.005} />
       <LiveWire from={[70, 120]} to={[70, 210]} current={I} currentMax={0.005} />
@@ -500,33 +617,89 @@ const sch18: SchematicRender = (v) => {
   );
 };
 
-// 19. Logic gates — four gates side by side. Inputs from V_CC threshold value
-const sch19: SchematicRender = (v) => {
+// 19. Logic gates — four gates side by side. Inputs from V_CC threshold value.
+// Interactive: click any gate input pin to flip HIGH/LOW (synthetic vars A1/B1 … A4/B4).
+const sch19: SchematicRender = (v, onVarChange) => {
   const Vcc = pick(v, 'V_CC', 5);
-  const high = Vcc > 2.5;
+  const a1 = (v.A1 ?? 1) > 0.5;
+  const b1 = (v.B1 ?? 1) > 0.5;
+  const a2 = (v.A2 ?? 1) > 0.5;
+  const b2 = (v.B2 ?? 0) > 0.5;
+  const a3 = (v.A3 ?? 1) > 0.5;
+  const b3 = (v.B3 ?? (Vcc > 2.5 ? 1 : 0)) > 0.5;
+  const a4 = (v.A4 ?? 0) > 0.5;
+  const b4 = (v.B4 ?? 0) > 0.5;
+  // Each gate has two synthetic vars (A1/B1 … A4/B4) so individual pins are toggleable.
   return (
     <g>
-      <LiveGate x={90} y={70} kind="and" inputs={[true, true]} />
-      <LiveGate x={90} y={170} kind="or" inputs={[true, false]} />
-      <LiveGate x={280} y={70} kind="nand" inputs={[true, high]} />
-      <LiveGate x={280} y={170} kind="nor" inputs={[false, false]} />
+      <LiveGate
+        x={90}
+        y={70}
+        kind="and"
+        inputs={[a1, b1]}
+        onInputChange={onVarChange ? (i, next) => onVarChange(i === 0 ? 'A1' : 'B1', next) : undefined}
+        testId="sch19-and"
+      />
+      <LiveGate
+        x={90}
+        y={170}
+        kind="or"
+        inputs={[a2, b2]}
+        onInputChange={onVarChange ? (i, next) => onVarChange(i === 0 ? 'A2' : 'B2', next) : undefined}
+        testId="sch19-or"
+      />
+      <LiveGate
+        x={280}
+        y={70}
+        kind="nand"
+        inputs={[a3, b3]}
+        onInputChange={onVarChange ? (i, next) => onVarChange(i === 0 ? 'A3' : 'B3', next) : undefined}
+        testId="sch19-nand"
+      />
+      <LiveGate
+        x={280}
+        y={170}
+        kind="nor"
+        inputs={[a4, b4]}
+        onInputChange={onVarChange ? (i, next) => onVarChange(i === 0 ? 'A4' : 'B4', next) : undefined}
+        testId="sch19-nor"
+      />
       <text x={200} y={20} fontSize={11} fill="currentColor" opacity={0.7} textAnchor="middle">
-        V_CC = {Vcc.toFixed(1)}V — threshold {(Vcc * 0.7).toFixed(2)}V (HIGH)
+        V_CC = {Vcc.toFixed(1)}V — click input pins to toggle
       </text>
     </g>
   );
 };
 
-// 20. AND tree of 5 inputs → 1 LED
-const sch20: SchematicRender = (v) => {
+// 20. AND tree of 5 inputs → 1 LED.
+// Interactive: click any gate input to flip; LED only lights if all stay HIGH.
+const sch20: SchematicRender = (v, onVarChange) => {
   const S = Math.round(pick(v, 'S', 5));
-  const allCorrect = true;
+  const i1 = (v.I1 ?? 1) > 0.5;
+  const i2 = (v.I2 ?? 1) > 0.5;
+  const i3 = (v.I3 ?? 1) > 0.5;
+  const i4 = (v.I4 ?? 1) > 0.5;
+  const allCorrect = i1 && i2 && i3 && i4;
   return (
     <g>
-      <LiveGate x={80} y={60} kind="and" inputs={[true, true]} />
-      <LiveGate x={80} y={160} kind="and" inputs={[true, true]} />
-      <LiveGate x={220} y={110} kind="and" inputs={[true, true]} />
-      <LiveGate x={340} y={110} kind="and" inputs={[true, true]} />
+      <LiveGate
+        x={80}
+        y={60}
+        kind="and"
+        inputs={[i1, i2]}
+        onInputChange={onVarChange ? (i, next) => onVarChange(i === 0 ? 'I1' : 'I2', next) : undefined}
+        testId="sch20-g1"
+      />
+      <LiveGate
+        x={80}
+        y={160}
+        kind="and"
+        inputs={[i3, i4]}
+        onInputChange={onVarChange ? (i, next) => onVarChange(i === 0 ? 'I3' : 'I4', next) : undefined}
+        testId="sch20-g2"
+      />
+      <LiveGate x={220} y={110} kind="and" inputs={[i1 && i2, i3 && i4]} />
+      <LiveGate x={340} y={110} kind="and" inputs={[allCorrect, allCorrect]} />
       <LiveWire from={[108, 60]} to={[195, 95]} current={allCorrect ? 0.001 : 0} currentMax={0.005} />
       <LiveWire from={[108, 160]} to={[195, 125]} current={allCorrect ? 0.001 : 0} currentMax={0.005} />
       <LiveWire from={[248, 110]} to={[315, 95]} current={allCorrect ? 0.001 : 0} currentMax={0.005} />
@@ -538,14 +711,33 @@ const sch20: SchematicRender = (v) => {
   );
 };
 
-// 21. SR latch from 2 NAND gates
-const sch21: SchematicRender = (v) => {
+// 21. SR latch from 2 NAND gates.
+// Interactive: click S or R pin to toggle (active-low: HIGH = idle, LOW = pulse).
+const sch21: SchematicRender = (v, onVarChange) => {
   const S = Math.round(pick(v, 'S', 0));
   const R = Math.round(pick(v, 'R', 1));
   return (
     <g>
-      <LiveGate x={140} y={90} kind="nand" inputs={[S === 0, true]} />
-      <LiveGate x={140} y={170} kind="nand" inputs={[true, R === 0]} />
+      <LiveGate
+        x={140}
+        y={90}
+        kind="nand"
+        inputs={[S === 0, true]}
+        onInputChange={
+          onVarChange ? (i, next) => (i === 0 ? onVarChange('S', next ? 0 : 1) : undefined) : undefined
+        }
+        testId="sch21-S"
+      />
+      <LiveGate
+        x={140}
+        y={170}
+        kind="nand"
+        inputs={[true, R === 0]}
+        onInputChange={
+          onVarChange ? (i, next) => (i === 1 ? onVarChange('R', next ? 0 : 1) : undefined) : undefined
+        }
+        testId="sch21-R"
+      />
       <LiveWire from={[168, 90]} to={[200, 90]} current={0.001} currentMax={0.005} />
       <LiveWire from={[200, 90]} to={[200, 170]} current={0.001} currentMax={0.005} />
       <LiveWire from={[200, 170]} to={[110, 170]} current={0.001} currentMax={0.005} />
@@ -559,18 +751,47 @@ const sch21: SchematicRender = (v) => {
   );
 };
 
-// 22. Debounce — RC filter + Schmitt inverter
-const sch22: SchematicRender = (v) => {
+// 22. Debounce — RC filter + Schmitt inverter.
+// Interactive: drag R, drag C; click button to toggle.
+const sch22: SchematicRender = (v, onVarChange) => {
   const R = pick(v, 'R', 10000);
   const C = pick(v, 'C', 0.0000001);
   const tau = R * C;
+  const btn = (v.btn ?? 0) > 0.5;
   return (
     <g>
-      <LiveSwitch x={80} y={120} closed={false} label="btn" />
+      <LiveSwitch
+        x={80}
+        y={120}
+        closed={btn}
+        label="btn"
+        onChange={onVarChange ? (c) => onVarChange('btn', c) : undefined}
+        testId="sch22-btn"
+      />
       <LiveWire from={[110, 120]} to={[180, 120]} current={0} currentMax={0.001} />
-      <LiveResistor x={220} y={120} value={R} current={0} powerMax={0.01} />
+      <LiveResistor
+        x={220}
+        y={120}
+        value={R}
+        current={0}
+        powerMax={0.01}
+        onChange={onVarChange ? (next) => onVarChange('R', next) : undefined}
+        min={100}
+        max={1_000_000}
+        testId="sch22-R"
+      />
       <LiveWire from={[260, 120]} to={[300, 120]} current={0} currentMax={0.001} />
-      <LiveCapacitor x={300} y={170} capacitance={C} voltage={2.5} orientation="vertical" />
+      <LiveCapacitor
+        x={300}
+        y={170}
+        capacitance={C}
+        voltage={2.5}
+        orientation="vertical"
+        onChange={onVarChange ? (next) => onVarChange('C', next) : undefined}
+        min={1e-9}
+        max={1e-3}
+        testId="sch22-C"
+      />
       <LiveWire from={[300, 185]} to={[300, 220]} current={0} currentMax={0.001} />
       <LiveGate x={350} y={120} kind="not" inputs={[false]} />
       <LiveWire from={[300, 120]} to={[330, 120]} current={0} currentMax={0.001} />
@@ -806,15 +1027,24 @@ const sch30: SchematicRender = (v) => {
   );
 };
 
-// 31. Button toggles LED
-const sch31: SchematicRender = (v) => {
+// 31. Button toggles LED.
+// Interactive: click the button to toggle the LED state directly.
+const sch31: SchematicRender = (v, onVarChange) => {
   const t = pick(v, 't_bounce', 0.01);
   const tIgnore = pick(v, 't_ignore', 0.03);
-  const debounced = tIgnore >= t;
+  const btn = onVarChange ? (v.btn ?? 0) > 0.5 : tIgnore >= t;
+  const debounced = btn;
   return (
     <g>
       <McuBox x={140} y={140} label="Arduino" pin="pin 2 / 13" />
-      <LiveSwitch x={70} y={100} closed={debounced} label="btn" />
+      <LiveSwitch
+        x={70}
+        y={100}
+        closed={debounced}
+        label="btn"
+        onChange={onVarChange ? (c) => onVarChange('btn', c) : undefined}
+        testId="sch31-btn"
+      />
       <LiveWire from={[100, 100]} to={[100, 130]} current={0} currentMax={0.001} />
       <LiveWire from={[100, 130]} to={[140, 130]} current={0} currentMax={0.001} />
       <LiveWire from={[190, 130]} to={[230, 130]} current={debounced ? 0.015 : 0} currentMax={0.02} />

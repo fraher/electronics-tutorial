@@ -27,7 +27,7 @@ describe('ExperimentSchematic', () => {
         render={renderFn}
       />,
     );
-    expect(renderFn).toHaveBeenCalledWith({ I: 0.25, R: 200 });
+    expect(renderFn).toHaveBeenCalledWith({ I: 0.25, R: 200 }, undefined);
   });
 
   it('re-renders when vars change', () => {
@@ -35,11 +35,11 @@ describe('ExperimentSchematic', () => {
     const { rerender } = render(
       <ExperimentSchematic vars={{ I: 0.1 }} ariaLabel="x" render={renderFn} />,
     );
-    expect(renderFn).toHaveBeenLastCalledWith({ I: 0.1 });
+    expect(renderFn).toHaveBeenLastCalledWith({ I: 0.1 }, undefined);
     rerender(
       <ExperimentSchematic vars={{ I: 0.5 }} ariaLabel="x" render={renderFn} />,
     );
-    expect(renderFn).toHaveBeenLastCalledWith({ I: 0.5 });
+    expect(renderFn).toHaveBeenLastCalledWith({ I: 0.5 }, undefined);
   });
 
   it('renders a legend list when legend is provided', () => {

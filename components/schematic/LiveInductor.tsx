@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { formatSI, magnitudeToIntensity } from './utils';
+import { useDraggableValue } from './interaction';
 
 export type LiveInductorProps = {
   x: number;
@@ -15,6 +16,12 @@ export type LiveInductorProps = {
   label?: string;
   orientation?: 'horizontal' | 'vertical';
   testId?: string;
+  /** Bidirectional drag-to-change callback. */
+  onChange?: (inductance: number) => void;
+  /** Drag bounds. Default 1µH - 10H on log scale. */
+  min?: number;
+  max?: number;
+  step?: number;
 };
 
 /**
@@ -30,7 +37,22 @@ export function LiveInductor({
   label,
   orientation = 'horizontal',
   testId,
+  onChange,
+  min = 1e-6,
+  max = 10,
+  step,
 }: LiveInductorProps) {
+  const interactive = typeof onChange === 'function';
+  const drag = useDraggableValue({
+    value: inductance,
+    min,
+    max,
+    step,
+    logScale: true,
+    axis: orientation === 'vertical' ? 'x' : 'y',
+    ariaLabel: `inductor ${formatSI(inductance)}H`,
+    onChange,
+  });
   const intensity = magnitudeToIntensity(current, currentMax);
   const fieldOpacity = intensity * 0.8;
   const displayLabel = label ?? `${formatSI(inductance)}H`;
@@ -51,12 +73,42 @@ export function LiveInductor({
 
   const rotate = orientation === 'vertical' ? 90 : 0;
 
+  const interactiveProps = interactive
+    ? {
+        ...drag.pointerHandlers,
+        ...drag.keyboardHandlers,
+        ...drag.ariaProps,
+        'data-interactive': 'true',
+        'data-dragging': drag.isDragging ? 'true' : 'false',
+        style: {
+          cursor: orientation === 'vertical' ? 'ew-resize' : 'ns-resize',
+          touchAction: 'none' as const,
+          outline: 'none',
+        } as React.CSSProperties,
+      }
+    : { 'aria-hidden': 'true' as const };
+
   return (
     <g
       data-testid={testId}
       transform={`translate(${x} ${y}) rotate(${rotate})`}
-      aria-hidden="true"
+      {...interactiveProps}
     >
+      {interactive && (
+        <rect
+          x={xStart - lead}
+          y={-r - 4}
+          width={span + 2 * lead}
+          height={2 * r + 8}
+          rx={4}
+          fill="transparent"
+          stroke="currentColor"
+          strokeWidth={0.6}
+          strokeDasharray="2 3"
+          opacity={drag.isDragging ? 0.6 : 0.3}
+          data-testid={testId ? `${testId}-hitbox` : undefined}
+        />
+      )}
       {/* Field lines — dashed ellipses around the coil. Density scales with intensity. */}
       {intensity > 0.05 && (
         <g

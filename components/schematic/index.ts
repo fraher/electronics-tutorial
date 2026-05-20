@@ -31,3 +31,10 @@ export { LiveSwitch } from './LiveSwitch';
 export type { LiveSwitchProps } from './LiveSwitch';
 export { ExperimentSchematic } from './ExperimentSchematic';
 export type { ExperimentSchematicProps } from './ExperimentSchematic';
+export { useDraggableValue, useToggle } from './interaction';
+export type {
+  DraggableValueOpts,
+  DraggableValueResult,
+  ToggleOpts,
+  ToggleResult,
+} from './interaction';
