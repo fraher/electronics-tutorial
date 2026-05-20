@@ -33,8 +33,9 @@ export function CircuitEmbed({
           width="100%"
           height={height}
           style={{ height, width: '100%', border: 0, display: 'block' }}
-          // CircuitJS is a GWT app running JS on the same origin; both flags are required.
-          sandbox="allow-scripts allow-same-origin"
+          // CircuitJS is a GWT app running JS on the same origin; allow-modals lets it use alert()
+          // for error messages instead of being silently sandboxed.
+          sandbox="allow-scripts allow-same-origin allow-modals"
           loading="lazy"
         />
       </div>

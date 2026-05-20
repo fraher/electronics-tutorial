@@ -1,0 +1,112 @@
+[
+  {
+    "route": "/",
+    "screenshot": ".factory/playtest/screenshots/home.png",
+    "svgs": 0,
+    "sliders": 0,
+    "iframes": 0,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/schematic-gallery",
+    "screenshot": ".factory/playtest/screenshots/schematic-gallery.png",
+    "svgs": 7,
+    "sliders": 9,
+    "iframes": 0,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/1",
+    "screenshot": ".factory/playtest/screenshots/chapter_1.png",
+    "svgs": 0,
+    "sliders": 0,
+    "iframes": 0,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/1/experiment/1",
+    "screenshot": ".factory/playtest/screenshots/chapter_1_experiment_1.png",
+    "svgs": 1,
+    "sliders": 1,
+    "iframes": 1,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/1/experiment/3",
+    "screenshot": ".factory/playtest/screenshots/chapter_1_experiment_3.png",
+    "svgs": 1,
+    "sliders": 3,
+    "iframes": 1,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/2/experiment/7",
+    "screenshot": ".factory/playtest/screenshots/chapter_2_experiment_7.png",
+    "svgs": 1,
+    "sliders": 4,
+    "iframes": 1,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/3/experiment/14",
+    "screenshot": ".factory/playtest/screenshots/chapter_3_experiment_14.png",
+    "svgs": 1,
+    "sliders": 5,
+    "iframes": 1,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/4/experiment/22",
+    "screenshot": ".factory/playtest/screenshots/chapter_4_experiment_22.png",
+    "svgs": 1,
+    "sliders": 3,
+    "iframes": 1,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/5/experiment/25",
+    "screenshot": ".factory/playtest/screenshots/chapter_5_experiment_25.png",
+    "svgs": 1,
+    "sliders": 4,
+    "iframes": 1,
+    "placeholderCards": 0,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/5/experiment/29",
+    "screenshot": ".factory/playtest/screenshots/chapter_5_experiment_29.png",
+    "svgs": 1,
+    "sliders": 5,
+    "iframes": 0,
+    "placeholderCards": 1,
+    "errors": 0,
+    "failedRequests": 0
+  },
+  {
+    "route": "/chapter/5/experiment/32",
+    "screenshot": ".factory/playtest/screenshots/chapter_5_experiment_32.png",
+    "svgs": 1,
+    "sliders": 3,
+    "iframes": 0,
+    "placeholderCards": 1,
+    "errors": 0,
+    "failedRequests": 0
+  }
+]

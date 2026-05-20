@@ -22,7 +22,7 @@ export type Formula = {
 
 export type ExperimentCircuit =
   | { kind: 'circuitjs'; cir: string }
-  | { kind: 'wokwi'; projectId: string };
+  | { kind: 'wokwi'; projectId: string; placeholder?: boolean; sketchHint?: string };
 
 export type ExperimentPageProps = {
   chapter: number; // 1-5
@@ -150,6 +150,8 @@ export function ExperimentPage({
               projectId={circuit.projectId}
               title={`${title} — Arduino simulation`}
               caption="Arduino sketch + breadboard. Requires internet."
+              placeholder={circuit.placeholder}
+              sketchHint={circuit.sketchHint}
             />
           )}
         </Section>

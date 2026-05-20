@@ -39,7 +39,7 @@ type SerializableFormula = {
 type CircuitProp =
   | { kind: 'circuitjs'; cir: string }
   | { kind: 'circuitjs-empty'; note?: string }
-  | { kind: 'wokwi'; projectId: string }
+  | { kind: 'wokwi'; projectId: string; placeholder?: boolean; sketchHint?: string }
   | null;
 
 export default function Page({
@@ -73,7 +73,12 @@ export default function Page({
   const curatedCircuit = getExperimentCircuit(brief.number);
   const cir: string = brief.suggested_falstad_circuit ?? '';
   if (wokwi) {
-    circuit = { kind: 'wokwi', projectId: wokwi.projectId };
+    circuit = {
+      kind: 'wokwi',
+      projectId: wokwi.projectId,
+      placeholder: wokwi.match === 'placeholder',
+      sketchHint: wokwi.note,
+    };
   } else if (curatedCircuit?.kind === 'cir') {
     circuit = { kind: 'circuitjs', cir: curatedCircuit.text };
   } else if (curatedCircuit?.kind === 'builtin') {

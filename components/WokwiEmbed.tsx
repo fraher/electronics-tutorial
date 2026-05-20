@@ -13,6 +13,11 @@ export type WokwiEmbedProps = {
   height?: number;
   caption?: string;
   className?: string;
+  /** When true, suppress the iframe and show a "set up your own Wokwi project" card instead.
+   *  Wokwi public projects use opaque numeric IDs; placeholder slugs won't resolve. */
+  placeholder?: boolean;
+  /** Optional sketch hint shown in the placeholder card (e.g., "Blink the on-board LED"). */
+  sketchHint?: string;
 };
 
 function wokwiEmbedUrl(projectId: string): string {
@@ -30,6 +35,8 @@ export function WokwiEmbed({
   height = 480,
   caption,
   className,
+  placeholder,
+  sketchHint,
 }: WokwiEmbedProps) {
   const [online, setOnline] = React.useState<boolean>(() => {
     if (typeof navigator === 'undefined') return true; // SSR: assume online
@@ -50,6 +57,40 @@ export function WokwiEmbed({
 
   const src = url ?? (projectId ? wokwiEmbedUrl(projectId) : undefined);
   const backupHref = projectId ? wokwiProjectUrl(projectId) : url;
+
+  // Placeholder mode: registry holds an unverified slug. Surface a clear
+  // setup card instead of a 404-ing iframe.
+  if (placeholder) {
+    return (
+      <figure className={cn('space-y-2', className)}>
+        <div
+          role="status"
+          data-testid="wokwi-placeholder-card"
+          className="flex flex-col items-start gap-3 rounded-lg border-2 border-dashed bg-card p-6 text-sm"
+          style={{ minHeight: height }}
+        >
+          <span className="rounded bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
+            BUILD YOUR OWN
+          </span>
+          <h3 className="text-base font-semibold">{title}</h3>
+          {sketchHint ? (
+            <p className="text-muted-foreground">{sketchHint}</p>
+          ) : null}
+          <p className="text-muted-foreground">
+            This Arduino experiment doesn{'’'}t ship a hosted Wokwi project yet. Build it
+            yourself in three steps:
+          </p>
+          <ol className="ml-4 list-decimal space-y-1 text-muted-foreground">
+            <li>
+              Open <a className="text-primary underline" href="https://wokwi.com/projects/new/arduino-uno" target="_blank" rel="noreferrer">a new Wokwi Arduino project</a>
+            </li>
+            <li>Build the circuit + sketch matching the schematic above</li>
+            <li>Hit ▶ Start to see it run</li>
+          </ol>
+        </div>
+      </figure>
+    );
+  }
 
   return (
     <figure className={cn('space-y-2', className)}>

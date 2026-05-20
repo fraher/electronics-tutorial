@@ -1,0 +1,47 @@
+{
+  "order_id": "order-20260520-intuitive-formula-viz-and-preloa",
+  "order_shape": "project",
+  "status": "complete",
+  "created_at": "2026-05-20T20:53:48Z",
+  "updated_at": "2026-05-20T21:24:30Z",
+  "raw_intent": "Improve electronics-tutorial: replace plain formula sliders with live animated mini-schematic visualizations where wire thickness scales with current, resistor color with dissipation, capacitor fill animates with charge, etc. Also: each of the 30 analog experiments should preload a working CircuitJS example circuit (hybrid: use CircuitJS built-in examples where applicable, custom .cir strings for the rest).",
+  "refined_intent": {
+    "refined_intent": "Upgrade every formula on every experiment page from a bare slider to a live mini-schematic visualization (inline SVG: wire thickness ∝ current, resistor color/glow ∝ power dissipation, capacitor fill ∝ charge, etc.), augmenting FormulaSlider not replacing it. Every analog experiment's CircuitEmbed preloads a working circuit (CircuitJS built-ins where they fit + custom .cir for the rest). Wokwi briefs 29-36 get verified project IDs. Offline-first preserved.",
+    "scope": "all 30 experiments + 6 Arduino"
+  },
+  "plan": {
+    "summary": "Replace plain FormulaSlider with live animated SVG mini-schematics; preload working CircuitJS circuits + verified Wokwi IDs across all 36 experiments. 3 sprints, 3-4 subagent spawns.",
+    "sprints": 3,
+    "steps": 4,
+    "approach": "focused-improvement-batch",
+    "total_estimated_minutes": 420,
+    "risks": [
+      "SVG animation complexity per primitive",
+      "Custom .cir authoring quality varies",
+      "Wokwi project IDs need real-world verification (online dep)"
+    ]
+  },
+  "gates_approved": [
+    {
+      "gate": "intent-confirmation",
+      "decision": "approved",
+      "at": "2026-05-20T20:54:53Z",
+      "operator": "fraher@gmail.com"
+    },
+    {
+      "gate": "plan-approval",
+      "decision": "approved",
+      "at": "2026-05-20T20:55:28Z",
+      "operator": "fraher@gmail.com"
+    }
+  ],
+  "steps_completed": {
+    "sA": "complete",
+    "sB": "complete",
+    "sC": "complete",
+    "s.final": "complete"
+  },
+  "audit": {
+    "created_by": "fraher"
+  }
+}

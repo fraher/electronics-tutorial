@@ -21,7 +21,7 @@ type SerializableFormula = {
 type CircuitProp =
   | { kind: 'circuitjs'; cir: string }
   | { kind: 'circuitjs-empty'; note?: string }
-  | { kind: 'wokwi'; projectId: string }
+  | { kind: 'wokwi'; projectId: string; placeholder?: boolean; sketchHint?: string }
   | null;
 
 export type ExperimentClientProps = {
@@ -127,7 +127,12 @@ export default function ExperimentClient(props: ExperimentClientProps) {
     props.circuit?.kind === 'circuitjs'
       ? { kind: 'circuitjs', cir: props.circuit.cir }
       : props.circuit?.kind === 'wokwi'
-      ? { kind: 'wokwi', projectId: props.circuit.projectId }
+      ? {
+          kind: 'wokwi',
+          projectId: props.circuit.projectId,
+          placeholder: props.circuit.placeholder,
+          sketchHint: props.circuit.sketchHint,
+        }
       : props.circuit?.kind === 'circuitjs-empty'
       ? { kind: 'circuitjs', cir: '' }
       : undefined;

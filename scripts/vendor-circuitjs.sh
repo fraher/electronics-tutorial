@@ -77,6 +77,38 @@ fetch "iframe.html"         "$DEST/iframe.html" || true
 # GWT compiled bundle. The nocache.js script names the 5 permutation files.
 fetch "$GWT_DIR/circuitjs1.nocache.js" "$DEST/$GWT_DIR/circuitjs1.nocache.js"
 
+# Static assets the GWT runtime fetches at load time (style + setup list +
+# clear gif + GWT 'clean' theme). Discovered via real Playwright probe — the
+# bundle 404s on these if we miss them.
+fetch "$GWT_DIR/style.css"        "$DEST/$GWT_DIR/style.css"
+fetch "$GWT_DIR/setuplist.txt"    "$DEST/$GWT_DIR/setuplist.txt"
+fetch "$GWT_DIR/clear.cache.gif"  "$DEST/$GWT_DIR/clear.cache.gif"
+mkdir -p "$DEST/$GWT_DIR/gwt/clean/images"
+fetch "$GWT_DIR/gwt/clean/clean.css" "$DEST/$GWT_DIR/gwt/clean/clean.css"
+for img in hborder.png vborder.png corner.png hborder_ie6.png vborder_ie6.png; do
+  fetch "$GWT_DIR/gwt/clean/images/$img" "$DEST/$GWT_DIR/gwt/clean/images/$img" || true
+done
+
+# Rewrite manifest path from upstream /circuit/ to our /circuitjs/ vendor path.
+if grep -q '/circuit/manifest.json' "$DEST/circuitjs.html"; then
+  sed -i 's|/circuit/manifest.json|/circuitjs/manifest.json|g' "$DEST/circuitjs.html"
+fi
+
+# Strip the service-worker registration block entirely. The SW script itself
+# isn't vendored (CircuitJS works without it) and trying to register would
+# print a noisy 404 in every embed.
+if grep -q "navigator.serviceWorker.register" "$DEST/circuitjs.html"; then
+  python3 - <<PY
+import re, pathlib
+html = pathlib.Path("$DEST/circuitjs.html").read_text()
+html = re.sub(r"<script>\s*if \('serviceWorker' in navigator\).*?</script>",
+              "<script>/* service-worker registration removed by vendor-circuitjs.sh */</script>",
+              html, count=1, flags=re.DOTALL)
+pathlib.Path("$DEST/circuitjs.html").write_text(html)
+PY
+  echo "vendor-circuitjs: removed service-worker registration"
+fi
+
 # Extract permutation hashes from nocache.js and pull each .cache.js.
 mapfile -t PERMS < <(grep -oE '[A-F0-9]{32}' "$DEST/$GWT_DIR/circuitjs1.nocache.js" | sort -u)
 if [[ ${#PERMS[@]} -eq 0 ]]; then
