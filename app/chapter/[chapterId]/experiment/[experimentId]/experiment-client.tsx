@@ -6,6 +6,8 @@ import { KatexInline } from '@/components/katex-inline';
 import { getEvaluator } from '@/lib/formula-evaluators';
 import type { BriefVar } from '@/lib/briefs';
 import { recordLastVisited } from '@/components/ContinueCard';
+import { getExperimentSchematic } from '@/lib/experiment-schematics';
+import { ExperimentSchematic } from '@/components/schematic';
 
 type SerializableFormula = {
   id: string;
@@ -47,6 +49,8 @@ export default function ExperimentClient(props: ExperimentClientProps) {
     });
   }, [props.number, props.chapter, props.title]);
 
+  const schematicRender = getExperimentSchematic(props.number);
+
   const liveFormulas: Formula[] = [];
   const staticFormulas: SerializableFormula[] = [];
   for (const f of props.formulas) {
@@ -59,6 +63,9 @@ export default function ExperimentClient(props: ExperimentClientProps) {
         vars: f.vars,
         solveFor: f.solveFor,
         title: f.description,
+        // Bind the same per-experiment composite schematic to every formula
+        // slider so the visual updates wherever the learner is interacting.
+        schematic: schematicRender,
       });
     } else {
       staticFormulas.push(f);
@@ -75,11 +82,43 @@ export default function ExperimentClient(props: ExperimentClientProps) {
     </>
   );
 
-  const schematicNode = props.schematicDescription ? (
+  // Default vars for the composite schematic — pull defaults from the first
+  // live formula. The per-FormulaSlider schematic above re-renders with that
+  // slider's actual values; this top-of-page one is the static "depiction".
+  const compositeVars: Record<string, number> = React.useMemo(() => {
+    const out: Record<string, number> = {};
+    for (const f of props.formulas) {
+      for (const v of f.vars) {
+        if (out[v.name] === undefined) {
+          out[v.name] = v.default ?? v.min;
+        }
+      }
+    }
+    return out;
+  }, [props.formulas]);
+
+  const schematicNode = schematicRender ? (
+    <div className="w-full space-y-3 text-sm">
+      <ExperimentSchematic
+        vars={compositeVars}
+        ariaLabel={`Live schematic for ${props.title}`}
+        render={schematicRender}
+        testId={`experiment-${props.number}-schematic`}
+      />
+      {props.schematicDescription ? (
+        <details className="rounded-md border bg-background/40 p-3 text-muted-foreground">
+          <summary className="cursor-pointer text-sm font-medium text-foreground">
+            Schematic notes
+          </summary>
+          <p className="mt-2 whitespace-pre-line leading-relaxed">
+            {props.schematicDescription.trim()}
+          </p>
+        </details>
+      ) : null}
+    </div>
+  ) : props.schematicDescription ? (
     <div className="w-full space-y-2 text-sm">
-      <p className="text-muted-foreground">
-        Schematic (described in prose; SVG illustration is a future enhancement):
-      </p>
+      <p className="text-muted-foreground">Schematic (described in prose):</p>
       <p className="whitespace-pre-line leading-relaxed">{props.schematicDescription.trim()}</p>
     </div>
   ) : null;

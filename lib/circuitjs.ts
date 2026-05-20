@@ -5,17 +5,20 @@
  * CircuitJS reads three useful query parameters from `window.location.search`
  * (verified against pfalstad/circuitjs1 CirSim.java QueryParameters):
  *
- *   - cct           — raw circuit-file text (CircuitJS text format).
- *                     The simulator literally calls `cct.replace("%24", "$")`,
- *                     so `$` chars must survive URL-encoding as `%24`.
- *   - ctz           — lz-string-compressed circuit text (base64-ish). Used by
- *                     "Export As Link" in the simulator UI. Shorter URLs.
- *   - startCircuit  — name of a built-in example circuit (looked up in the
- *                     simulator's setupList; only useful if we vendor the
- *                     example circuits too — currently empty).
+ *   - cct                — raw circuit-file text (CircuitJS text format).
+ *                          The simulator literally calls `cct.replace("%24", "$")`,
+ *                          so `$` chars must survive URL-encoding as `%24`.
+ *   - ctz                — lz-string-compressed circuit text (base64-ish). Used
+ *                          by "Export As Link" in the simulator UI. Shorter URLs.
+ *                          Caller must produce the compressed payload (we don't
+ *                          ship lz-string in the build pipeline yet).
+ *   - startCircuitLink   — relative path to a built-in circuit file shipped in
+ *                          the vendored `circuits/` tree (e.g.
+ *                          `examples/circuits/basics/rc-circuit.txt`).
+ *                          Looked up via the simulator's loadFileFromURL path.
  *
- * We only implement the `cct` form here; `ctz` would require shipping the
- * lz-string compressor at build time, which we don't need yet.
+ * The trio is mutually exclusive — only one query parameter takes effect per
+ * load. If multiple are passed, CircuitJS picks `cct` > `ctz` > `startCircuitLink`.
  */
 
 /** Where the vendored simulator lives, relative to the static-export root. */
@@ -39,7 +42,28 @@ export function circuitJsUrl(circuitCir: string): string {
   return `${CIRCUITJS_BASE}?cct=${encodeURIComponent(circuitCir)}`;
 }
 
-// TODO: add circuitJsCompressedUrl(circuitCir) using lz-string once we want
-// shorter iframe URLs (the `ctz` param). The lz-string compressor would have
-// to be bundled at build time — see public/circuitjs/lz-string.min.js for the
-// runtime decoder.
+/**
+ * Build a URL that opens CircuitJS with a pre-compressed lz-string payload.
+ *
+ * Callers are responsible for producing `compressed` via lz-string's
+ * `compressToEncodedURIComponent`; this helper just stitches the URL. Useful
+ * for circuits whose raw text would otherwise blow past iframe URL limits.
+ */
+export function circuitJsCompressedUrl(compressed: string): string {
+  if (!compressed) return CIRCUITJS_BASE;
+  return `${CIRCUITJS_BASE}?ctz=${compressed}`;
+}
+
+/**
+ * Build a URL that opens CircuitJS pointing at a built-in example circuit
+ * shipped under `public/circuitjs/` in the vendor tree.
+ *
+ * @param relativePath Path relative to the vendor root (no leading slash),
+ *   e.g. `examples/circuits/basics/rc-circuit.txt`. The simulator fetches it
+ *   over XHR — must be same-origin.
+ */
+export function circuitJsBuiltinUrl(relativePath: string): string {
+  if (!relativePath) return CIRCUITJS_BASE;
+  const cleaned = relativePath.replace(/^\/+/, '');
+  return `${CIRCUITJS_BASE}?startCircuitLink=${encodeURIComponent(cleaned)}`;
+}
