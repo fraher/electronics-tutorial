@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getAllBriefs, getBriefByNumber, isRealCirString, type Brief } from '@/lib/briefs';
 import { getEvaluator } from '@/lib/formula-evaluators';
+import { getExperimentCircuit } from '@/lib/experiment-circuits';
+import { getExperimentWokwi } from '@/lib/experiment-wokwi';
 import ExperimentClient from './experiment-client';
 
 export function generateStaticParams() {
@@ -63,9 +65,23 @@ export default function Page({
     hasEvaluator: Boolean(getEvaluator(f.id)),
   }));
 
+  // Resolve circuit: prefer our curated Sprint-B registries over the brief's
+  // placeholder fields. Wokwi takes precedence (Chapter 5 Arduino briefs);
+  // CircuitJS otherwise; the brief's prose stays as a fallback.
   let circuit: CircuitProp = null;
+  const wokwi = getExperimentWokwi(brief.number);
+  const curatedCircuit = getExperimentCircuit(brief.number);
   const cir: string = brief.suggested_falstad_circuit ?? '';
-  if (brief.suggested_wokwi_project_id) {
+  if (wokwi) {
+    circuit = { kind: 'wokwi', projectId: wokwi.projectId };
+  } else if (curatedCircuit?.kind === 'cir') {
+    circuit = { kind: 'circuitjs', cir: curatedCircuit.text };
+  } else if (curatedCircuit?.kind === 'builtin') {
+    // Built-in path mode flows through the same cir field, prefixed so the
+    // client / CircuitEmbed can route it via circuitJsBuiltinUrl. For now
+    // we fall through to circuitjs-empty since CircuitEmbed only handles cct.
+    circuit = { kind: 'circuitjs-empty' };
+  } else if (brief.suggested_wokwi_project_id) {
     circuit = { kind: 'wokwi', projectId: brief.suggested_wokwi_project_id };
   } else if (isRealCirString(cir)) {
     circuit = { kind: 'circuitjs', cir };

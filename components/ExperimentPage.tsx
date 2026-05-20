@@ -12,6 +12,12 @@ export type Formula = {
   vars: Var[];
   solveFor: { name: string; unit?: string; precision?: number };
   title?: string;
+  /**
+   * Optional render-prop forwarded to FormulaSlider; draws a live mini-
+   * schematic bound to the same variable state. Authored per-experiment in
+   * `lib/experiment-schematics.tsx`.
+   */
+  schematic?: (vars: Record<string, number>) => React.ReactNode;
 };
 
 export type ExperimentCircuit =
@@ -124,6 +130,7 @@ export function ExperimentPage({
                 vars={f.vars}
                 solveFor={f.solveFor}
                 title={f.title}
+                schematic={f.schematic}
               />
             ))}
           </div>
