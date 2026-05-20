@@ -3,14 +3,20 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
+export type OnVarChange = (name: string, value: number | boolean) => void;
+
 export type ExperimentSchematicProps = {
   /**
    * Render-prop that places primitives based on the slider's current variable
-   * state. Caller composes <LiveWire />, <LiveResistor />, etc.
+   * state. Caller composes <LiveWire />, <LiveResistor />, etc. The optional
+   * 2nd arg lets the closure wire bidirectional callbacks back through to the
+   * owning FormulaSlider state.
    */
-  render: (vars: Record<string, number>) => React.ReactNode;
+  render: (vars: Record<string, number>, onVarChange?: OnVarChange) => React.ReactNode;
   /** Current variable values from the FormulaSlider (or any caller). */
   vars: Record<string, number>;
+  /** Bidirectional state callback. When provided, primitives can call this. */
+  onVarChange?: OnVarChange;
   /** Accessible label — what does this schematic depict? */
   ariaLabel: string;
   /** Optional legend lines (one short line per visual). */
@@ -33,6 +39,7 @@ export type ExperimentSchematicProps = {
 export const ExperimentSchematic = React.memo(function ExperimentSchematic({
   render,
   vars,
+  onVarChange,
   ariaLabel,
   legend,
   viewBox = '0 0 400 240',
@@ -40,7 +47,10 @@ export const ExperimentSchematic = React.memo(function ExperimentSchematic({
   className,
   testId,
 }: ExperimentSchematicProps) {
-  const content = React.useMemo(() => render(vars), [render, vars]);
+  const content = React.useMemo(
+    () => render(vars, onVarChange),
+    [render, vars, onVarChange],
+  );
 
   return (
     <div className={cn('w-full', className)} data-testid={testId}>

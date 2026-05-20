@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, act } from '@testing-library/react';
 import { FormulaSlider } from './FormulaSlider';
 
 describe('FormulaSlider', () => {
@@ -226,6 +226,64 @@ describe('FormulaSlider', () => {
     expect(
       container.querySelector('[data-testid="formula-slider-schematic"]'),
     ).toBeNull();
+  });
+
+  it('bidirectional: schematic onVarChange updates slider state', () => {
+    let capturedOnVarChange:
+      | ((name: string, value: number | boolean) => void)
+      | undefined;
+    const { container } = render(
+      <FormulaSlider
+        formula="V = I \cdot R"
+        evaluate={({ I, R }) => I * R}
+        vars={[
+          { name: 'I', min: 0, max: 1, step: 0.01, default: 0.1, unit: 'A' },
+          { name: 'R', min: 1, max: 100, step: 1, default: 10, unit: 'Ω' },
+        ]}
+        solveFor={{ name: 'V', unit: 'V' }}
+        schematic={(vars, onVarChange) => {
+          capturedOnVarChange = onVarChange;
+          return <svg data-r={vars.R} data-testid="schem-inner" />;
+        }}
+      />,
+    );
+    expect(capturedOnVarChange).toBeTypeOf('function');
+    // Simulate an interactive primitive calling back.
+    act(() => {
+      capturedOnVarChange!('R', 42);
+    });
+    const sliders = screen.getAllByRole('slider');
+    const rSlider = sliders.find((s) => s.getAttribute('aria-label')?.startsWith('R'));
+    expect(rSlider?.getAttribute('aria-valuenow')).toBe('42');
+    const inner = container.querySelector('[data-testid="schem-inner"]') as SVGElement;
+    expect(inner.getAttribute('data-r')).toBe('42');
+  });
+
+  it('bidirectional: boolean values coerce to 0/1', () => {
+    let capturedOnVarChange:
+      | ((name: string, value: number | boolean) => void)
+      | undefined;
+    render(
+      <FormulaSlider
+        formula="x"
+        evaluate={({ X }) => X}
+        vars={[{ name: 'X', min: 0, max: 1, step: 1, default: 0 }]}
+        solveFor={{ name: 'V' }}
+        schematic={(_, onVarChange) => {
+          capturedOnVarChange = onVarChange;
+          return <svg />;
+        }}
+      />,
+    );
+    act(() => {
+      capturedOnVarChange!('X', true);
+    });
+    const slider = screen.getByRole('slider');
+    expect(slider.getAttribute('aria-valuenow')).toBe('1');
+    act(() => {
+      capturedOnVarChange!('X', false);
+    });
+    expect(slider.getAttribute('aria-valuenow')).toBe('0');
   });
 
   it('slider is focusable via Tab order (tabindex >= 0)', () => {

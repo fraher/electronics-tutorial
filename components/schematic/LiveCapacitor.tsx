@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { clamp, formatSI } from './utils';
+import { useDraggableValue } from './interaction';
 
 export type LiveCapacitorProps = {
   x: number;
@@ -19,6 +20,12 @@ export type LiveCapacitorProps = {
   /** Orientation. */
   orientation?: 'horizontal' | 'vertical';
   testId?: string;
+  /** Bidirectional drag-to-change callback. */
+  onChange?: (capacitance: number) => void;
+  /** Drag bounds. Default 1pF - 1F on log scale. */
+  min?: number;
+  max?: number;
+  step?: number;
 };
 
 /**
@@ -35,7 +42,22 @@ export function LiveCapacitor({
   label,
   orientation = 'horizontal',
   testId,
+  onChange,
+  min = 1e-12,
+  max = 1,
+  step,
 }: LiveCapacitorProps) {
+  const interactive = typeof onChange === 'function';
+  const drag = useDraggableValue({
+    value: capacitance,
+    min,
+    max,
+    step,
+    logScale: true,
+    axis: orientation === 'vertical' ? 'x' : 'y',
+    ariaLabel: `capacitor ${formatSI(capacitance)}F`,
+    onChange,
+  });
   const q = charge ?? capacitance * voltage;
   const qMax = chargeMax ?? (Math.abs(capacitance * 12) || 1);
   const fillFraction = clamp(Math.abs(q) / qMax, 0, 1);
@@ -48,12 +70,42 @@ export function LiveCapacitor({
   const displayLabel = label ?? `${formatSI(capacitance)}F`;
   const rotate = orientation === 'vertical' ? 90 : 0;
 
+  const interactiveProps = interactive
+    ? {
+        ...drag.pointerHandlers,
+        ...drag.keyboardHandlers,
+        ...drag.ariaProps,
+        'data-interactive': 'true',
+        'data-dragging': drag.isDragging ? 'true' : 'false',
+        style: {
+          cursor: orientation === 'vertical' ? 'ew-resize' : 'ns-resize',
+          touchAction: 'none' as const,
+          outline: 'none',
+        } as React.CSSProperties,
+      }
+    : { 'aria-hidden': 'true' as const };
+
   return (
     <g
       data-testid={testId}
       transform={`translate(${x} ${y}) rotate(${rotate})`}
-      aria-hidden="true"
+      {...interactiveProps}
     >
+      {interactive && (
+        <rect
+          x={-gap / 2 - lead}
+          y={-plateHalfH - 4}
+          width={2 * (gap / 2 + lead)}
+          height={2 * plateHalfH + 8}
+          rx={4}
+          fill="transparent"
+          stroke="currentColor"
+          strokeWidth={0.6}
+          strokeDasharray="2 3"
+          opacity={drag.isDragging ? 0.6 : 0.3}
+          data-testid={testId ? `${testId}-hitbox` : undefined}
+        />
+      )}
       {/* Left lead */}
       <line
         x1={-gap / 2 - lead}

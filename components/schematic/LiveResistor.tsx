@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { formatSI, magnitudeToIntensity, resistorPower } from './utils';
+import { useDraggableValue } from './interaction';
 
 export type LiveResistorProps = {
   /** Center x in SVG user units. */
@@ -20,6 +21,12 @@ export type LiveResistorProps = {
   powerMax?: number;
   /** Test id for assertions. */
   testId?: string;
+  /** Bidirectional drag-to-change callback. */
+  onChange?: (resistance: number) => void;
+  /** Drag bounds (only used when onChange is provided). Default 1Ω - 1MΩ on log scale. */
+  min?: number;
+  max?: number;
+  step?: number;
 };
 
 /**
@@ -36,7 +43,22 @@ export function LiveResistor({
   orientation = 'horizontal',
   powerMax = 1,
   testId,
+  onChange,
+  min = 1,
+  max = 1_000_000,
+  step,
 }: LiveResistorProps) {
+  const interactive = typeof onChange === 'function';
+  const drag = useDraggableValue({
+    value,
+    min,
+    max,
+    step,
+    logScale: true,
+    axis: orientation === 'vertical' ? 'x' : 'y',
+    ariaLabel: `resistor ${formatSI(value)}Ω`,
+    onChange,
+  });
   const power = resistorPower(current, value);
   const intensity = magnitudeToIntensity(power, powerMax);
   // Glow opacity: 0 at no power, ~0.9 at saturated power.
@@ -64,12 +86,43 @@ export function LiveResistor({
 
   const rotate = orientation === 'vertical' ? 90 : 0;
 
+  const interactiveProps = interactive
+    ? {
+        ...drag.pointerHandlers,
+        ...drag.keyboardHandlers,
+        ...drag.ariaProps,
+        'data-interactive': 'true',
+        'data-dragging': drag.isDragging ? 'true' : 'false',
+        style: {
+          cursor: orientation === 'vertical' ? 'ew-resize' : 'ns-resize',
+          touchAction: 'none' as const,
+          outline: 'none',
+        } as React.CSSProperties,
+      }
+    : { 'aria-hidden': 'true' as const };
+
   return (
     <g
       data-testid={testId}
       transform={`translate(${x} ${y}) rotate(${rotate})`}
-      aria-hidden="true"
+      {...interactiveProps}
     >
+      {/* Interactive hit-box / focus outline */}
+      {interactive && (
+        <rect
+          x={-half - lead}
+          y={-16}
+          width={2 * (half + lead)}
+          height={32}
+          rx={4}
+          fill="transparent"
+          stroke="currentColor"
+          strokeWidth={0.6}
+          strokeDasharray="2 3"
+          opacity={drag.isDragging ? 0.6 : 0.3}
+          data-testid={testId ? `${testId}-hitbox` : undefined}
+        />
+      )}
       {/* Halo for glow effect (rendered when there is meaningful power) */}
       {intensity > 0.01 && (
         <ellipse

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useToggle } from './interaction';
 
 export type GateKind = 'and' | 'or' | 'not' | 'nand' | 'nor' | 'xor' | 'xnor';
 
@@ -14,6 +15,8 @@ export type LiveGateProps = {
   output?: boolean;
   label?: string;
   testId?: string;
+  /** Optional bidirectional callback. When provided, each input pin becomes clickable. */
+  onInputChange?: (index: number, next: boolean) => void;
 };
 
 /**
@@ -48,7 +51,7 @@ const LOW_COLOR = 'hsl(220deg 10% 35%)';
  * Standard digital logic gate symbol (US/IEEE). Inputs colored green/dark per
  * HIGH/LOW; output computed and colored similarly.
  */
-export function LiveGate({ x, y, kind, inputs, output, label, testId }: LiveGateProps) {
+export function LiveGate({ x, y, kind, inputs, output, label, testId, onInputChange }: LiveGateProps) {
   const isNot = kind === 'not';
   const expectedArity = isNot ? 1 : 2;
   const safeInputs = inputs.slice(0, expectedArity);
@@ -104,24 +107,16 @@ export function LiveGate({ x, y, kind, inputs, output, label, testId }: LiveGate
       {bubble}
       {/* Inputs */}
       {safeInputs.map((hi, i) => (
-        <g key={`in-${i}`}>
-          <line
-            x1={inputXs[i]}
-            y1={inputYs[i]}
-            x2={bodyInputX}
-            y2={inputYs[i]}
-            stroke={hi ? HIGH_COLOR : LOW_COLOR}
-            strokeWidth={2.2}
-            data-testid={testId ? `${testId}-in${i}` : `live-gate-in${i}`}
-            data-state={hi ? 'high' : 'low'}
-          />
-          <circle
-            cx={inputXs[i]}
-            cy={inputYs[i]}
-            r={2.5}
-            fill={hi ? HIGH_COLOR : LOW_COLOR}
-          />
-        </g>
+        <GateInput
+          key={`in-${i}`}
+          index={i}
+          hi={hi}
+          inputX={inputXs[i]}
+          inputY={inputYs[i]}
+          bodyX={bodyInputX}
+          testId={testId}
+          onInputChange={onInputChange}
+        />
       ))}
       {/* Output */}
       <line
@@ -157,6 +152,71 @@ export function LiveGate({ x, y, kind, inputs, output, label, testId }: LiveGate
       <text x={0} y={h / 2 + 14} textAnchor="middle" fontSize={10} fontFamily="monospace" fill="currentColor">
         {label ?? kind.toUpperCase()}
       </text>
+    </g>
+  );
+}
+
+function GateInput({
+  index,
+  hi,
+  inputX,
+  inputY,
+  bodyX,
+  testId,
+  onInputChange,
+}: {
+  index: number;
+  hi: boolean;
+  inputX: number;
+  inputY: number;
+  bodyX: number;
+  testId?: string;
+  onInputChange?: (index: number, next: boolean) => void;
+}) {
+  const interactive = typeof onInputChange === 'function';
+  const toggle = useToggle({
+    value: hi,
+    ariaLabel: `gate input ${index} (${hi ? 'HIGH' : 'LOW'})`,
+    onChange: (next) => onInputChange?.(index, next),
+  });
+
+  const hitProps = interactive
+    ? {
+        ...toggle.buttonHandlers,
+        ...toggle.ariaProps,
+        'data-interactive': 'true',
+        style: { cursor: 'pointer', outline: 'none' } as React.CSSProperties,
+      }
+    : { 'aria-hidden': 'true' as const };
+
+  return (
+    <g>
+      <line
+        x1={inputX}
+        y1={inputY}
+        x2={bodyX}
+        y2={inputY}
+        stroke={hi ? HIGH_COLOR : LOW_COLOR}
+        strokeWidth={2.2}
+        data-testid={testId ? `${testId}-in${index}` : `live-gate-in${index}`}
+        data-state={hi ? 'high' : 'low'}
+      />
+      <circle cx={inputX} cy={inputY} r={2.5} fill={hi ? HIGH_COLOR : LOW_COLOR} />
+      {/* Transparent click hit-box that sits over the input pin. */}
+      {interactive && (
+        <circle
+          cx={inputX}
+          cy={inputY}
+          r={10}
+          fill="transparent"
+          stroke="currentColor"
+          strokeWidth={0.6}
+          strokeDasharray="2 2"
+          opacity={0.3}
+          data-testid={testId ? `${testId}-in${index}-hit` : `live-gate-in${index}-hit`}
+          {...hitProps}
+        />
+      )}
     </g>
   );
 }

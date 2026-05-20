@@ -50,6 +50,15 @@ export default function SchematicGalleryPage() {
   // Battery
   const [vBat, setVBat] = React.useState(9);
 
+  // Interactive (bidirectional) sandbox state
+  const [intR, setIntR] = React.useState(1000);
+  const [intC, setIntC] = React.useState(1e-6);
+  const [intInd, setIntInd] = React.useState(0.01);
+  const [iBat, setIBat] = React.useState(9);
+  const [iSw, setISw] = React.useState(true);
+  const [gA, setGA] = React.useState(true);
+  const [gB, setGB] = React.useState(false);
+
   return (
     <main id="main" className="container mx-auto space-y-8 p-6">
       <header className="space-y-2">
@@ -171,6 +180,59 @@ export default function SchematicGalleryPage() {
         />
       </Card>
 
+      <Card title="Interactive primitives (click / drag the SVG itself)">
+        <p className="text-xs text-muted-foreground">
+          These primitives accept an <code className="font-mono">onChange</code> prop, making the
+          SVG bidirectionally interactive. Click switches, click gate input pins, drag
+          resistors / capacitors / inductors / batteries. Keyboard: focus and use Arrow / Page /
+          Home / End keys.
+        </p>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <InteractiveDemo label="LiveSwitch (click to toggle)" value={iSw ? 'closed' : 'open'}>
+            <svg viewBox="0 0 200 80" className="w-full h-auto text-foreground/70">
+              <LiveSwitch x={100} y={40} closed={iSw} onChange={setISw} testId="gallery-sw" />
+            </svg>
+          </InteractiveDemo>
+
+          <InteractiveDemo label={`LiveResistor (drag vertically, log): ${intR.toFixed(0)} Ω`} value={`${intR.toFixed(0)}`}>
+            <svg viewBox="0 0 200 80" className="w-full h-auto text-foreground/70">
+              <LiveResistor x={100} y={40} value={intR} current={0} onChange={setIntR} min={1} max={1_000_000} testId="gallery-r" />
+            </svg>
+          </InteractiveDemo>
+
+          <InteractiveDemo label={`LiveCapacitor (drag, log): ${(intC * 1e6).toFixed(3)} µF`} value={`${intC.toExponential(2)} F`}>
+            <svg viewBox="0 0 200 80" className="w-full h-auto text-foreground/70">
+              <LiveCapacitor x={100} y={40} capacitance={intC} voltage={5} onChange={setIntC} min={1e-12} max={1} testId="gallery-c" />
+            </svg>
+          </InteractiveDemo>
+
+          <InteractiveDemo label={`LiveInductor (drag, log): ${(intInd * 1000).toFixed(3)} mH`} value={`${intInd.toExponential(2)} H`}>
+            <svg viewBox="0 0 200 80" className="w-full h-auto text-foreground/70">
+              <LiveInductor x={100} y={40} inductance={intInd} current={0.2} onChange={setIntInd} min={1e-6} max={10} testId="gallery-l" />
+            </svg>
+          </InteractiveDemo>
+
+          <InteractiveDemo label={`LiveBattery (drag, linear): ${iBat.toFixed(1)} V`} value={`${iBat.toFixed(1)} V`}>
+            <svg viewBox="0 0 200 80" className="w-full h-auto text-foreground/70">
+              <LiveBattery x={100} y={40} voltage={iBat} onChange={setIBat} min={0} max={24} testId="gallery-bat" />
+            </svg>
+          </InteractiveDemo>
+
+          <InteractiveDemo label={`LiveGate (click input pins)`} value={`A=${gA ? 'HI' : 'LO'} B=${gB ? 'HI' : 'LO'}`}>
+            <svg viewBox="0 0 200 80" className="w-full h-auto text-foreground/70">
+              <LiveGate
+                x={100}
+                y={40}
+                kind="and"
+                inputs={[gA, gB]}
+                onInputChange={(i, next) => (i === 0 ? setGA(next) : setGB(next))}
+                testId="gallery-gate"
+              />
+            </svg>
+          </InteractiveDemo>
+        </div>
+      </Card>
+
       <Card title="LiveBattery + LiveSwitch">
         <div className="grid gap-3 sm:grid-cols-2">
           <LabeledSlider label={`Voltage (V): ${vBat.toFixed(1)}`} min={-12} max={12} step={0.1} value={vBat} onChange={setVBat} />
@@ -190,6 +252,26 @@ export default function SchematicGalleryPage() {
         />
       </Card>
     </main>
+  );
+}
+
+function InteractiveDemo({
+  label,
+  value,
+  children,
+}: {
+  label: string;
+  value: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1 rounded-md border bg-background/40 p-3">
+      <div className="font-mono text-xs text-muted-foreground">{label}</div>
+      {children}
+      <div className="text-sm">
+        value: <span className="font-mono font-semibold">{value}</span>
+      </div>
+    </div>
   );
 }
 
