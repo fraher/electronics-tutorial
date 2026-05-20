@@ -97,13 +97,16 @@ export function FormulaSlider({
 
       <div className="border-t pt-3">
         <div className="flex items-baseline justify-between">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground" id={`solve-for-${solveFor.name}`}>
             {solveFor.name}
             {solveFor.unit ? ` (${solveFor.unit})` : ''}
           </span>
           <span
             data-testid="formula-slider-result"
             className="font-mono text-xl font-semibold tabular-nums"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-labelledby={`solve-for-${solveFor.name}`}
           >
             {resultText}
           </span>
