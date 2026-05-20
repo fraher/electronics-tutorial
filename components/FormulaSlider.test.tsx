@@ -191,6 +191,43 @@ describe('FormulaSlider', () => {
     expect(screen.getByText(/Ohm's Law/)).toBeInTheDocument();
   });
 
+  it('renders the optional schematic above the formula when provided', () => {
+    const { container } = render(
+      <FormulaSlider
+        formula="V = I \cdot R"
+        evaluate={({ I, R }) => I * R}
+        vars={[
+          { name: 'I', min: 0, max: 1, step: 0.01, default: 0.1, unit: 'A' },
+          { name: 'R', min: 1, max: 100, step: 1, default: 10, unit: 'Ω' },
+        ]}
+        solveFor={{ name: 'V', unit: 'V' }}
+        schematic={(vars) => (
+          <svg viewBox="0 0 100 40" data-current={vars.I} data-testid="inner-schem" />
+        )}
+      />,
+    );
+    expect(
+      container.querySelector('[data-testid="formula-slider-schematic"]'),
+    ).toBeInTheDocument();
+    const inner = container.querySelector('[data-testid="inner-schem"]') as SVGElement;
+    expect(inner).toBeInTheDocument();
+    expect(inner.getAttribute('data-current')).toBe('0.1');
+  });
+
+  it('omits the schematic container when no schematic prop is provided', () => {
+    const { container } = render(
+      <FormulaSlider
+        formula="V = I \cdot R"
+        evaluate={({ I, R }) => I * R}
+        vars={[{ name: 'I', min: 0, max: 1, default: 0.1, unit: 'A' }]}
+        solveFor={{ name: 'V', unit: 'V' }}
+      />,
+    );
+    expect(
+      container.querySelector('[data-testid="formula-slider-schematic"]'),
+    ).toBeNull();
+  });
+
   it('slider is focusable via Tab order (tabindex >= 0)', () => {
     render(
       <FormulaSlider
