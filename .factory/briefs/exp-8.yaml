@@ -1,0 +1,66 @@
+id: exp-8
+number: 8
+chapter: 2
+title: "A Relay Oscillator"
+slug: "a-relay-oscillator"
+learning_objective: |
+  Build the simplest possible oscillator — a relay that breaks its own coil supply — and in the process learn
+  to use a solderless breadboard, including how to make jumper wires of the right length.
+paraphrased_summary: |
+  A relay is wired so that its own normally-closed (NC) contact carries the supply to its coil. When power is
+  first applied, current flows through the NC contact into the coil; the coil energizes, the contact opens,
+  the coil de-energizes, the contact snaps closed again, and the cycle repeats. The result is a
+  relay-based square-wave oscillator that buzzes audibly at a few tens of hertz. An LED in series with a
+  current-limiting resistor on one of the relay's other contacts visibly flashes. The frequency is governed
+  by the mechanical mass of the relay's armature and the inductance of its coil and is not precisely tunable,
+  but adding a capacitor across the coil slows the cycle by stretching the time it takes for the coil's
+  magnetic field to collapse. The experiment also introduces the solderless breadboard: how the internal bus
+  strips are arranged, why neat short jumpers beat long curly hookup wire, how to use the wire-stripper
+  notches to cut insulation without nicking the copper, and the convention that the long horizontal rails
+  carry +V and ground while the short vertical columns hold components.
+parts:
+  - "9V battery + battery clip"
+  - "Solderless breadboard"
+  - "DPDT 9VDC relay"
+  - "Generic red LED (×2)"
+  - "Tactile switch (×2)"
+  - "Resistors: 100Ω (×1), 470Ω (×1), 1kΩ (×2)"
+  - "Electrolytic capacitors: 100µF, 1000µF"
+  - "Ceramic capacitor: 1µF"
+  - "Wire cutters and 22-gauge hookup wire"
+formulas:
+  - id: relay-osc-freq
+    latex: "f \\approx 1 / (t_{on} + t_{off})"
+    vars:
+      - { name: t_on,  min: 0.001, max: 0.5, step: 0.001, default: 0.01, unit: "s" }
+      - { name: t_off, min: 0.001, max: 0.5, step: 0.001, default: 0.01, unit: "s" }
+    solve_for: { name: f, unit: "Hz", precision: 1 }
+    description: "Oscillation frequency is the reciprocal of one full cycle (the time the relay is energized plus the time it's released)."
+  - id: cap-slowing
+    latex: "\\tau = R_{coil} \\cdot C"
+    vars:
+      - { name: R_coil, min: 50, max: 2000, step: 10, default: 500, unit: "Ω" }
+      - { name: C,      min: 0.000001, max: 0.001, step: 0.000001, default: 0.0001, unit: "F" }
+    solve_for: { name: τ, unit: "s", precision: 4 }
+    description: "Adding a capacitor across the coil lengthens the time constant that governs how fast the coil's voltage can change, slowing the oscillation."
+schematic_description: |
+  9V supply runs through the relay's NC contact to one side of the coil; the other side of the coil returns
+  to ground. With this wiring, the relay's own switching action repeatedly breaks the supply to its own coil,
+  causing it to chatter. A second branch off the supply lights an LED through a 470Ω resistor when the
+  relay's other pole closes (or NC, depending which contact is chosen), so the learner sees the flashing.
+  Optionally a large electrolytic (100µF–1000µF) is added in parallel with the coil to slow the cycle.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: a 9V source, relay model (inductor + series resistor + ideal SPDT contact
+  whose state depends on coil current), feedback from the contact back into the coil supply through the NC
+  terminal. CircuitJS may need a behavioral switch element to capture the contact's hysteresis.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Any switch that breaks its own driving supply will oscillate."
+  - "Relay oscillators are slow (tens of Hz) because they depend on physical motion of the armature."
+  - "A capacitor in parallel with an inductive coil lengthens the time required to change the coil's current."
+  - "The breadboard's bus strips run horizontally for power and vertically for components — match this convention."
+  - "Strip jumper wires using the right-sized notch on a wire stripper to avoid nicking the conductor."
+notes_for_implementer: |
+  This experiment is half "oscillator concept" and half "learn the breadboard." Consider splitting the page
+  into a top section with an animation of the chattering relay and a bottom section with a labeled breadboard
+  layout. The capacitor-slows-oscillation behavior is the most rewarding interactive parameter.

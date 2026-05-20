@@ -1,0 +1,69 @@
+id: exp-23
+number: 23
+chapter: 4
+title: "Nice Dice"
+slug: "nice-dice"
+learning_objective: |
+  Build an electronic dice circuit that uses a fast counter, a 7-LED display arranged like a die face, and
+  a freeze-on-release button — combining 555 timing, counters, decoders, and switch debouncing into a
+  finished gadget.
+paraphrased_summary: |
+  An electronic die emulates the random outcome of a rolled cube using a fast counter and a momentary
+  button. A 555 in astable mode oscillates at several kilohertz; its pulses clock a 4017 decade counter (or
+  a 4029 binary counter) whose outputs cycle through 1-6 too fast for the eye to follow. Seven LEDs are
+  arranged on a board in the dot pattern of a die face; a small decoder circuit (built from a few logic
+  gates and diodes, or a custom array) lights the correct LED subset for each of the six possible counts.
+  The button, when pressed, gates the 555 clock so the counter freezes on whatever value happened to be
+  current. Release the button and the rapid counting resumes — invisible to the eye, but giving each press
+  an effectively random result. The experiment introduces decoders / encoders, the idea of a "common
+  anode" array of LEDs sharing a single resistor (vs individual resistors, with trade-offs), and the role
+  of multiplexing in digital displays. Equalization of LED brightness when several share a resistor is
+  discussed.
+parts:
+  - "9V battery (or 5V supply)"
+  - "Solderless breadboard"
+  - "555 timer IC"
+  - "CD4017 decade counter (or 74HC4017)"
+  - "74HC08 AND gates (for the dot-pattern decoder)"
+  - "Generic LEDs (×7) arranged in die pattern"
+  - "Resistors: 470Ω (×7 or shared), 1kΩ, 10kΩ, 100kΩ"
+  - "Capacitors: 0.01µF, 10µF"
+  - "Tactile pushbutton (roll button)"
+formulas:
+  - id: dice-clock-freq
+    latex: "f_{clock} = 1.44 / ((R_A + 2 R_B) \\cdot C)"
+    vars:
+      - { name: R_A, min: 100, max: 100000, step: 100, default: 1000, unit: "Ω" }
+      - { name: R_B, min: 100, max: 100000, step: 100, default: 1000, unit: "Ω" }
+      - { name: C,   min: 0.000000001, max: 0.00001, step: 0.000000001, default: 0.0000001, unit: "F" }
+    solve_for: { name: f_clock, unit: "Hz", precision: 1 }
+    description: "Counter clock frequency — should be high enough (>1 kHz) that the displayed face is unpredictable when the user releases the button."
+  - id: counter-modulus
+    latex: "n = f_{clock} / f_{display}"
+    vars:
+      - { name: f_clock,   min: 100, max: 100000, step: 100, default: 5000, unit: "Hz" }
+      - { name: f_display, min: 100, max: 5000, step: 100, default: 833, unit: "Hz" }
+    solve_for: { name: n, unit: "states", precision: 0 }
+    description: "How many counter states fit per display refresh; with a 4017 modulo-6 the displayed value cycles in 6 ticks."
+schematic_description: |
+  555 astable runs at ~5 kHz. Its output goes to the clock input of a 4017 decade counter; the 4017's Q6
+  output is wired back to its reset, so the counter cycles through outputs Q0..Q5 (states 1..6). Each Q
+  output drives a small decoder built from AND gates that lights the appropriate combination of the seven
+  die-face LEDs: center LED (Q0, Q2, Q4 — the odd faces), four corners (Q3+), two more for faces 4-6, etc.
+  The roll button gates the 555's reset pin: pressed = counter free-runs; released = counter frozen on
+  whatever state was current.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: 555 astable feeding a divide-by-6 counter, with decoded outputs to a
+  7-LED grid arranged as die spots. The decoder logic should be visible in the schematic so learners can
+  trace which Q maps to which LEDs.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A counter clocked too fast for the eye, then frozen on user input, behaves as a random selector."
+  - "A 4017 decade counter with Q6→reset produces a modulo-6 (dice-friendly) sequence."
+  - "Dot patterns are decoded with a small lookup of AND gates — one per face."
+  - "Sharing a current-limiting resistor between several LEDs reduces brightness equalisation; individual resistors are cleaner."
+  - "The same architecture (fast clock + freeze) generalises to slot machines and random-number gadgets."
+notes_for_implementer: |
+  Interactive: a virtual roll button that visually cycles the dice face when held, freezing on release.
+  Showing the 4017 Q outputs as numbered LEDs alongside the die face helps learners see the mapping. A
+  histogram of outcomes over many rolls would demonstrate that the result is effectively uniform.

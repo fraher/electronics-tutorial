@@ -1,0 +1,67 @@
+id: exp-34
+number: 34
+chapter: 5
+title: "Tones and Music"
+slug: "tones-and-music"
+learning_objective: |
+  Use the Arduino tone() and noTone() functions to drive a passive piezo or small speaker at a chosen
+  frequency, then play a short melody by sequencing a table of note frequencies and durations.
+paraphrased_summary: |
+  Arduino's built-in tone(pin, frequency) function generates a 50%-duty-cycle square wave on any digital
+  pin at the requested frequency, ranging from a few Hz to about 30 kHz. Wiring a passive piezo or a small
+  speaker (with a series resistor) to pin 8 lets the Arduino play arbitrary pitches. A melody is just an
+  array of frequencies (in Hz, looked up from a standard table — A4 = 440 Hz, C5 = 523 Hz, etc.) and a
+  parallel array of durations (in milliseconds). The sketch iterates through the arrays calling tone()
+  for each note, then delay() for the note's length, then noTone() briefly between notes to make the
+  rhythm crisp. This experiment connects the 555-tone work of Experiment 16 directly to the
+  microcontroller world: the same audible square-wave generator now responds to data instead of resistor
+  values. Concepts: arrays (int notes[] = { ... }), the sizeof / sizeof[0] pattern for array length,
+  for-loop iteration, and the structure of a simple sequencer.
+parts:
+  - "Arduino Uno"
+  - "USB cable"
+  - "Solderless breadboard"
+  - "Passive piezo transducer or small 8Ω speaker"
+  - "Resistor 100Ω (current limit if using a speaker)"
+  - "Hookup wire"
+formulas:
+  - id: note-frequency-from-midi
+    latex: "f = 440 \\cdot 2^{(n-69)/12}"
+    vars:
+      - { name: n, min: 21, max: 108, step: 1, default: 69, unit: "MIDI note" }
+    solve_for: { name: f, unit: "Hz", precision: 2 }
+    description: "Frequency of a note in equal temperament — MIDI note 69 is A4 at 440 Hz; each semitone is a factor of 2^(1/12)."
+  - id: note-period
+    latex: "T = 1 / f"
+    vars:
+      - { name: f, min: 100, max: 4000, step: 1, default: 440, unit: "Hz" }
+    solve_for: { name: T, unit: "s", precision: 5 }
+    description: "Period of one cycle of the square wave produced by tone() — useful for sanity-checking what the speaker is actually doing."
+  - id: note-duration
+    latex: "d = 60000 / (BPM \\cdot N_{per\\_beat})"
+    vars:
+      - { name: BPM,           min: 40, max: 240, step: 1, default: 120, unit: "beats/min" }
+      - { name: N_per_beat,    min: 1, max: 8, step: 1, default: 1, unit: "" }
+    solve_for: { name: d, unit: "ms", precision: 1 }
+    description: "Length of one beat (or sub-beat) in milliseconds at a given tempo — useful for picking delay() values when composing a melody."
+schematic_description: |
+  Arduino pin 8 to one terminal of a passive piezo through a 100 Ω series resistor (the resistor protects
+  the pin and slightly tames the volume); the other terminal of the piezo goes to GND. The sketch
+  declares int notes[] = { 262, 294, 330, 349, 392, 440, 494, 523 } (a C-major scale) and int
+  durations[] = { 250, 250, 250, 250, 250, 250, 250, 500 }, then in setup() loops through both arrays
+  calling tone(8, notes[i]); delay(durations[i]); noTone(8); delay(50).
+suggested_falstad_circuit: |
+  N/A — microcontroller project. Use Wokwi (the simulator has a buzzer element that plays audio in the
+  browser).
+suggested_wokwi_project_id: "arduino-melody"
+takeaways:
+  - "tone(pin, freq) produces a 50%-duty square wave at any digital pin; noTone(pin) stops it."
+  - "Notes are stored as frequencies in Hz; common tables exist for C0..B8."
+  - "A melody is a pair of arrays — frequencies and durations — iterated in a loop."
+  - "Arduino's tone() uses Timer2; using it disables PWM on pins 3 and 11."
+  - "Equal temperament: each semitone is a factor of 2^(1/12) in frequency."
+notes_for_implementer: |
+  Wokwi has audio playback in the browser, which makes this an audible interactive — possibly the most
+  delightful one in the whole tutorial. Provide a small "note table" with frequencies for at least one
+  octave so learners can compose their own melodies. Mention pitches.h (the standard Arduino include) as
+  a convenience.

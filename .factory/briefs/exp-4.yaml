@@ -1,0 +1,72 @@
+id: exp-4
+number: 4
+chapter: 1
+title: "Heat and Power"
+slug: "heat-and-power"
+learning_objective: |
+  Discover Ohm's law and the power law by direct measurement, and understand that electrical power dissipated as
+  heat in a resistor is the product of voltage across it and current through it.
+paraphrased_summary: |
+  The learner reconstructs Ohm's law from data rather than being told it. By measuring voltage across and current
+  through a series resistor for several resistor values, the ratio V/I always lands on the resistor's resistance —
+  the relationship V = I·R falls out of the table. A second relationship emerges from the same data: the product
+  V·I gives the power dissipated by the resistor, in watts. A resistor pushed past its power rating gets noticeably
+  warm; the experiment includes deliberately driving a low-value resistor near or past its rating so the learner
+  can feel the temperature rise. This motivates the practical rule that components have power ratings as well as
+  voltage and current limits, and a quarter-watt (0.25 W) resistor is fine for most hobby work as long as the
+  product V·I stays below 0.25. Three algebraic forms of the power law (P=V·I, P=I²·R, P=V²/R) are introduced
+  along with their use cases. By the end of the experiment the three foundational variables (V, I, R) and the
+  one derived quantity (P) are tied together in a single coherent picture.
+parts:
+  - "9V alkaline battery"
+  - "Assorted resistors (100Ω, 470Ω, 1kΩ, 2.2kΩ, 4.7kΩ)"
+  - "Optional: a low-value resistor like 47Ω with at least 0.25W rating, to feel heat"
+  - "Test leads"
+  - "Digital multimeter"
+formulas:
+  - id: ohms-law
+    latex: "V = I \\cdot R"
+    vars:
+      - { name: I, min: 0.0001, max: 0.1, step: 0.0001, default: 0.005, unit: "A" }
+      - { name: R, min: 1, max: 10000, step: 1, default: 1000, unit: "Ω" }
+    solve_for: { name: V, unit: "V", precision: 3 }
+    description: "Voltage across a resistor equals the current through it multiplied by its resistance."
+  - id: power-vi
+    latex: "P = V \\cdot I"
+    vars:
+      - { name: V, min: 0, max: 12, step: 0.1, default: 9, unit: "V" }
+      - { name: I, min: 0, max: 0.5, step: 0.001, default: 0.02, unit: "A" }
+    solve_for: { name: P, unit: "W", precision: 4 }
+    description: "Electrical power dissipated in a component is voltage across it times current through it."
+  - id: power-i2r
+    latex: "P = I^{2} \\cdot R"
+    vars:
+      - { name: I, min: 0, max: 0.5, step: 0.001, default: 0.02, unit: "A" }
+      - { name: R, min: 1, max: 10000, step: 1, default: 470, unit: "Ω" }
+    solve_for: { name: P, unit: "W", precision: 4 }
+    description: "Useful when you know current and resistance: power equals current squared times resistance."
+  - id: power-v2r
+    latex: "P = V^{2} / R"
+    vars:
+      - { name: V, min: 0, max: 12, step: 0.1, default: 9, unit: "V" }
+      - { name: R, min: 1, max: 10000, step: 1, default: 470, unit: "Ω" }
+    solve_for: { name: P, unit: "W", precision: 4 }
+    description: "Useful when you know voltage and resistance: power equals voltage squared divided by resistance."
+schematic_description: |
+  A single resistor in series with a 9V battery. The voltmeter sits across the resistor (in parallel) to read
+  V_R. The ammeter is inserted in series (breaks the loop) to read I. The product V·I gives power dissipated in
+  the resistor; if the resistor's rated power is exceeded it warms up. Repeat for several different resistor
+  values, tabulate V and I, and show that V/I always equals R.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: 9V source with a single resistor (slider 100Ω–10kΩ). Voltmeter across the
+  resistor, ammeter in series. Display computed power V·I and color the resistor red when P > 0.25W.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Ohm's law (V = I·R) emerges directly from measurement; it isn't an arbitrary rule."
+  - "Power dissipated in a resistor is P = V·I, also equal to I²·R and V²/R."
+  - "Every resistor has a power rating; exceed it and the resistor heats up or burns out."
+  - "A quarter-watt rating is fine for most low-voltage hobby circuits."
+notes_for_implementer: |
+  This is the formula-densest early experiment. An interactive showing all three power-law forms updating
+  simultaneously as a slider moves is highly effective. Highlight the resistor turning red/yellow as P
+  crosses 0.125W and 0.25W to make the rating limit visceral.

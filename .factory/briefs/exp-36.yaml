@@ -1,0 +1,72 @@
+id: exp-36
+number: 36
+chapter: 5
+title: "Putting It All Together"
+slug: "putting-it-all-together"
+learning_objective: |
+  Combine analog input, digital output, PWM, tone(), and Serial logging into a single capstone Arduino
+  sketch that reads ambient light, drives an LED brightness inversely to it, plays a confirmation chirp on
+  state changes, and logs the data — synthesizing every skill from the Arduino chapter.
+paraphrased_summary: |
+  This capstone integrates the techniques of Experiments 29-35 into one small but complete project — an
+  ambient-aware "smart night-light with logging." The Arduino reads the voltage from an LDR / fixed-resistor
+  divider (Experiment 33) on A0; maps that reading to a 0-255 PWM value (Experiment 32) on pin 9, where
+  an LED with a series resistor shines brighter as the room darkens; plays a one-note chirp on pin 8
+  (Experiment 34) whenever the LED crosses a "on" threshold (with hysteresis from Experiment 33); and
+  prints a timestamped line over Serial (Experiment 35) every second so the learner can graph their room's
+  light profile across an evening. A pushbutton on pin 2 (Experiment 31) toggles the chirp on or off so it
+  doesn't bother neighbors at night. The sketch demonstrates good practice: every analog read is checked
+  for plausibility, no delay() blocks for more than 50 ms (so the button stays responsive), and constants
+  for thresholds and durations are pulled out as named #defines at the top of the file. Beyond the
+  individual techniques, the experiment teaches structure — separating the program into clear phases
+  (read inputs → compute → drive outputs → log) — which is the foundation of every embedded program.
+parts:
+  - "Arduino Uno"
+  - "USB cable"
+  - "Solderless breadboard"
+  - "Generic LED + 220Ω resistor (PWM output)"
+  - "Photoresistor (LDR) + 10kΩ partner resistor"
+  - "Passive piezo + 100Ω current limit"
+  - "Tactile pushbutton"
+  - "Hookup wire jumpers"
+formulas:
+  - id: brightness-mapping
+    latex: "PWM = 255 - map(adc, 0, 1023, 0, 255)"
+    vars:
+      - { name: adc, min: 0, max: 1023, step: 1, default: 500, unit: "" }
+    solve_for: { name: PWM, unit: "0-255", precision: 0 }
+    description: "Invert the ADC reading and rescale: brighter room → smaller PWM duty (LED dims); darker room → larger PWM duty (LED brightens)."
+  - id: log-rate
+    latex: "T_{log} = 1 / f_{log}"
+    vars:
+      - { name: f_log, min: 0.1, max: 10, step: 0.1, default: 1, unit: "Hz" }
+    solve_for: { name: T_log, unit: "s", precision: 2 }
+    description: "Interval between Serial.print events — 1 Hz is fine for room-light logging; faster wastes bandwidth, slower misses transients."
+  - id: program-loop-time
+    latex: "t_{loop} \\leq t_{button\\_response}"
+    vars:
+      - { name: t_button_response, min: 0.01, max: 0.2, step: 0.01, default: 0.05, unit: "s" }
+    solve_for: { name: t_loop, unit: "s", precision: 2 }
+    description: "Worst-case loop time must stay below how long the user is willing to wait for a button to register — keeps the UI feeling responsive."
+schematic_description: |
+  Inputs: LDR divider (10 kΩ from +5V to A0; LDR from A0 to GND) and tactile button on pin 2 with
+  INPUT_PULLUP to GND. Outputs: PWM LED on pin 9 with 220 Ω series resistor to GND; passive piezo on pin
+  8 with 100 Ω series resistor to GND. The sketch uses millis()-based scheduling: every 50 ms it reads
+  the LDR and the button; every 1000 ms it prints a CSV line "millis(), adc, pwm, chirpEnabled" to
+  Serial. When the PWM crosses the on-threshold (with hysteresis from below to above), it triggers a
+  short tone() chirp (200 ms, 880 Hz) if chirps are enabled. The button toggles the chirp-enable state.
+suggested_falstad_circuit: |
+  N/A — microcontroller capstone. Use Wokwi.
+suggested_wokwi_project_id: "arduino-capstone-nightlight"
+takeaways:
+  - "Real projects integrate several inputs and outputs — read all inputs first, then drive outputs."
+  - "Use millis()-based scheduling instead of delay() so the program stays responsive."
+  - "Pull constants out as named #defines or const variables for clarity and easy tuning."
+  - "Serial logging at 1 Hz is enough to characterize slow phenomena (room light) without flooding the host."
+  - "Hysteresis applies as much in software as in hardware — debounce, threshold, and noise filtering all use it."
+notes_for_implementer: |
+  This page is the climax of the Arduino strand — design it as a polished, working project rather than a
+  bare exercise. Wokwi with all four peripherals (LDR, LED, piezo, button) lets the learner experience
+  the whole system live. Include a sample CSV log and a plot of "adc vs time over one evening" to make
+  the data-logging story tangible. Note: this is supplemental capstone content; the book itself ends at
+  Experiment 30, with Chapter 31 ('The Learning Process') being narrative rather than a circuit.

@@ -1,0 +1,68 @@
+id: exp-28
+number: 28
+chapter: 5
+title: "One Radio, No Solder, No Power"
+slug: "one-radio-no-solder-no-power"
+learning_objective: |
+  Build a crystal-set AM radio that harvests its own power from the broadcast signal — combining a tuned
+  LC circuit, a germanium diode demodulator, an antenna, an earth ground, and a high-impedance earphone.
+paraphrased_summary: |
+  A crystal radio is electronics at its most poetic: a few components, no power source, and the listener
+  can pick up nearby AM stations because the broadcast itself supplies the energy. A long wire antenna
+  picks up the electromagnetic signal; an LC tank circuit (a hand-wound coil with several taps and either
+  a fixed or variable capacitor) selects one frequency band by resonance. A germanium diode (chosen for
+  its low forward voltage, ~0.2V) acts as an envelope detector: it rectifies the high-frequency carrier,
+  leaving only the slower audio modulation. A high-impedance crystal earphone or a passive piezo speaker
+  converts the audio voltage to sound — no amplification needed because the human ear is sensitive enough
+  to detect microwatts of signal. A solid earth ground (a stake or cold-water pipe) completes the circuit;
+  the antenna and ground together form a giant capacitor with the planet. The experiment teases the
+  physics of amplitude modulation, resonance, and rectification. Optional improvements include adding an
+  LM386 audio amplifier so the signal can be heard through a regular speaker, and adding a variable cap
+  for sharper station selection.
+parts:
+  - "Long wire antenna (10-30 meters)"
+  - "Earth ground (cold-water pipe or copper ground rod)"
+  - "Hand-wound coil (~65 turns on a 3-inch tube, tapped every 5 turns)"
+  - "Germanium diode (1N34A or 1N270)"
+  - "High-impedance crystal earphone or passive piezo speaker"
+  - "Variable capacitor 100-365pF (optional, for tuning)"
+  - "Test leads with alligator clips"
+  - "Optional: LM386 amplifier IC + 9V battery for amplified version"
+formulas:
+  - id: am-resonance
+    latex: "f = 1 / (2 \\pi \\sqrt{L C})"
+    vars:
+      - { name: L, min: 0.00001, max: 0.001, step: 0.00001, default: 0.00025, unit: "H" }
+      - { name: C, min: 0.00000000001, max: 0.000001, step: 0.00000000001, default: 0.0000002, unit: "F" }
+    solve_for: { name: f, unit: "Hz", precision: 0 }
+    description: "Resonant frequency of the tuning circuit — for AM broadcast (525-1710 kHz) the L·C product must be small."
+  - id: am-wave-power
+    latex: "P_{ant} \\propto E^{2} \\cdot A_{eff}"
+    vars:
+      - { name: E,     min: 0.0001, max: 0.1, step: 0.0001, default: 0.005, unit: "V/m" }
+      - { name: A_eff, min: 0.1, max: 100, step: 0.1, default: 10, unit: "m²" }
+    solve_for: { name: P_ant, unit: "(arb.)", precision: 5 }
+    description: "Power captured by an antenna scales with the square of the local field strength and with the antenna's effective area; longer antennas catch more signal."
+schematic_description: |
+  Antenna wire → one tap of the coil. The coil (e.g., 65 turns of 22-AWG enameled wire on a 3-inch
+  cardboard tube, with a tap every 5 turns) has its two ends connected to a variable capacitor in
+  parallel, forming the LC tank. Earth ground connects to the other end of the tank. From the antenna
+  side of the tank, a germanium diode in series leads to one terminal of a high-impedance earphone; the
+  other earphone terminal returns to earth ground. To tune, slide an alligator clip along the taps of the
+  coil while listening — at the resonant tap a particular station becomes audible.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: an RF source (modeled as a small AC source at 1 MHz with audio
+  modulation), an LC tank, a diode envelope detector, and a load representing the earphone. The audio
+  envelope output should be plotted to show the modulation extraction.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A crystal radio extracts its operating power from the broadcast itself — no battery required."
+  - "An LC tank resonates at a single frequency, selecting one station from the spectrum."
+  - "A germanium diode's low forward voltage makes it the right rectifier for tiny RF signals."
+  - "A long antenna and a real earth ground are non-optional — they form the radio's energy capture."
+  - "AM broadcast spans 525-1710 kHz with at least 10 kHz between stations."
+notes_for_implementer: |
+  This is one of the most evocative experiments in the book. Show the AM signal in three stages: the
+  modulated carrier picked up by the antenna; the tuned (filtered) carrier at the LC tank; the rectified
+  audio envelope at the diode output. A waveform animation of envelope detection is the high-value visual.
+  Mention that crystal earphones are increasingly rare — link the learner to suppliers in the parts list.

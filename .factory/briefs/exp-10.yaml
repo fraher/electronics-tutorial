@@ -1,0 +1,66 @@
+id: exp-10
+number: 10
+chapter: 2
+title: "Transistor Switching"
+slug: "transistor-switching"
+learning_objective: |
+  Understand the bipolar junction transistor (BJT) as a current-controlled switch — a tiny base current
+  controls a much larger collector-to-emitter current — and use it to drive a load that a logic-level signal
+  couldn't drive directly.
+paraphrased_summary: |
+  A transistor is a solid-state version of a relay: a small base current controls a larger collector current.
+  The 2N3904 NPN transistor used throughout the book has three leads — collector (C), base (B), emitter (E) —
+  whose order depends on which side the flat of the case is facing. With the emitter grounded, a base
+  resistor (e.g., 10kΩ) is tied to the input signal and the collector drives the load (here, an LED with its
+  own series resistor) connected up to the 9V rail. When the base resistor is tied to +9V through a finger
+  touch or pushbutton, base current flows, the transistor turns on, and the LED lights. Removing the base
+  current turns the transistor off, and the LED goes dark. The current gain (β, hFE) of a 2N3904 is typically
+  around 100-300, meaning the collector current is roughly 100× the base current up to the point of
+  saturation. Saturation — when V_CE collapses to about 0.2V and the transistor can no longer amplify further
+  — is the regime used for digital switching. The relationship between base resistor, supply, and load is
+  introduced as a design exercise: pick a base resistor that gives enough base current to saturate the
+  transistor for the worst-case (smallest) hFE.
+parts:
+  - "9V battery"
+  - "Solderless breadboard"
+  - "2N3904 NPN transistor"
+  - "Generic red LED"
+  - "Resistors: 470Ω, 10kΩ, 1MΩ"
+  - "Tactile pushbutton switch"
+  - "Multimeter"
+formulas:
+  - id: transistor-gain
+    latex: "I_C = \\beta \\cdot I_B"
+    vars:
+      - { name: β,   min: 50, max: 400, step: 10, default: 200, unit: "" }
+      - { name: I_B, min: 0.0000001, max: 0.001, step: 0.0000001, default: 0.00005, unit: "A" }
+    solve_for: { name: I_C, unit: "A", precision: 5 }
+    description: "Active-region relationship: collector current equals base current times the current gain (β or hFE), up to the point of saturation."
+  - id: base-resistor
+    latex: "R_B = (V_{in} - 0.7) / I_B"
+    vars:
+      - { name: V_in, min: 1, max: 12, step: 0.1, default: 5, unit: "V" }
+      - { name: I_B,  min: 0.00001, max: 0.005, step: 0.00001, default: 0.0005, unit: "A" }
+    solve_for: { name: R_B, unit: "Ω", precision: 0 }
+    description: "Pick a base resistor so the desired base current flows; subtract the base-emitter junction drop (~0.7 V) before dividing by I_B."
+schematic_description: |
+  The emitter of a 2N3904 is tied to ground. The collector is connected through a 470Ω resistor and a red LED
+  to +9V. The base is connected through a 10kΩ resistor to a tactile pushbutton; the other side of the
+  pushbutton goes to +9V. When the button is pressed, base current flows through 10kΩ (about 0.8 mA), the
+  transistor saturates, and the LED lights. When the button is released, the base floats (or pulls down
+  through a 1MΩ to ground if desired), the transistor turns off, and the LED goes dark.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: 9V source, NPN transistor (2N3904 model), 470Ω + LED on the collector path,
+  10kΩ + switch on the base. Sliders for base resistor and supply voltage make hFE saturation behavior
+  visible. A voltmeter across collector-emitter shows V_CE collapsing to ~0.2V when saturated.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A bipolar transistor is a current-controlled switch: small base current → large collector current."
+  - "Current gain (β or hFE) of a 2N3904 is typically 100-300."
+  - "For digital switching, design the base current to saturate the transistor (V_CE ≈ 0.2 V)."
+  - "Pin order (C, B, E) depends on package orientation — always check the datasheet."
+  - "Unlike a relay, the transistor has no moving parts, switches in nanoseconds, and is silent."
+notes_for_implementer: |
+  Showing V_CE on a live readout as the base resistor is varied is the clearest way to surface the active vs
+  saturation regions. Use a slider for R_B from 1kΩ (deep saturation) to 1MΩ (off) and let the LED brightness
+  follow I_C. A side panel comparing transistor switching to the relay of Experiment 7 cements the analogy.

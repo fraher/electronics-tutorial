@@ -1,0 +1,60 @@
+id: exp-31
+number: 31
+chapter: 5
+title: "Reading a Button"
+slug: "reading-a-button"
+learning_objective: |
+  Extend the Arduino blink sketch to read a digital input — pressing a button toggles the LED — and master
+  the INPUT vs INPUT_PULLUP modes, software debouncing, and edge-detection patterns.
+paraphrased_summary: |
+  Building on the blink sketch of Experiment 29, this lesson adds an input: a tactile button connected
+  between pin 2 and GND. The pin is configured with INPUT_PULLUP so it idles HIGH and goes LOW when the
+  button is pressed; this saves an external pull-up resistor. The sketch reads the pin with digitalRead()
+  every loop iteration and toggles the LED's state each time it detects a falling edge — that is, a HIGH
+  reading on the previous loop and a LOW reading on the current loop. To avoid multiple toggles from
+  contact bounce, the program also remembers the time of the last accepted edge (via millis()) and ignores
+  any further edges within 30 ms. This is the canonical "debounced edge-triggered toggle" idiom used in
+  countless Arduino projects. The lesson also covers the difference between polling (this experiment) and
+  interrupts (briefly mentioned), and the pitfalls of using delay() inside loop() when responsive input is
+  needed. This is supplemental material that extends Make: Electronics' Arduino introduction into a more
+  complete first-week curriculum, paralleling material that ships with the Arduino starter kit.
+parts:
+  - "Arduino Uno"
+  - "USB cable"
+  - "Solderless breadboard"
+  - "Generic LED + 470Ω resistor"
+  - "Tactile pushbutton"
+  - "Hookup wire jumpers"
+formulas:
+  - id: debounce-window
+    latex: "t_{ignore} \\geq t_{bounce}"
+    vars:
+      - { name: t_bounce, min: 0.001, max: 0.05, step: 0.001, default: 0.01, unit: "s" }
+    solve_for: { name: t_ignore, unit: "s", precision: 3 }
+    description: "Software debounce window should comfortably exceed the worst-case bounce duration; 20-50 ms is typical for tactile switches."
+  - id: poll-rate
+    latex: "f_{poll} = 1 / t_{loop}"
+    vars:
+      - { name: t_loop, min: 0.0001, max: 0.1, step: 0.0001, default: 0.001, unit: "s" }
+    solve_for: { name: f_poll, unit: "Hz", precision: 1 }
+    description: "How often the program checks the button; t_loop is the time taken by one pass through loop(). At 1 kHz polling, no human press will be missed."
+schematic_description: |
+  Pin 2 of the Arduino → one terminal of a tactile button → other terminal to GND. Pin 13 → anode of an
+  LED → cathode through a 470Ω resistor to GND. (The on-board pin-13 LED also blinks along with the
+  external one.) The sketch initializes pin 2 with pinMode(2, INPUT_PULLUP) and pin 13 with pinMode(13,
+  OUTPUT), then in loop() reads pin 2, compares to the previous reading, debounces with a millis()
+  check, and toggles a state variable that drives pin 13.
+suggested_falstad_circuit: |
+  N/A — microcontroller project. Use Wokwi.
+suggested_wokwi_project_id: "arduino-button-toggle"
+takeaways:
+  - "INPUT_PULLUP enables the chip's internal pull-up resistor — saves a discrete part."
+  - "Edge detection: remember the previous reading; the change between calls is the edge."
+  - "Debounce in software by recording the millis() of the last accepted edge."
+  - "Polling at >100 Hz (loop() running every <10 ms) catches all human button presses reliably."
+  - "Avoid delay() in loops that must remain responsive — use millis() comparisons instead."
+notes_for_implementer: |
+  Wokwi simulation with a clickable button and a visible LED is ideal. Show the sketch with three stages:
+  (a) naive read+toggle (will flicker), (b) edge-detected read+toggle (still bounces), (c) edge-detected
+  + millis() debounce (clean). Each stage in its own collapsible code block helps learners see the
+  iterative improvement.

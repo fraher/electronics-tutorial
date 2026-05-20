@@ -1,0 +1,63 @@
+id: exp-29
+number: 29
+chapter: 5
+title: "Hardware Meets Software"
+slug: "hardware-meets-software"
+learning_objective: |
+  Make the transition from discrete components to microcontrollers — install the Arduino IDE, write your
+  first sketch, upload it to an Arduino Uno (or Nano), and blink an LED under software control.
+paraphrased_summary: |
+  After 28 experiments of discrete logic and analog circuits, the book pivots to microcontrollers. An
+  Arduino Uno (or its smaller, breadboard-friendly cousin the Nano) is a small board with an ATmega328P
+  chip whose pins can be driven HIGH or LOW under program control — replacing a 555 + counter + decoder
+  with a few lines of C code. The learner downloads the Arduino IDE, plugs the board in via USB, opens a
+  new sketch, and writes the canonical first program: pinMode(13, OUTPUT) in setup(), then alternating
+  digitalWrite(13, HIGH) / delay(1000) / digitalWrite(13, LOW) / delay(100) in loop(). After Verify/Compile
+  catches any syntax errors and Upload pushes the binary to the board, the on-board LED (wired to pin 13)
+  blinks asymmetrically — one second on, a tenth of a second off. Extending the project to an external LED
+  wired to pin 13 through a 470 Ω resistor on a breadboard reinforces that the same digital pin can drive
+  external circuits. Core programming vocabulary is introduced: setup() vs loop(), reserved words,
+  case-sensitivity, semicolons, braces, and the sketch lifecycle (write → compile → upload → run).
+parts:
+  - "Arduino Uno (preferably DIP, socketed; Nano is fine too)"
+  - "USB cable (A-to-B for Uno; A-to-mini-USB for Nano)"
+  - "Computer with the Arduino IDE installed"
+  - "Solderless breadboard"
+  - "Generic LED + 470Ω resistor"
+  - "Hookup wire jumpers"
+formulas:
+  - id: blink-period
+    latex: "T = t_{on} + t_{off}"
+    vars:
+      - { name: t_on,  min: 0.001, max: 5, step: 0.001, default: 1, unit: "s" }
+      - { name: t_off, min: 0.001, max: 5, step: 0.001, default: 0.1, unit: "s" }
+    solve_for: { name: T, unit: "s", precision: 3 }
+    description: "Period of a software blink — the sum of delay() calls in the loop(). Frequency is 1/T."
+  - id: pin-current
+    latex: "I_{pin} = (V_{pin} - V_{LED}) / R"
+    vars:
+      - { name: V_pin, min: 0, max: 5, step: 0.1, default: 5, unit: "V" }
+      - { name: V_LED, min: 1.7, max: 3.3, step: 0.05, default: 2.1, unit: "V" }
+      - { name: R,     min: 100, max: 4700, step: 10, default: 470, unit: "Ω" }
+    solve_for: { name: I_pin, unit: "A", precision: 4 }
+    description: "Current sourced from an Arduino digital pin when driving an LED — keep under 20 mA per pin (40 mA absolute max)."
+schematic_description: |
+  Pin 13 of the Arduino connects to the anode of an LED on the breadboard. The cathode of the LED goes
+  through a 470 Ω resistor to GND on the Arduino. (The Arduino itself also has an on-board LED wired to
+  pin 13, so the same blink appears on both.) Power for the Arduino comes from the USB cable during
+  programming, or optionally from a 9 V supply on the barrel jack.
+suggested_falstad_circuit: |
+  N/A — this is a microcontroller experiment, not a discrete-component circuit. The schematic is trivial
+  (one pin, one resistor, one LED). The interactive belongs in a Wokwi simulator instead.
+suggested_wokwi_project_id: "arduino-blink"
+takeaways:
+  - "A microcontroller replaces many discrete chips with a single programmable IC."
+  - "setup() runs once at power-up; loop() runs forever."
+  - "pinMode declares whether a pin is an INPUT or OUTPUT; digitalWrite sets it HIGH or LOW."
+  - "delay() pauses the program for the given number of milliseconds."
+  - "Keep digital-pin current under 20 mA — use a series resistor with every external LED."
+notes_for_implementer: |
+  This page should embed a Wokwi simulator (or equivalent) so the learner can edit the sketch and see the
+  LED blink without owning hardware. Pair with a copy-paste-ready code block and clear screenshots of the
+  Tools→Board selection and the Upload button. Wokwi project IDs may need to be created by the
+  implementer; the suggested ID 'arduino-blink' is a placeholder.

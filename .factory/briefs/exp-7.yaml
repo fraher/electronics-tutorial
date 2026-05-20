@@ -1,0 +1,68 @@
+id: exp-7
+number: 7
+chapter: 2
+title: "Investigating a Relay"
+slug: "investigating-a-relay"
+learning_objective: |
+  Understand how a relay uses a small control current to operate a magnetically actuated mechanical switch
+  that can route a much larger load current, and learn to identify a relay's coil pins versus its switch pins
+  from continuity testing or a datasheet.
+paraphrased_summary: |
+  A relay is an electromechanical switch: applying a small voltage to its coil generates a magnetic field that
+  pulls a lever inside the relay, mechanically closing or opening contacts that can carry much higher currents
+  than the coil itself. The learner uses a 9V DPDT relay, applies the supply to the two coil pins (verified by
+  hearing the relay click and feeling a tiny mechanical jump), and uses the multimeter in continuity mode to
+  probe the remaining pins. Two contacts that were beeping before energizing stop beeping when the coil is
+  active, while another pair that was silent starts beeping — this maps which pins are the common (pole),
+  normally-closed (NC), and normally-open (NO) terminals. Optionally the case can be carefully sliced open
+  with a utility knife so the learner can see the coil, the lever, the spring, and the contact pads inside.
+  The reason a relay is still useful in 2026 (even though transistors have replaced it for most signal-level
+  switching) is that it provides galvanic isolation between control and load and can switch tens of amps with
+  zero on-resistance. Latching relays, AC relays, and small-signal vs power relays are mentioned briefly.
+parts:
+  - "9V battery"
+  - "DPDT 9VDC relay (e.g., Omron G5V-2)"
+  - "Optional: a second relay to dissect"
+  - "Tactile pushbutton switch"
+  - "Test leads"
+  - "Utility knife (optional, for opening the relay)"
+  - "Digital multimeter"
+formulas:
+  - id: coil-current
+    latex: "I_{coil} = V_{coil} / R_{coil}"
+    vars:
+      - { name: V_coil, min: 3, max: 24, step: 0.5, default: 9, unit: "V" }
+      - { name: R_coil, min: 50, max: 2000, step: 10, default: 500, unit: "Ω" }
+    solve_for: { name: I_coil, unit: "A", precision: 4 }
+    description: "Coil current is the operating voltage divided by the coil's DC resistance; this is what the upstream circuit must supply."
+  - id: coil-power
+    latex: "P_{coil} = V_{coil}^{2} / R_{coil}"
+    vars:
+      - { name: V_coil, min: 3, max: 24, step: 0.5, default: 9, unit: "V" }
+      - { name: R_coil, min: 50, max: 2000, step: 10, default: 500, unit: "Ω" }
+    solve_for: { name: P_coil, unit: "W", precision: 3 }
+    description: "Continuous power dissipated in the relay coil while energized — a useful figure for choosing how to drive it."
+schematic_description: |
+  Three test setups are documented. (1) The 9V battery is connected through a tactile switch to the two coil
+  pins. When the switch is pressed, the relay clicks. (2) With the coil de-energized, the multimeter
+  (continuity mode) probes pairs of non-coil pins until it finds a pair that conducts (these are the
+  pole + NC contact). (3) With the switch held down to energize the coil, the meter is moved across the
+  remaining pins to find the pole + NO pair. For DPDT this is repeated on the second pole. The internal
+  schematic of the relay shows a coil with a dashed line connecting it to a mechanical switch (single-pole
+  for SPDT, two ganged switches for DPDT).
+suggested_falstad_circuit: |
+  TBD — implementer to construct a relay-driver example: a 9V source, a pushbutton, a coil (model as an
+  inductor 100mH + 500Ω resistor), and a flyback diode across the coil; the relay contacts switch a 12V
+  load (e.g., a small motor or a higher-current LED chain). Use this to teach why a flyback diode is needed
+  even though the book defers detailed diode treatment.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A relay couples a small control circuit to a large load circuit through a magnetic field."
+  - "Coil pins draw a steady current proportional to V_coil / R_coil; non-coil pins carry the switched load."
+  - "Continuity testing each pair of pins identifies which are common, NO, and NC."
+  - "Relays provide galvanic isolation and zero on-resistance — properties transistors can't fully duplicate."
+  - "Latching relays remember their state when power is removed."
+notes_for_implementer: |
+  An animated cutaway showing the coil pulling the lever down and the contacts switching when a virtual button
+  is pressed is the clearest possible explanation. Add a "spec table" widget where the learner can pick coil
+  voltage, coil resistance, and contact rating and see derived coil current and power.

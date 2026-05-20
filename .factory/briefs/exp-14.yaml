@@ -1,0 +1,66 @@
+id: exp-14
+number: 14
+chapter: 3
+title: "A Wearable Multivibrator"
+slug: "a-wearable-multivibrator"
+learning_objective: |
+  Solder a small two-transistor astable multivibrator onto perfboard so it can be worn as a flashing
+  badge or pin, consolidating breadboard skills, soldering practice, and capacitor timing into a single
+  finished project.
+paraphrased_summary: |
+  An astable multivibrator uses two NPN transistors, each cross-coupled to the other through a capacitor and
+  driven by a base resistor. The circuit has no stable state — each transistor periodically pulls its
+  partner's base low and then itself off, producing a square-wave oscillation that flashes two LEDs
+  alternately. The flash rate is set by the product of the cross-coupling capacitor and the base resistor on
+  each side; typical hobby values (10 µF + 47 kΩ ≈ 0.5 Hz) give a comfortable visible blink. The learner
+  transfers a breadboarded version onto a small piece of perfboard, soldering each component into place and
+  routing connections with short wire jumpers or solder bridges. A 9V battery clip and a small slide switch
+  finish the assembly into a wearable pin. The experiment exercises every Chapter 3 skill: planning a
+  layout, soldering without overheating semiconductors, double-checking polarity for electrolytics and LEDs,
+  and applying the RC timing intuition of Experiment 9.
+parts:
+  - "9V battery + clip"
+  - "Perfboard, small (e.g., 2cm × 4cm)"
+  - "2N3904 NPN transistors (×2)"
+  - "Generic LEDs (×2, any color)"
+  - "Resistors: 470Ω (×2), 47kΩ (×2)"
+  - "Electrolytic capacitors: 10µF (×2)"
+  - "SPST slide switch"
+  - "Hookup wire + soldering supplies"
+formulas:
+  - id: astable-period
+    latex: "T = 0.693 \\cdot (R_1 C_1 + R_2 C_2)"
+    vars:
+      - { name: R_1, min: 1000, max: 1000000, step: 1000, default: 47000, unit: "Ω" }
+      - { name: R_2, min: 1000, max: 1000000, step: 1000, default: 47000, unit: "Ω" }
+      - { name: C_1, min: 0.000001, max: 0.001, step: 0.000001, default: 0.00001, unit: "F" }
+      - { name: C_2, min: 0.000001, max: 0.001, step: 0.000001, default: 0.00001, unit: "F" }
+    solve_for: { name: T, unit: "s", precision: 3 }
+    description: "Period of an astable multivibrator — the natural-log-of-2 factor comes from the exponential charge curve."
+  - id: astable-frequency
+    latex: "f = 1 / T"
+    vars:
+      - { name: T, min: 0.001, max: 10, step: 0.001, default: 0.65, unit: "s" }
+    solve_for: { name: f, unit: "Hz", precision: 2 }
+    description: "Flash frequency is the reciprocal of the multivibrator's period."
+schematic_description: |
+  Two NPN transistors Q1 and Q2 each have their emitter grounded. Q1's collector is tied through a 470Ω
+  collector resistor + LED1 to +9V; Q2's identical. A 10µF cap couples Q1's collector to Q2's base; another
+  10µF cap couples Q2's collector to Q1's base. Each base also has a 47kΩ pull-up to +9V. The circuit
+  alternates: while Q1 is on, its collector is near 0V, pulling Q2's base low through the cap, holding Q2
+  off; the cap on Q2's base then charges through 47kΩ until Q2's base reaches ~0.7V and Q2 turns on, which
+  by the same mechanism shuts off Q1; the pattern repeats.
+suggested_falstad_circuit: |
+  TBD — implementer to construct the classic two-transistor astable. CircuitJS has this as a canonical
+  example; using it directly is encouraged. Add sliders for R and C to live-control the blink rate.
+suggested_wokwi_project_id: null
+takeaways:
+  - "An astable multivibrator is a self-oscillating two-transistor circuit with no stable state."
+  - "Each half of the cycle is set by one R·C pair on the cross-coupling path."
+  - "The factor 0.693 (ln 2) in the period formula comes from the cap charging to half the supply."
+  - "Building from breadboard to perfboard is a useful intermediate before designing a PCB."
+  - "Symmetrical R and C values give a 50% duty cycle; asymmetry produces uneven on/off times."
+notes_for_implementer: |
+  This is one of the most satisfying interactives in the whole book. Live blink simulation with sliders for
+  R and C, side-by-side with a labeled schematic and a perfboard layout suggestion, would be ideal. Show
+  asymmetric R values producing different on/off durations as a deeper-cut feature.

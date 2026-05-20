@@ -1,0 +1,64 @@
+id: exp-5
+number: 5
+chapter: 1
+title: "Let's Make a Battery"
+slug: "lets-make-a-battery"
+learning_objective: |
+  Build a primitive voltaic cell from household materials to understand that electricity from a battery is the
+  result of a chemical reaction between two dissimilar metals in an electrolyte.
+paraphrased_summary: |
+  Following Volta's 1800 discovery, the learner constructs a homemade cell using a copper-plated object (a
+  penny or copper-clad mending plate works) and a zinc-plated object (a galvanized mending plate or bracket)
+  immersed in a lemon, a wedge of citrus pulp, or salty water. Each pair of dissimilar metals in the acidic
+  or salty electrolyte produces a small voltage — typically around 0.5 to 0.9 volts per cell, far less than a
+  commercial alkaline cell. Stacking several cells in series (the original "voltaic pile") increases the
+  voltage; wiring them in parallel increases the available current. The multimeter is used to verify both
+  the open-circuit voltage and (briefly) the short-circuit current, which is tiny. An LED, requiring at least
+  about 1.8V to light up, will not glow from a single lemon cell but may flicker from three or four in series.
+  The takeaway is mechanism: a battery isn't a magic voltage source but a chemical reaction whose two
+  electrodes have a difference in their tendency to give up electrons. Different metal pairs give different
+  voltages (the electrochemical series).
+parts:
+  - "Copper-plated pennies OR copper mending plates (4 or more)"
+  - "Zinc-plated mending plates or small brackets (4 or more)"
+  - "Lemons or wedges of citrus (4)"
+  - "Optional: salty water in a small dish"
+  - "Test leads with alligator clips"
+  - "Digital multimeter"
+  - "Optional: red LED to test"
+formulas:
+  - id: series-voltage
+    latex: "V_{total} = N \\cdot V_{cell}"
+    vars:
+      - { name: N,      min: 1, max: 12, step: 1, default: 4, unit: "" }
+      - { name: V_cell, min: 0.3, max: 1.2, step: 0.05, default: 0.8, unit: "V" }
+    solve_for: { name: V_total, unit: "V", precision: 2 }
+    description: "Voltage of cells in series adds up; N identical cells of V_cell volts each produce N·V_cell volts together."
+  - id: parallel-current
+    latex: "I_{available} = N \\cdot I_{cell}"
+    vars:
+      - { name: N,      min: 1, max: 12, step: 1, default: 4, unit: "" }
+      - { name: I_cell, min: 0, max: 0.01, step: 0.0001, default: 0.0005, unit: "A" }
+    solve_for: { name: I_available, unit: "A", precision: 4 }
+    description: "Cells wired in parallel share load current; the total deliverable current scales with the number of cells."
+schematic_description: |
+  Each cell is a copper electrode and a zinc electrode pushed into one lemon (or one cup of salty water), not
+  touching each other inside the electrolyte. To make a series stack, connect the copper of cell 1 to the zinc
+  of cell 2 with a test lead, the copper of cell 2 to the zinc of cell 3, and so on. The two unconnected ends
+  (the zinc of the first cell and the copper of the last cell) become the negative and positive terminals of
+  the assembled battery. Measure voltage with the meter across those two terminals.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: four small voltage sources (0.8V each) in series feeding an LED with a small
+  series resistor. Toggle between series stacking (voltage adds) and parallel stacking (current capacity adds)
+  to show the difference visually.
+suggested_wokwi_project_id: null
+takeaways:
+  - "A battery is a chemical reaction, not a passive bucket of electrons."
+  - "Two dissimilar metals in an electrolyte produce a small but real voltage."
+  - "Cells in series add voltages; cells in parallel add current capacity."
+  - "A single lemon cell can't light an LED, but a stack of several can."
+  - "Different metal pairs give predictably different voltages — see the electrochemical series."
+notes_for_implementer: |
+  An interactive that lets the learner toggle "series" / "parallel" wiring and add cells one at a time, with
+  a live readout of V and a max-current estimate, will land the abstraction quickly. Mention the
+  electrochemical series briefly in a "going deeper" callout.

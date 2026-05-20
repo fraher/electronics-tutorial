@@ -1,0 +1,65 @@
+id: exp-3
+number: 3
+chapter: 1
+title: "Applying Pressure"
+slug: "applying-pressure"
+learning_objective: |
+  Understand voltage as the "pressure" pushing current through a circuit, learn how to measure it as a potential
+  difference across components, and observe that voltage drops sum to the supply voltage around a loop.
+paraphrased_summary: |
+  The same series circuit from Experiment 2 is repurposed to measure voltage rather than current. The meter is
+  moved into voltmeter mode and placed across components, not in series with them — it sits "outside" the loop
+  and observes. With the meter probes across the battery the reading is roughly 9V; across the LED, the reading
+  is the LED's forward voltage of about 2.1V; across the resistor, the reading is whatever is left over,
+  roughly 7V. Voltage drops around the loop add to the supply voltage — an informal introduction to Kirchhoff's
+  voltage law. The water-tower analogy is introduced: voltage corresponds to water pressure (height of the
+  reservoir), current to the rate of flow, and resistance to the size of the hole through which water escapes.
+  Several resistor values from 470Ω through 3.3kΩ are tried so the learner can see the LED voltage staying
+  pinned near 2.1V (a property of diodes) while the resistor voltage absorbs the difference. AC vs DC is
+  explained briefly: a battery supplies DC (steady direction), while wall outlets supply AC (alternating, 60 Hz
+  in the US, 50 Hz in Europe). Unit prefixes mV and kV are introduced for completeness.
+parts:
+  - "9V alkaline battery"
+  - "Resistor 470Ω"
+  - "Resistor 1kΩ (×2)"
+  - "Resistor 1.5kΩ"
+  - "Resistor 2.2kΩ"
+  - "Resistor 3.3kΩ"
+  - "Generic red LED"
+  - "Test leads with alligator clips"
+  - "Digital multimeter"
+formulas:
+  - id: kvl-loop
+    latex: "V_S = V_R + V_{LED}"
+    vars:
+      - { name: V_S,   min: 3, max: 12, step: 0.1, default: 9, unit: "V" }
+      - { name: V_LED, min: 1.7, max: 3.3, step: 0.05, default: 2.1, unit: "V" }
+    solve_for: { name: V_R, unit: "V", precision: 2 }
+    description: "Voltage supplied by the source equals the sum of voltage drops across the components in series; solve for what's left across the resistor."
+  - id: water-analogy
+    latex: "V \\propto h, \\; I \\propto \\dot{Q}, \\; R \\propto 1/A"
+    vars:
+      - { name: h, min: 0, max: 100, step: 1, default: 10, unit: "(arb.)" }
+    solve_for: { name: V, unit: "(arb.)", precision: 1 }
+    description: "Conceptual mapping: voltage is like water pressure (column height), current is volumetric flow rate, resistance is inverse to the cross-section of the outlet hole."
+schematic_description: |
+  Same loop as Experiment 2: 9V battery → resistor → LED (anode toward +) → back to battery negative. The
+  multimeter (in volts mode, red lead in V/Ω socket) does NOT break the loop. Its probes are touched across
+  components: across both battery terminals to read supply voltage; across the resistor leads to read the
+  resistor's voltage drop; across the LED leads to read the LED's forward voltage. The meter's high internal
+  impedance ensures it draws negligible current while observing.
+suggested_falstad_circuit: |
+  TBD — implementer to construct: 9V source, series resistor (slider 470Ω–3.3kΩ), LED. Add three voltmeter probes:
+  across battery, across resistor, across LED. Demonstrate that LED voltage stays near 2.1V while resistor voltage
+  varies, and that the two always sum to the supply.
+suggested_wokwi_project_id: null
+takeaways:
+  - "Voltage is measured between two points (a potential difference), not at one point."
+  - "A voltmeter sits across a component, not in series like an ammeter."
+  - "Voltage drops around a loop sum to the source voltage (Kirchhoff's voltage law, informally)."
+  - "A diode like an LED pins its own voltage near a fixed forward value (≈2.1V for red); the resistor takes the rest."
+  - "DC flows in one direction (battery); AC alternates (wall outlet)."
+notes_for_implementer: |
+  An interactive with three live voltmeter readouts updating as the resistor slider moves makes the
+  "drops sum to supply" idea click instantly. Also good to surface the water analogy as an inline diagram with
+  height (pressure), flow rate, and hole diameter labeled.

@@ -1,0 +1,63 @@
+id: exp-20
+number: 20
+chapter: 4
+title: "The Unlocker"
+slug: "the-unlocker"
+learning_objective: |
+  Use combinational logic gates to build a small electronic combination lock that requires the correct
+  sequence of switches to be set to "open," reinforcing AND-gate behavior and the design of
+  multi-input decision circuits.
+paraphrased_summary: |
+  An electronic combination lock is a satisfying first application of Boolean logic. Several SPDT switches
+  (here five) each contribute one bit of "correct" or "incorrect" to a master AND function. Only when every
+  switch is in its predetermined position does the AND of all five inputs go HIGH, triggering an unlock
+  signal that lights an LED or, in a real installation, energizes a solenoid. Because off-the-shelf AND
+  gates have only two or three inputs, the design cascades several 2-input ANDs in a tree (AND(AND(A,B),
+  AND(C,D)) AND E). Equivalently, the project shows how to chain switches in series so that the same
+  function is implemented mechanically — five switches in series is a hardware 5-input AND. The contrast
+  between the two implementations (logic IC vs series switches) makes the abstraction concrete. Optionally,
+  inverters (74HC04) are used so some switches must be in the "off" position rather than "on" to match the
+  combination, which makes the lock harder to guess.
+parts:
+  - "5V supply"
+  - "Solderless breadboard"
+  - "74HC08 quad AND gates"
+  - "Optional: 74HC04 hex inverter for inverted-input combinations"
+  - "SPDT slide switches (×5)"
+  - "Generic LED + 470Ω (the 'unlocked' indicator)"
+  - "Resistors 10kΩ (×5) for pulldowns"
+  - "Decoupling cap 0.1µF per IC"
+formulas:
+  - id: combination-count
+    latex: "N = 2^{S}"
+    vars:
+      - { name: S, min: 1, max: 16, step: 1, default: 5, unit: "switches" }
+    solve_for: { name: N, unit: "combinations", precision: 0 }
+    description: "Total number of switch settings; only one of these is the correct combination."
+  - id: guess-probability
+    latex: "P = 1 / 2^{S}"
+    vars:
+      - { name: S, min: 1, max: 16, step: 1, default: 5, unit: "switches" }
+    solve_for: { name: P, unit: "probability", precision: 5 }
+    description: "Probability that a random guess opens the lock — falls exponentially with the number of switches."
+schematic_description: |
+  Five SPDT switches each route +5V (correct) or 0V (incorrect) into one of five input lines. Each input
+  passes through a 10 kΩ pulldown so it has a defined level. The five lines feed an AND-tree built from
+  74HC08 quad AND chips: AND1 = A·B; AND2 = C·D; AND3 = AND1·AND2; AND4 = AND3·E. The output of AND4 drives
+  an LED through 470Ω to ground. Optionally, selected inputs pass through a 74HC04 inverter so that switch
+  must be LOW (rather than HIGH) to satisfy the combination.
+suggested_falstad_circuit: |
+  TBD — implementer to construct an AND-tree of five 2-input AND gates wired to five SPDT switches and an
+  LED. Optional inverters on chosen lines. CircuitJS has all needed elements.
+suggested_wokwi_project_id: null
+takeaways:
+  - "An n-input AND can be built by cascading 2-input ANDs in a balanced tree."
+  - "Switches wired in series implement AND directly in hardware."
+  - "Adding inverters to selected inputs hides the combination from observers."
+  - "Doubling the number of switches squares the number of possible combinations."
+  - "Pulldown resistors on logic inputs are mandatory — never let an input float."
+notes_for_implementer: |
+  An interactive with five clickable switches and a hidden "correct combination" that the learner can
+  configure (or shuffle) makes for an engaging puzzle. Display the AND tree with each intermediate node
+  lit when its two inputs are both true — this visually reveals how the cascade narrows down to the
+  single output.
