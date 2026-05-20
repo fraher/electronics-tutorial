@@ -19,7 +19,7 @@ Interactive web companion to Charles Platt's *Make: Electronics, 3rd Edition*. 3
 - Build:   `npm run build` (produces static `./out`)
 - Lint:    `npm run lint`
 - Typecheck: `npm run typecheck`
-- Vendor CircuitJS: `bash scripts/vendor-circuitjs.sh` (needs JDK + Ant)
+- Vendor CircuitJS: `bash scripts/vendor-circuitjs.sh` (needs only `curl`; no JDK/Ant — pulls the prebuilt GWT bundle from falstad.com)
 
 ## CLI overrides
 - Implementer: codex (default)

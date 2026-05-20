@@ -1,0 +1,21 @@
+# public/circuitjs/ — vendored CircuitJS (gitignored)
+
+This directory is intentionally gitignored. The vendored CircuitJS bundle
+(~11 MB of GWT-compiled JavaScript + fonts) is fetched on demand and is
+not tracked in git.
+
+To populate this directory, run from the repo root:
+
+    bash scripts/vendor-circuitjs.sh
+
+To refetch from scratch:
+
+    bash scripts/vendor-circuitjs.sh --force
+
+CircuitJS is GPLv2 (Paul Falstad et al.). The vendor script also fetches
+LICENSE.txt and writes NOTICE.txt alongside the bundle. Those two text
+files ARE committed to git (force-added) so the license travels with the
+project even when the binary blobs do not.
+
+See README.md ("CircuitJS (vendored)") and
+.project-memory/decisions/vendor-circuitjs-locally.md for context.
