@@ -66,6 +66,24 @@ without touching the slider/formula plumbing.
 - **`currentColor` for skeletons.** All primitives use `currentColor` for the
   static stroke so they pick up dark-mode tokens via the wrapping container.
 
+## Bidirectional interactivity (added 2026-05-20)
+
+Primitives accept an optional `onChange` callback. When present, the SVG element becomes interactive (click for boolean primitives, pointer-drag + ArrowKeys for continuous ones). Helpers in `components/schematic/interaction.ts`:
+
+- `useDraggableValue` — pointer-down → document-level pointer-move (drag continues outside the SVG) → pointer-up. Supports `logScale: true` for resistance/capacitance (4+ decade ranges). ARIA `role="slider"` with `valuemin/max/now`. ArrowKeys + PageUp/Down + Home/End on focus.
+- `useToggle` — click + Space + Enter. ARIA `role="switch"` with `aria-checked`.
+
+The composer `ExperimentSchematic` accepts `onVarChange?: (name, value) => void` and passes it to the render closure as a 2nd arg. The per-experiment registry's render signature is now `(vars, onVarChange?) => ReactNode` — backwards-compat (closures ignoring the 2nd arg keep working).
+
+FormulaSlider owns vars state. When a primitive's onChange fires, it calls `onVarChange(varName, newValue)` which updates the slider's state. The slider knob moves and the schematic re-renders in lockstep. **The slider is never removed** — it's the accessibility floor.
+
+### Interactive vs read-only partition
+- **Interactive (can drive vars):** LiveSwitch, LiveGate (input pins), LiveResistor, LiveCapacitor, LiveInductor, LiveBattery
+- **Read-only (computed outputs):** LiveWire, LiveLamp
+- **Skipped v1:** LiveDiode (orientation flip ambiguous), LiveTransistor (multi-var, no obvious mapping)
+
+11 experiments wired with at least one interactive primitive (1, 2, 4, 6, 7, 9, 19, 20, 21, 22, 31). Others still work via slider.
+
 ## Gallery surface
 
 `/schematic-gallery` (an `app/schematic-gallery/page.tsx` route) hosts every

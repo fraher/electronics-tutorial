@@ -21,6 +21,13 @@ If a server component needs to hand a client component behavior, pass a string i
 
 **How to apply:** Any Brief-like schema describing UI behavior must be JSON-serializable. Code in `lib/` exposes registries keyed by ids. See [[decisions/server-client-rehydration]] and [[failures/function-prop-rsc-boundary]].
 
+## keep-the-accessibility-floor-when-adding-richer-input
+When adding richer input modalities (drag, gesture, multi-touch), the original a11y-friendly control stays. New surface AUGMENTS, doesn't REPLACE.
+
+**Why:** Sprint 1 of bidirectional interactivity wired pointer-drag on resistors/capacitors as a richer alternative to sliders. Sliders are excellent for keyboard + screen reader; SVG drag is harder. We kept the slider visible, gave the SVG `role="slider"` + ArrowKeys + focus rings, and made the two surfaces share the same state. A learner with motor impairments has the full slider experience; a learner with a mouse gets the visceral drag.
+
+**How to apply:** Any time you add a gesture/pointer/drag interaction, audit: does the user without a pointer have an equivalent path? If not, either add one or don't ship.
+
 ## ui-orders-need-real-browser-verification
 `npm test` and `npm run build` passing means nothing about whether the page actually works in a browser. Always run Playwright smoke before marking a UI-touching order complete.
 
