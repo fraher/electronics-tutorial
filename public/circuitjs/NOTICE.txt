@@ -1,0 +1,8 @@
+CircuitJS by Paul Falstad and contributors.
+Source:   https://github.com/pfalstad/circuitjs1
+Upstream: https://www.falstad.com/circuit
+Licensed under GPL v2 (see LICENSE.txt).
+Vendored on 2026-05-20 for offline use in the electronics-tutorial
+companion project. No modifications to the simulator runtime; only the external
+Dropbox <script> reference in circuitjs.html was disabled so the page loads
+without network access.

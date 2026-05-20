@@ -1,0 +1,41 @@
+# --- baseline (OS / editor) ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*~
+
+# --- foundry runtime ---
+.factory/outputs/
+.factory/audit.log
+.worktrees/
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+dist/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+.env*.local
+.turbo/
+tsconfig.tsbuildinfo
+
+# --- vendored CircuitJS build output (rebuild via scripts/vendor-circuitjs.sh) ---
+public/circuitjs/
+
+# --- secrets (never remove) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*_rsa
+*_dsa
+secrets/
+
+# --- operator additions below ---
