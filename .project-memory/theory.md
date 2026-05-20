@@ -3,36 +3,50 @@ name: project-theory
 description: Portal — start here. Links to entity / decision / invariant / failure pages.
 metadata:
   type: project
-  authority: medium
+  authority: high
   last_full_review: 2026-05-20
-  reviewed_against_commit: a760e55
+  reviewed_against_commit: HEAD
 ---
 
 # Theory — electronics-tutorial
 
 ## Purpose
-An interactive companion to Charles Platt's *Make: Electronics, 3rd Edition* — a locally-run web tutorial that makes each of the book's 36 experiments quick to review and intuitive to explore through editable circuits and interactive formula sliders.
+An interactive companion to Charles Platt's *Make: Electronics, 3rd Edition* — a locally-run web tutorial that makes each experiment quick to review and intuitive to explore through editable circuits and interactive formula sliders.
 
 ## Domain
-- [[entities/Experiment]] — one page per book experiment (36 total)
-- [[entities/Chapter]] — book's 5-chapter structure (Discovery / Switching / Getting Somewhere / Logic / What Next)
-- [[entities/Formula]] — interactive parameter widgets; one per formula in the book
+- [[entities/Experiment]] — one page per experiment (30 book + 6 supplemental Arduino)
+- [[entities/Chapter]] — book's 5-chapter structure
+- [[entities/Formula]] — equation + slider widget
+- [[entities/Brief]] — on-disk YAML descriptor (one per experiment)
+- [[entities/ExperimentPage]] — render surface
+- [[entities/FormulaSlider]], [[entities/FormulaEvaluator]] — interactive formula widgets
+- [[entities/CircuitEmbed]], [[entities/WokwiEmbed]] — simulator iframes
 
 ## Why this shape
-- [[decisions/static-export-no-deploy]] — local-only static site, no backend, no hosting
+- [[decisions/static-export-no-deploy]] — local-only static site
 - [[decisions/vendor-circuitjs-locally]] — true offline interactivity; GPLv2 ingest accepted for personal use
-- [[decisions/paraphrase-not-copy]] — copyright-safe companion, not a textbook clone
+- [[decisions/paraphrase-not-copy]] — copyright-safe companion
+- [[decisions/wokwi-online-exception]] — single documented exception to offline-first
+- [[decisions/client-side-search-fuse]] — Fuse.js prebuilt index, no server
+- [[decisions/server-client-rehydration]] — functions can't cross RSC; rehydrate by id
+- [[decisions/supplemental-arduino-content]] — why we ship 36 not 30
+- [[decisions/sprints-collapsed-pragmatic]] — meta: when batching sprints is OK
+
+## Invariants
+- [[invariants/offline-first]] — `/out` must work fully from `file://`
 
 ## What "wrong" looks like
-- Verbatim prose from the book (copyright failure)
-- Network-required interactivity (breaks the offline promise)
-- Pages that just summarize and don't let the learner *manipulate* the circuit or formula
+- [[failures/function-prop-rsc-boundary]]
+- [[failures/pdf-extraction-count-mismatch]]
+- [[failures/implementer-pivot-on-missing-prereq]]
 
 ## Tried & rejected
-- (none yet)
+- *(none yet)*
 
 ## Open questions
-- (none yet)
+- Real CircuitJS .cir payloads for analog experiments (all currently TBD — empty simulators render)
+- Hand-drawn SVG schematics (currently rendered as prose)
+- Proper SR-latch + water-analogy evaluators (current ones are stand-ins, flagged in code)
 
-## Glossary
-- (none yet)
+## Lessons
+See [[lessons]] — append-only.
