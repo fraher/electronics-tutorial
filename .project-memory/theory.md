@@ -20,7 +20,9 @@ An interactive companion to Charles Platt's *Make: Electronics, 3rd Edition* —
 - [[entities/Brief]] — on-disk YAML descriptor (one per experiment)
 - [[entities/ExperimentPage]] — render surface
 - [[entities/FormulaSlider]], [[entities/FormulaEvaluator]] — interactive formula widgets
+- [[entities/LiveSchematic]] — inline-SVG visualizations that mirror formula state
 - [[entities/CircuitEmbed]], [[entities/WokwiEmbed]] — simulator iframes
+- [[entities/ExperimentRegistry]] — per-experiment schematic + circuit + wokwi lookup tables
 
 ## Why this shape
 - [[decisions/static-export-no-deploy]] — local-only static site
@@ -31,6 +33,7 @@ An interactive companion to Charles Platt's *Make: Electronics, 3rd Edition* —
 - [[decisions/server-client-rehydration]] — functions can't cross RSC; rehydrate by id
 - [[decisions/supplemental-arduino-content]] — why we ship 36 not 30
 - [[decisions/sprints-collapsed-pragmatic]] — meta: when batching sprints is OK
+- [[decisions/wokwi-placeholder-honesty]] — unverified external IDs labeled honestly
 
 ## Invariants
 - [[invariants/offline-first]] — `/out` must work fully from `file://`
@@ -44,9 +47,11 @@ An interactive companion to Charles Platt's *Make: Electronics, 3rd Edition* —
 - *(none yet)*
 
 ## Open questions
-- Real CircuitJS .cir payloads for analog experiments (all currently TBD — empty simulators render)
-- Hand-drawn SVG schematics (currently rendered as prose)
-- Proper SR-latch + water-analogy evaluators (current ones are stand-ins, flagged in code)
+- ~~Real CircuitJS .cir payloads for analog experiments~~ — **resolved**: 26 custom .cir authored in `lib/experiment-circuits.ts`; hand-tune layouts inside CircuitJS as needed
+- ~~Hand-drawn SVG schematics~~ — **superseded**: instead of static SVG per experiment, we have animated live schematics via [[entities/LiveSchematic]]
+- Verified Wokwi numeric project IDs (briefs 29-36 currently placeholder)
+- Proper SR-latch + water-analogy evaluators (still stand-ins, flagged in code)
+- Fine-tune .cir circuit layouts inside CircuitJS (current geometry is plausible-but-coarse)
 
 ## Lessons
 See [[lessons]] — append-only.

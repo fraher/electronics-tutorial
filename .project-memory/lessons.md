@@ -21,6 +21,20 @@ If a server component needs to hand a client component behavior, pass a string i
 
 **How to apply:** Any Brief-like schema describing UI behavior must be JSON-serializable. Code in `lib/` exposes registries keyed by ids. See [[decisions/server-client-rehydration]] and [[failures/function-prop-rsc-boundary]].
 
+## visualize-not-simulate-split
+Visualization components and simulators serve different jobs and should be separate components — don't conflate.
+
+**Why:** When the operator asked for "intuitive elements" alongside the existing CircuitJS embed, the temptation was to make CircuitJS itself prettier. Instead we built [[entities/LiveSchematic]] as a pure visualization layer (inline SVG, tied to slider state, no physics) that lives ABOVE the simulator. Two layers, two jobs, both fully composable. Each can evolve independently.
+
+**How to apply:** When a feature reads as "interactive + intuitive + accurate," default to two separate components: one for visualization (cheap, fast, illustrative, can lie) and one for ground truth (real simulation or computation). They cooperate via shared state but neither pretends to be the other.
+
+## external-id-default-to-placeholder
+For external-service IDs we can't verify at build time, default the confidence label to `'placeholder'` not `'exact'`.
+
+**Why:** Sprint B initially marked some Wokwi project slugs `'exact'` based on their plausible-looking names. Reviewer flagged that Wokwi uses opaque numeric IDs — the slugs would 404. Marking unverified IDs `'exact'` would mislead learners about which embeds actually work. See [[decisions/wokwi-placeholder-honesty]].
+
+**How to apply:** For YouTube video IDs, GitHub gists, Wokwi projects, etc. — any external resource we can't verify locally — schema should have a `verified: boolean` or `match: 'placeholder' | 'verified'` field defaulting to placeholder. Operator earns the upgrade through manual confirmation.
+
 ## implementer-prereq-probe-pivot
 Implementer steps that depend on host tooling should probe + pivot, not fail outright.
 

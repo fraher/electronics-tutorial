@@ -6,8 +6,9 @@
 
 ## Entities
 - [Experiment](entities/Experiment.md), [Chapter](entities/Chapter.md), [Formula](entities/Formula.md)
-- [Brief](entities/Brief.md), [ExperimentPage](entities/ExperimentPage.md)
+- [Brief](entities/Brief.md), [ExperimentPage](entities/ExperimentPage.md), [ExperimentRegistry](entities/ExperimentRegistry.md)
 - [FormulaSlider](entities/FormulaSlider.md), [FormulaEvaluator](entities/FormulaEvaluator.md)
+- [LiveSchematic](entities/LiveSchematic.md)
 - [CircuitEmbed](entities/CircuitEmbed.md), [WokwiEmbed](entities/WokwiEmbed.md)
 
 ## Decisions
@@ -19,6 +20,7 @@
 - [server-client-rehydration](decisions/server-client-rehydration.md)
 - [supplemental-arduino-content](decisions/supplemental-arduino-content.md)
 - [sprints-collapsed-pragmatic](decisions/sprints-collapsed-pragmatic.md)
+- [wokwi-placeholder-honesty](decisions/wokwi-placeholder-honesty.md)
 
 ## Invariants
 - [offline-first](invariants/offline-first.md)
