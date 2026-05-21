@@ -46,3 +46,7 @@ playwright-report/
 secrets/
 
 # --- operator additions below ---
+
+# --- source book copy (local-only; project paraphrases, never publishes) ---
+docs/*.pdf
+docs/*.epub

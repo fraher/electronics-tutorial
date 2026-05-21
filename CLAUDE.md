@@ -52,7 +52,7 @@ visual report for any UI-touching order.
 - `public/circuitjs/` — vendored CircuitJS GWT build (gitignored after first vendor; commit only the vendor script)
 - `.factory/briefs/` — paraphrased structured briefs (`exp-1.yaml` … `exp-36.yaml`) produced in Sprint 3
 - `scripts/` — vendor + build helpers
-- `docs/Make - Electronics (3e).pdf` — operator-owned source PDF (never edited, never published)
+- `docs/` — local-only space for the source book PDF (gitignored, never published — see [COPYRIGHT.md](./COPYRIGHT.md))
 
 ## Theory
 See [.project-memory/theory.md](.project-memory/theory.md). Top entities: Experiment, Chapter, Formula.

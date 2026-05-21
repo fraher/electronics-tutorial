@@ -1,0 +1,49 @@
+{
+  "order_id": "order-20260521-wokwi-ci-arduino-integration",
+  "order_shape": "project",
+  "status": "complete",
+  "created_at": "2026-05-21T03:36:52Z",
+  "updated_at": "2026-05-21T04:11:46Z",
+  "raw_intent": "Integrate Wokwi CI CLI + arduino-cli to author diagram.json + sketch.ino per Arduino brief (29-36), compile + headlessly run each at build time to capture screenshot.png + serial.log, then render those + the source code + an 'Open in Wokwi' deep-link on the experiment page (replacing the current placeholder card).",
+  "refined_intent": {
+    "refined_intent": "Integrate Wokwi CI (wokwi-cli) + arduino-cli to (a) author per-experiment diagram.json + sketch.ino + wokwi.toml in content/wokwi-projects/exp-N/ for briefs 29-36, (b) run an author-time `npm run wokwi:capture` script that compiles each sketch (arduino-cli) and headlessly simulates it (wokwi-cli, authenticated by env WOKWI_CLI_TOKEN), capturing screenshot.png + serial.log to public/wokwi-captures/exp-N/, (c) replace the WokwiEmbed placeholder card with a new WokwiPanel that renders the captured screenshot + serial-log snippet + syntax-highlighted sketch source + an 'Open in Wokwi' deep-link, (d) Playwright verify all 8 Arduino pages.",
+    "scope": "all 8 Arduino briefs (29-36)",
+    "capture_mode": "author-time (committed artifacts) — keeps static build offline + token-free",
+    "tooling": "install wokwi-cli + arduino-cli via official shell scripts"
+  },
+  "plan": {
+    "summary": "Wokwi CI + arduino-cli integration: install tooling → author 8 Arduino projects → author-time capture script (compile + headless sim) → WokwiPanel UI replaces placeholder card → Playwright verify. 4 sprints.",
+    "sprints": 4,
+    "approach": "author-time capture (committed artifacts) — preserves offline-first invariant",
+    "risks": [
+      "WOKWI_CLI_TOKEN required for capture script (operator-provided)",
+      "arduino-cli AVR core fetch is ~80MB one-time",
+      "Wokwi CI may rate-limit captures",
+      "Open-in-Wokwi deep-link size limit (~5KB diagram+sketch via URL fragment)"
+    ]
+  },
+  "gates_approved": [
+    {
+      "gate": "intent-confirmation",
+      "decision": "approved",
+      "at": "2026-05-21T03:37:20Z",
+      "operator": "fraher@gmail.com"
+    },
+    {
+      "gate": "plan-approval",
+      "decision": "approved",
+      "at": "2026-05-21T03:37:20Z",
+      "operator": "fraher@gmail.com"
+    }
+  ],
+  "steps_completed": {
+    "sA": "complete",
+    "sB": "complete",
+    "sC": "complete",
+    "sD-playwright": "50/50 green",
+    "s.final": "complete"
+  },
+  "audit": {
+    "created_by": "fraher"
+  }
+}

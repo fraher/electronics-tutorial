@@ -91,14 +91,16 @@ experiments), which loads from `wokwi.com`. Other chapters require zero network.
 
 ## Copyright posture
 
-This companion is a personal local-only study aid. All prose is paraphrased
-from notes in the operator's own words; **no scans, photos, or original text
-from the book are reproduced**. Schematics are redrawn originals.
+This companion is a personal study aid for Charles Platt's *Make: Electronics,
+3rd Edition*. All prose is paraphrased original writing; **no scans, photos,
+or original text from the book are reproduced**. Schematics, Arduino sketches,
+and circuit topologies are constructed independently. The book itself
+(`docs/*.pdf`) is gitignored and never published.
 
-Do **not** publish, deploy, or distribute this site without a separate copyright
-review and (likely) explicit permission from Maker Media. The credit goes to
-Charles Platt for the experiments; this companion only adds interactive
-re-derivations of the math.
+Full statement: [COPYRIGHT.md](./COPYRIGHT.md).
+
+The site assumes you own a copy of the book — buy it from
+[Make Community](https://www.makershed.com) or O'Reilly if you don't already.
 
 ## CircuitJS (vendored, GPLv2)
 
@@ -125,7 +127,11 @@ Experiment, Chapter, Formula.
 
 ## License
 
-The companion source (everything in this repo *outside* `public/circuitjs/`) has
-no public license attached — it is a personal project. CircuitJS in
-`public/circuitjs/` is GPLv2 with its license preserved in
-`public/circuitjs/LICENSE.txt`.
+This repository's source code is **all rights reserved** — see
+[COPYRIGHT.md](./COPYRIGHT.md). It's published publicly so other learners can
+read it and so I can use it as a portfolio reference, but no license is granted
+to redistribute or repurpose. If you'd like to use any of it, [open an
+issue](https://github.com/fraher/electronics-tutorial/issues) and ask.
+
+Vendored CircuitJS at `public/circuitjs/` is GPLv2 (gitignored — fetched
+locally by the vendor script).

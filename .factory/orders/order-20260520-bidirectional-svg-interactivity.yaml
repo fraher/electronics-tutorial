@@ -1,0 +1,39 @@
+{
+  "order_id": "order-20260520-bidirectional-svg-interactivity",
+  "order_shape": "project",
+  "status": "complete",
+  "created_at": "2026-05-20T21:50:10Z",
+  "updated_at": "2026-05-20T22:23:04Z",
+  "raw_intent": "Make LiveSchematic SVG primitives bidirectionally interactive: clicking LiveGate inputs + LiveSwitch toggles them; dragging passive components (LiveResistor, LiveCapacitor, LiveInductor, LiveBattery) updates the underlying formula variable. Sliders remain. Verify with Playwright.",
+  "refined_intent": {
+    "refined_intent": "Make LiveSchematic SVG primitives bidirectionally interactive. Phase 1 — discrete: LiveSwitch click-toggles, LiveGate input pins click-toggle. Phase 2 — continuous: LiveResistor/LiveCapacitor/LiveInductor/LiveBattery accept pointer-drag (and ArrowKey on focus) to update the bound formula variable. FormulaSlider remains as accessibility floor. Add ARIA roles, keyboard support, cursor:grab hint, focus rings. All primitives broadcast value changes via onValueChange callback wired up through ExperimentSchematic to the FormulaSlider state. Verify with Playwright walk + screenshots + click/drag assertions.",
+    "scope": "primitives + per-experiment wiring + playtest"
+  },
+  "plan": {
+    "summary": "Bidirectional SVG interactivity: primitive interaction layer + state wire-through + per-experiment wiring + Playwright verify. 2 sprints + ritual.",
+    "sprints": 2,
+    "approach": "focused improvement"
+  },
+  "gates_approved": [
+    {
+      "gate": "intent-confirmation",
+      "decision": "approved",
+      "at": "2026-05-20T21:50:26Z",
+      "operator": "fraher@gmail.com"
+    },
+    {
+      "gate": "plan-approval",
+      "decision": "approved",
+      "at": "2026-05-20T21:50:26Z",
+      "operator": "fraher@gmail.com"
+    }
+  ],
+  "steps_completed": {
+    "sI": "complete",
+    "sII-verify": "green (123/123 unit + 42 playwright)",
+    "s.final": "complete"
+  },
+  "audit": {
+    "created_by": "fraher"
+  }
+}
