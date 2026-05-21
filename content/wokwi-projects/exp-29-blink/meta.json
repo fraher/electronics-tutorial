@@ -1,0 +1,7 @@
+{
+  "screenshotPart": "uno",
+  "screenshotTimeMs": 2500,
+  "timeoutMs": 4000,
+  "title": "Blink the on-board LED",
+  "summary": "The canonical first sketch — toggles the L LED wired to digital pin 13 once a second."
+}
