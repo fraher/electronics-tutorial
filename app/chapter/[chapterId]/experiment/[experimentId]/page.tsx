@@ -4,6 +4,7 @@ import { getAllBriefs, getBriefByNumber, isRealCirString, type Brief } from '@/l
 import { getEvaluator } from '@/lib/formula-evaluators';
 import { getExperimentCircuit } from '@/lib/experiment-circuits';
 import { getExperimentWokwi } from '@/lib/experiment-wokwi';
+import { getWokwiProject, summarizeSerial } from '@/lib/wokwi-projects';
 import ExperimentClient from './experiment-client';
 
 export function generateStaticParams() {
@@ -40,6 +41,15 @@ type CircuitProp =
   | { kind: 'circuitjs'; cir: string }
   | { kind: 'circuitjs-empty'; note?: string }
   | { kind: 'wokwi'; projectId: string; placeholder?: boolean; sketchHint?: string }
+  | {
+      kind: 'wokwi-panel';
+      briefNumber: number;
+      title: string;
+      sketch: string;
+      screenshotPath: string;
+      serialSnippet: string;
+      openInWokwiHref?: string;
+    }
   | null;
 
 export default function Page({
@@ -69,10 +79,21 @@ export default function Page({
   // placeholder fields. Wokwi takes precedence (Chapter 5 Arduino briefs);
   // CircuitJS otherwise; the brief's prose stays as a fallback.
   let circuit: CircuitProp = null;
+  const wokwiProject = getWokwiProject(brief.number);
   const wokwi = getExperimentWokwi(brief.number);
   const curatedCircuit = getExperimentCircuit(brief.number);
   const cir: string = brief.suggested_falstad_circuit ?? '';
-  if (wokwi) {
+  if (wokwiProject) {
+    circuit = {
+      kind: 'wokwi-panel',
+      briefNumber: wokwiProject.number,
+      title: wokwiProject.meta.title || brief.title,
+      sketch: wokwiProject.sketch,
+      screenshotPath: wokwiProject.screenshotPath,
+      serialSnippet: summarizeSerial(wokwiProject.serialLog, 10),
+      openInWokwiHref: wokwiProject.openInWokwiHref,
+    };
+  } else if (wokwi) {
     circuit = {
       kind: 'wokwi',
       projectId: wokwi.projectId,

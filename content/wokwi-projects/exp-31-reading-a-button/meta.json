@@ -1,0 +1,7 @@
+{
+  "screenshotPart": "uno",
+  "screenshotTimeMs": 2500,
+  "timeoutMs": 4000,
+  "title": "Reading a Button — debounced edge-toggle",
+  "summary": "Pin 2 with INPUT_PULLUP watches a button to GND. Software debounce + falling-edge detection toggles the on-board LED on every press."
+}

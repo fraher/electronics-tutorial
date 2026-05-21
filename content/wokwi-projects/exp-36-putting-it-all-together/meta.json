@@ -1,0 +1,7 @@
+{
+  "screenshotPart": "uno",
+  "screenshotTimeMs": 2500,
+  "timeoutMs": 4000,
+  "title": "Capstone — LDR + LED + button, AUTO/MANUAL modes",
+  "summary": "AUTO: LDR brightness drives the LED's PWM. Hold the button >500 ms to switch to MANUAL where a short press toggles the LED. Serial logs every state change."
+}

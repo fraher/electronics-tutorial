@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "author": "electronics-tutorial",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-breadboard", "id": "bb1", "top": -130, "left": 200, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "bz1", "top": -200, "left": 300, "attrs": { "volume": "0.1" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -140, "left": 300, "rotate": 90, "attrs": { "value": "100" } }
+  ],
+  "connections": [
+    [ "uno:8",  "r1:1",  "green", [] ],
+    [ "r1:2",   "bz1:1", "green", [] ],
+    [ "bz1:2",  "uno:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}

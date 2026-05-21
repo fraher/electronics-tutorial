@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/exp-34-tones-and-music.ino.hex'
+elf = 'build/exp-34-tones-and-music.ino.elf'

@@ -1,0 +1,7 @@
+{
+  "screenshotPart": "uno",
+  "screenshotTimeMs": 2500,
+  "timeoutMs": 4000,
+  "title": "Serial Communication — echo + blink",
+  "summary": "Opens Serial at 9600 baud, echoes each received byte back as uppercase, blinks the on-board LED per byte, and prints a periodic banner so the log always shows life."
+}

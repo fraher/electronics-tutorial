@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "author": "electronics-tutorial",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-breadboard", "id": "bb1", "top": -130, "left": 200, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": -60, "left": 280, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led1", "top": -200, "left": 380, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -140, "left": 380, "rotate": 90, "attrs": { "value": "470" } }
+  ],
+  "connections": [
+    [ "uno:2", "btn1:1.l", "green", [] ],
+    [ "btn1:2.r", "uno:GND.1", "black", [] ],
+    [ "uno:13", "led1:A", "red", [] ],
+    [ "led1:C", "r1:1", "black", [] ],
+    [ "r1:2", "uno:GND.2", "black", [] ]
+  ],
+  "dependencies": {}
+}

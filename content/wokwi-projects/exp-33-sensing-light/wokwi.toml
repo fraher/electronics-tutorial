@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/exp-33-sensing-light.ino.hex'
+elf = 'build/exp-33-sensing-light.ino.elf'

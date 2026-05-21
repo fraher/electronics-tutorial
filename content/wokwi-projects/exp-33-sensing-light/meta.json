@@ -1,0 +1,7 @@
+{
+  "screenshotPart": "uno",
+  "screenshotTimeMs": 2500,
+  "timeoutMs": 4000,
+  "title": "Sensing Light — LDR drives a night-light",
+  "summary": "A photoresistor + 10 kΩ divider feeds A0. The sketch reads the ADC and switches an LED on when the room darkens, with two thresholds for hysteresis."
+}

@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/exp-31-reading-a-button.ino.hex'
+elf = 'build/exp-31-reading-a-button.ino.elf'

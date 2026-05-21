@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "author": "electronics-tutorial",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-breadboard", "id": "bb1", "top": -130, "left": 200, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr1", "top": -210, "left": 240, "attrs": { "lux": "100" } },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": -60, "left": 290, "attrs": { "color": "blue" } },
+    { "type": "wokwi-led", "id": "led1", "top": -210, "left": 410, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-resistor", "id": "r_led", "top": -150, "left": 410, "rotate": 90, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "uno:5V",  "ldr1:VCC", "red",   [] ],
+    [ "ldr1:GND","uno:GND.1","black", [] ],
+    [ "uno:A0",  "ldr1:AO",  "yellow",[] ],
+    [ "uno:2",   "btn1:1.l", "green", [] ],
+    [ "btn1:2.r","uno:GND.2","black", [] ],
+    [ "uno:9",   "led1:A",   "yellow",[] ],
+    [ "led1:C",  "r_led:1",  "black", [] ],
+    [ "r_led:2", "uno:GND.3","black", [] ]
+  ],
+  "dependencies": {}
+}

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FormulaSlider, type Var } from '@/components/FormulaSlider';
 import { CircuitEmbed } from '@/components/CircuitEmbed';
 import { WokwiEmbed } from '@/components/WokwiEmbed';
+import { WokwiPanel } from '@/components/WokwiPanel';
 import { cn } from '@/lib/utils';
 
 export type Formula = {
@@ -22,7 +23,16 @@ export type Formula = {
 
 export type ExperimentCircuit =
   | { kind: 'circuitjs'; cir: string }
-  | { kind: 'wokwi'; projectId: string; placeholder?: boolean; sketchHint?: string };
+  | { kind: 'wokwi'; projectId: string; placeholder?: boolean; sketchHint?: string }
+  | {
+      kind: 'wokwi-panel';
+      briefNumber: number;
+      title: string;
+      sketch: string;
+      screenshotPath: string;
+      serialSnippet: string;
+      openInWokwiHref?: string;
+    };
 
 export type ExperimentPageProps = {
   chapter: number; // 1-5
@@ -144,6 +154,15 @@ export function ExperimentPage({
               circuit={circuit.cir}
               title={`${title} — interactive circuit`}
               caption="Drag component values or wires; the simulation updates live."
+            />
+          ) : circuit.kind === 'wokwi-panel' ? (
+            <WokwiPanel
+              briefNumber={circuit.briefNumber}
+              title={circuit.title}
+              sketch={circuit.sketch}
+              screenshotPath={circuit.screenshotPath}
+              serialSnippet={circuit.serialSnippet}
+              openInWokwiHref={circuit.openInWokwiHref}
             />
           ) : (
             <WokwiEmbed
