@@ -21,6 +21,13 @@ If a server component needs to hand a client component behavior, pass a string i
 
 **How to apply:** Any Brief-like schema describing UI behavior must be JSON-serializable. Code in `lib/` exposes registries keyed by ids. See [[decisions/server-client-rehydration]] and [[failures/function-prop-rsc-boundary]].
 
+## dont-ship-known-broken-with-just-a-todo
+If a feature has a known broken path with a `TODO` comment, the feature isn't shipped. Either find the real workflow or change the feature scope so the broken path doesn't exist.
+
+**Why:** Order order-20260521-wokwi-ci-arduino-integration shipped an "Open in Wokwi" button that opened a blank new-project page. Wokwi has no URL-import API. I documented this with a `TODO` comment in `lib/wokwi-projects.ts` instead of changing the UX. The operator immediately hit the broken button and called it out. The honest workflow turned out to be 3 buttons (Open Wokwi + Copy diagram + Copy sketch) with explicit paste instructions — that's the design we should have shipped first.
+
+**How to apply:** When you write a `TODO` for a load-bearing UX feature, treat it as a blocker. Either fix it before merge or change the feature to not have the broken path. A TODO comment in source code is invisible to users; the broken button isn't.
+
 ## verify-committed-artifacts-not-just-test-output
 When an order produces binary artifacts that get committed (captures, screenshots, generated assets), verify the COMMIT contains them — not just that the test logs say they exist.
 
