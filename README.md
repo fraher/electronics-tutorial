@@ -1,137 +1,78 @@
 # Make: Electronics 3e — Interactive Companion
 
-A local-only, offline-first study companion to Charles Platt's *Make: Electronics,
-3rd Edition* (Maker Media). 36 experiments across 5 chapters, each with:
+An interactive study companion to Charles Platt's *Make: Electronics, 3rd Edition*. Thirty experiments across five chapters, each on its own page with:
 
-- A paraphrased summary in your own words (no scans or quoted text from the book)
-- Tunable formula sliders that re-solve live (Ohm's law, RC time constants, gain, …)
-- An editable circuit — vendored [CircuitJS](https://github.com/pfalstad/circuitjs1)
-  for analog experiments, a [Wokwi](https://wokwi.com) iframe for the Arduino chapter
-- A short parts list and a takeaways block per experiment
-- Client-side fuzzy search across everything (⌘K / Ctrl-K) — no API, no server
+- A short summary of the experiment's idea
+- Live formula sliders that re-solve as you drag — Ohm's law, RC time constants, voltage dividers, transistor bias, oscillator frequency, and dozens more
+- Animated mini-schematics where wire thickness scales with current, resistors glow as they dissipate power, capacitors fill with charge, and logic gates respond to clicks
+- An editable circuit — [CircuitJS](https://github.com/pfalstad/circuitjs1) for the analog chapters, [Wokwi](https://wokwi.com) for the Arduino chapter
+- A parts list and a few takeaways
+- A ⌘K / Ctrl-K fuzzy search across every experiment and formula
 
-This is a personal study aid. It is **not** a copy of the book, and it is **not**
-intended for redistribution. See "Copyright posture" below.
+Plus six extra Arduino capstone projects (button input, analog/PWM, light sensing, tones, serial, and a small integrated project) that pick up where the book leaves off.
 
-## Quick start
+The site runs entirely from your machine. No accounts, no analytics, no backend.
+
+## Try it locally
 
 ```bash
+git clone https://github.com/fraher/electronics-tutorial.git
+cd electronics-tutorial
 npm install
-bash scripts/vendor-circuitjs.sh    # one-time: fetch CircuitJS bundle (~11 MB)
+bash scripts/vendor-circuitjs.sh    # one-time: fetch the CircuitJS bundle (~11 MB)
 npm run dev                          # http://localhost:3000
 ```
 
-To produce the offline static export:
+To build the static export:
 
 ```bash
 npm run build                        # writes ./out/
 npx serve out                        # or open out/index.html via file://
 ```
 
-Other commands:
+## A few good starting points
 
-```bash
-npm test          # vitest — unit + component tests
-npm run lint
-npm run typecheck
-```
-
-## Adding a new experiment
-
-The site is generated from structured YAML briefs at `.factory/briefs/exp-<n>.yaml`.
-To add or edit an experiment:
-
-1. Edit the YAML brief (paraphrased summary, parts, formulas with `vars` + `solve_for`,
-   schematic description, optional CircuitJS `.cir` payload or Wokwi project id, takeaways).
-2. If you added a formula whose id doesn't already have an evaluator in
-   `lib/formula-evaluators.ts`, add a `(vars) => result` function under the same id.
-   Formulas without an evaluator still render in a read-only "Reference formulas"
-   section.
-3. Restart `npm run dev`. The brief loader (`lib/briefs.ts`) reads from disk at
-   process start, and `generateStaticParams` picks up new experiments automatically.
-4. Run `npm test` and `npm run build` to confirm the new route compiles.
-
-The brief schema lives in `lib/briefs.ts` (`Brief`, `BriefFormula`, `BriefVar`).
-
-## Project structure
-
-- `app/` — Next.js App Router routes (`/`, `/chapter/[id]/`,
-  `/chapter/[id]/experiment/[n]/`, `/sitemap.xml`)
-- `components/` — `ExperimentPage`, `FormulaSlider`, `CircuitEmbed`, `WokwiEmbed`,
-  `SearchDialog`, `ChapterMenu`, header / footer, theme primitives
-- `lib/` — `briefs.ts` (YAML loader), `chapters.ts` (chapter metadata + blurbs),
-  `formula-evaluators.ts` (per-formula closed-form solvers),
-  `search-index.ts` (build-time Fuse.js doc list)
-- `.factory/briefs/` — the 36 paraphrased YAML briefs (source of truth for content)
-- `public/circuitjs/` — vendored CircuitJS bundle (gitignored; rebuilt via the
-  vendor script). `LICENSE.txt` + `NOTICE.txt` are force-added.
-- `scripts/vendor-circuitjs.sh` — pulls the prebuilt GWT bundle from falstad.com
-- `docs/` — operator-owned reference material (never published)
+- [`/`](http://localhost:3000/) — chapter overview + Continue-where-you-left-off
+- [`/chapter/1/experiment/1`](http://localhost:3000/chapter/1/experiment/1) — *Taste the Power*, the canonical first experiment
+- [`/chapter/4/experiment/19`](http://localhost:3000/chapter/4/experiment/19) — click logic gate inputs to flip HIGH/LOW
+- [`/chapter/5/experiment/29`](http://localhost:3000/chapter/5/experiment/29) — *Blink* with the real Arduino sketch + Wokwi simulator
+- [`/schematic-gallery`](http://localhost:3000/schematic-gallery) — every animated schematic primitive, with sliders
 
 ## Stack
 
-- **Framework:** Next.js 14 (App Router) with `output: 'export'` for static-only delivery
+- **Framework:** Next.js 14 (App Router) with `output: 'export'` for static delivery
 - **Language:** TypeScript (strict)
-- **Styling:** Tailwind CSS v3 + shadcn/ui primitives (Button, Card, Slider)
-- **Theming:** `next-themes` (system / dark / light, persisted)
-- **Math:** KaTeX (locally bundled CSS — no CDN at runtime)
-- **Fonts:** Inter via `next/font` (self-hosted at build time)
-- **Search:** Fuse.js (~12 KB gzipped), client-side index of all experiments + formulas
-- **Simulators:** CircuitJS (vendored, GPLv2) + Wokwi (iframe; Arduino chapter only)
-- **Tests:** Vitest + @testing-library/react (jsdom)
+- **Styling:** Tailwind CSS + shadcn/ui
+- **Math:** KaTeX
+- **Simulators:** CircuitJS (vendored locally) + Wokwi (Arduino chapter only)
+- **Tests:** Vitest + Playwright
 
-## Offline-first
+## Project structure
 
-No CDN fonts, no CDN scripts, no analytics, no backend. KaTeX CSS is imported from
-`node_modules` at build time. Inter is self-hosted via `next/font`. The exported
-`out/` directory runs from `file://` or `npx serve out` with networking disabled.
+- `app/` — Next.js routes (`/`, `/chapter/[id]/`, `/chapter/[id]/experiment/[n]/`, `/sitemap.xml`)
+- `components/` — `ExperimentPage`, `FormulaSlider`, `CircuitEmbed`, `WokwiPanel`, `SearchDialog`, the schematic primitive library, etc.
+- `lib/` — content loaders, formula evaluators, search index, experiment + circuit + wokwi registries
+- `content/wokwi-projects/` — per-experiment Arduino sketches + Wokwi diagrams
+- `public/wokwi-captures/` — committed screenshots and serial logs from headless Wokwi runs
+- `scripts/` — the CircuitJS vendor script and the Wokwi capture script
 
-The single documented exception is the Wokwi iframe in Chapter 5 (Arduino
-experiments), which loads from `wokwi.com`. Other chapters require zero network.
+## Wokwi captures (Arduino chapter)
 
-## Copyright posture
+The Arduino experiments run for real — each one has a sketch + `diagram.json` in `content/wokwi-projects/`, compiled with `arduino-cli` and simulated headlessly through `wokwi-cli`. The captured screenshot and serial log are committed under `public/wokwi-captures/` and shown on the page; the experiment page also exposes copy-to-clipboard buttons so you can paste the sketch and diagram straight into [wokwi.com](https://wokwi.com) and watch it run live.
 
-This companion is a personal study aid for Charles Platt's *Make: Electronics,
-3rd Edition*. All prose is paraphrased original writing; **no scans, photos,
-or original text from the book are reproduced**. Schematics, Arduino sketches,
-and circuit topologies are constructed independently. The book itself
-(`docs/*.pdf`) is gitignored and never published.
-
-Full statement: [COPYRIGHT.md](./COPYRIGHT.md).
-
-The site assumes you own a copy of the book — buy it from
-[Make Community](https://www.makershed.com) or O'Reilly if you don't already.
-
-## CircuitJS (vendored, GPLv2)
-
-The analog simulator is the [CircuitJS](https://github.com/pfalstad/circuitjs1)
-project by Paul Falstad and contributors, vendored under GPLv2.
+If you want to regenerate the captures (after editing a sketch or diagram):
 
 ```bash
-bash scripts/vendor-circuitjs.sh           # populate public/circuitjs/
-bash scripts/vendor-circuitjs.sh --force   # wipe and refetch
+export WOKWI_CLI_TOKEN=...          # free from https://wokwi.com/dashboard/ci
+npm run wokwi:capture
 ```
 
-The vendor script pulls the GWT-compiled bundle (~11 MB) directly from
-`https://www.falstad.com/circuit/`, strips one external `<script>` tag so the
-page loads with network disabled, and regenerates `LICENSE.txt` + `NOTICE.txt`
-on every run. Requires only `curl`. We do not modify the simulator runtime
-beyond that one strip; see
-[.project-memory/decisions/vendor-circuitjs-locally.md](.project-memory/decisions/vendor-circuitjs-locally.md)
-for the full rationale and copyleft assessment.
+## Source book
 
-## Theory
-
-See [.project-memory/theory.md](.project-memory/theory.md). Top entities:
-Experiment, Chapter, Formula.
+This site is a study companion — it assumes you have your own copy of the book. The summaries on each page are written from scratch in plain language; nothing from the book itself is reproduced here. If you don't have a copy yet, grab one from [Make Community](https://www.makershed.com) or O'Reilly.
 
 ## License
 
-This repository's source code is **all rights reserved** — see
-[COPYRIGHT.md](./COPYRIGHT.md). It's published publicly so other learners can
-read it and so I can use it as a portfolio reference, but no license is granted
-to redistribute or repurpose. If you'd like to use any of it, [open an
-issue](https://github.com/fraher/electronics-tutorial/issues) and ask.
+Source-available, all rights reserved — see [COPYRIGHT.md](./COPYRIGHT.md). Published openly so other learners can read it, but no license to redistribute. If you want to reuse any of it, [open an issue](https://github.com/fraher/electronics-tutorial/issues) and ask.
 
-Vendored CircuitJS at `public/circuitjs/` is GPLv2 (gitignored — fetched
-locally by the vendor script).
+Vendored CircuitJS in `public/circuitjs/` is GPLv2; its license travels with the bundle.
