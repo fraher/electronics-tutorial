@@ -22,6 +22,7 @@ An interactive companion to Charles Platt's *Make: Electronics, 3rd Edition* —
 - [[entities/FormulaSlider]], [[entities/FormulaEvaluator]] — interactive formula widgets
 - [[entities/LiveSchematic]] — inline-SVG visualizations that mirror formula state
 - [[entities/CircuitEmbed]], [[entities/WokwiEmbed]] — simulator iframes
+- [[entities/WokwiPanel]], [[entities/WokwiPipeline]] — Arduino captures (real sketches compiled + simulated headlessly)
 - [[entities/ExperimentRegistry]] — per-experiment schematic + circuit + wokwi lookup tables
 
 ## Why this shape
@@ -34,6 +35,7 @@ An interactive companion to Charles Platt's *Make: Electronics, 3rd Edition* —
 - [[decisions/supplemental-arduino-content]] — why we ship 36 not 30
 - [[decisions/sprints-collapsed-pragmatic]] — meta: when batching sprints is OK
 - [[decisions/wokwi-placeholder-honesty]] — unverified external IDs labeled honestly
+- [[decisions/author-time-capture-not-build-time]] — Wokwi captures run when operator edits, not per-build
 
 ## Invariants
 - [[invariants/offline-first]] — `/out` must work fully from `file://`

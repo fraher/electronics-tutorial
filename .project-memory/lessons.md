@@ -21,6 +21,13 @@ If a server component needs to hand a client component behavior, pass a string i
 
 **How to apply:** Any Brief-like schema describing UI behavior must be JSON-serializable. Code in `lib/` exposes registries keyed by ids. See [[decisions/server-client-rehydration]] and [[failures/function-prop-rsc-boundary]].
 
+## verify-committed-artifacts-not-just-test-output
+When an order produces binary artifacts that get committed (captures, screenshots, generated assets), verify the COMMIT contains them — not just that the test logs say they exist.
+
+**Why:** Sprint B's implementer correctly captured screenshot.png + serial.log for all 8 Arduino experiments in the worktree. The screenshots were committed, but the serial.log files weren't (likely missed in `git add` selection). The unit test caught it post-merge (assertion on `serialLog.length > 0` failed for exp-32). Took a regeneration to fix. The reviewer's `npm test` passed in the worktree (where artifacts existed); only the post-merge run in main caught it.
+
+**How to apply:** For orders producing committed artifacts, the verification step should `git diff --stat HEAD~1` and confirm the artifact files appear in the commit list, not just that they exist locally. Add a smoke check that `ls <artifact-dir>` returns the expected file count post-merge.
+
 ## keep-the-accessibility-floor-when-adding-richer-input
 When adding richer input modalities (drag, gesture, multi-touch), the original a11y-friendly control stays. New surface AUGMENTS, doesn't REPLACE.
 

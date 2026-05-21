@@ -10,6 +10,7 @@
 - [FormulaSlider](entities/FormulaSlider.md), [FormulaEvaluator](entities/FormulaEvaluator.md)
 - [LiveSchematic](entities/LiveSchematic.md)
 - [CircuitEmbed](entities/CircuitEmbed.md), [WokwiEmbed](entities/WokwiEmbed.md)
+- [WokwiPipeline](entities/WokwiPipeline.md), [WokwiPanel](entities/WokwiPanel.md)
 
 ## Decisions
 - [static-export-no-deploy](decisions/static-export-no-deploy.md)
@@ -21,6 +22,7 @@
 - [supplemental-arduino-content](decisions/supplemental-arduino-content.md)
 - [sprints-collapsed-pragmatic](decisions/sprints-collapsed-pragmatic.md)
 - [wokwi-placeholder-honesty](decisions/wokwi-placeholder-honesty.md)
+- [author-time-capture-not-build-time](decisions/author-time-capture-not-build-time.md)
 
 ## Invariants
 - [offline-first](invariants/offline-first.md)

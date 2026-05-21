@@ -21,6 +21,7 @@ Interactive web companion to Charles Platt's *Make: Electronics, 3rd Edition*. 3
 - Lint:    `npm run lint`
 - Typecheck: `npm run typecheck`
 - Vendor CircuitJS: `bash scripts/vendor-circuitjs.sh` (needs only `curl`; no JDK/Ant — pulls the prebuilt GWT bundle from falstad.com)
+- Capture Wokwi artifacts: `npm run wokwi:capture` (needs `arduino-cli` + `wokwi-cli` on PATH + `WOKWI_CLI_TOKEN` env var). Run after editing any `content/wokwi-projects/exp-N/*.ino` or `diagram.json`. Captures land in `public/wokwi-captures/` and get committed.
 
 ## Verification protocol (load-bearing — don't skip)
 Any order that touches UI MUST run `npm run test:e2e` before being marked complete.
