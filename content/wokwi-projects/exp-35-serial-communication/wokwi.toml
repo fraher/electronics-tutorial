@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/exp-35-serial-communication.ino.hex'
+elf = 'build/exp-35-serial-communication.ino.elf'

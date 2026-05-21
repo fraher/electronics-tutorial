@@ -1,0 +1,7 @@
+{
+  "screenshotPart": "uno",
+  "screenshotTimeMs": 2500,
+  "timeoutMs": 4000,
+  "title": "Nicer Dice — seven LEDs roll a face",
+  "summary": "Press the button (or watch the auto-roll) — random() picks 1..6 and four GPIO pins drive groups of LEDs that together form the die face."
+}

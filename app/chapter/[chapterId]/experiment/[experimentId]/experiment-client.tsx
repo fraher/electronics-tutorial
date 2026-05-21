@@ -22,6 +22,15 @@ type CircuitProp =
   | { kind: 'circuitjs'; cir: string }
   | { kind: 'circuitjs-empty'; note?: string }
   | { kind: 'wokwi'; projectId: string; placeholder?: boolean; sketchHint?: string }
+  | {
+      kind: 'wokwi-panel';
+      briefNumber: number;
+      title: string;
+      sketch: string;
+      screenshotPath: string;
+      serialSnippet: string;
+      openInWokwiHref?: string;
+    }
   | null;
 
 export type ExperimentClientProps = {
@@ -126,6 +135,16 @@ export default function ExperimentClient(props: ExperimentClientProps) {
   const expCircuit: ExperimentCircuit | undefined =
     props.circuit?.kind === 'circuitjs'
       ? { kind: 'circuitjs', cir: props.circuit.cir }
+      : props.circuit?.kind === 'wokwi-panel'
+      ? {
+          kind: 'wokwi-panel',
+          briefNumber: props.circuit.briefNumber,
+          title: props.circuit.title,
+          sketch: props.circuit.sketch,
+          screenshotPath: props.circuit.screenshotPath,
+          serialSnippet: props.circuit.serialSnippet,
+          openInWokwiHref: props.circuit.openInWokwiHref,
+        }
       : props.circuit?.kind === 'wokwi'
       ? {
           kind: 'wokwi',

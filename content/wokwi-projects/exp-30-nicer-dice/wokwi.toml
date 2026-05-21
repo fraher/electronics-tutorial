@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/exp-30-nicer-dice.ino.hex'
+elf = 'build/exp-30-nicer-dice.ino.elf'

@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/exp-36-putting-it-all-together.ino.hex'
+elf = 'build/exp-36-putting-it-all-together.ino.elf'

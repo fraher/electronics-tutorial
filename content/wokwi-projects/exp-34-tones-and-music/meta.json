@@ -1,0 +1,7 @@
+{
+  "screenshotPart": "uno",
+  "screenshotTimeMs": 2500,
+  "timeoutMs": 4000,
+  "title": "Tones and Music — a C-major scale on a piezo",
+  "summary": "tone()/noTone() drives a passive piezo buzzer through pin 8 to play an eight-note scale on a loop."
+}

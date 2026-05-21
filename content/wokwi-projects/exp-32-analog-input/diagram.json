@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "author": "electronics-tutorial",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-breadboard", "id": "bb1", "top": -130, "left": 200, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -130, "left": 270, "attrs": { "value": "512" } },
+    { "type": "wokwi-led", "id": "led1", "top": -200, "left": 420, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -140, "left": 420, "rotate": 90, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "uno:5V",  "pot1:VCC", "red",   [] ],
+    [ "uno:GND.1","pot1:GND","black", [] ],
+    [ "uno:A0",  "pot1:SIG", "yellow",[] ],
+    [ "uno:9",   "led1:A",   "yellow",[] ],
+    [ "led1:C",  "r1:1",     "black", [] ],
+    [ "r1:2",    "uno:GND.2","black", [] ]
+  ],
+  "dependencies": {}
+}
