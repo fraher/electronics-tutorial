@@ -46,6 +46,7 @@ type CircuitProp =
       briefNumber: number;
       title: string;
       sketch: string;
+      diagram: string;
       screenshotPath: string;
       serialSnippet: string;
       openInWokwiHref?: string;
@@ -89,8 +90,9 @@ export default function Page({
       briefNumber: wokwiProject.number,
       title: wokwiProject.meta.title || brief.title,
       sketch: wokwiProject.sketch,
+      diagram: wokwiProject.diagram,
       screenshotPath: wokwiProject.screenshotPath,
-      serialSnippet: summarizeSerial(wokwiProject.serialLog, 10),
+      serialSnippet: summarizeSerial(wokwiProject.serialLog, 12),
       openInWokwiHref: wokwiProject.openInWokwiHref,
     };
   } else if (wokwi) {

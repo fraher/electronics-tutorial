@@ -20,10 +20,20 @@ for (const n of WOKWI_BRIEFS) {
     const alt = await img.getAttribute('alt');
     expect(alt && alt.length > 0).toBeTruthy();
 
-    // Sketch code block has non-trivial content (>= 5 lines)
-    const code = panel.getByTestId('wokwi-panel-sketch');
-    const codeText = (await code.textContent()) ?? '';
-    expect(codeText.split('\n').filter((l) => l.trim().length > 0).length).toBeGreaterThanOrEqual(5);
+    // Sketch code block has non-trivial content (>= 5 lines) — visible by default
+    const sketchCode = panel.getByTestId('wokwi-panel-sketch');
+    const sketchText = (await sketchCode.textContent()) ?? '';
+    expect(sketchText.split('\n').filter((l) => l.trim().length > 0).length).toBeGreaterThanOrEqual(5);
+
+    // Tab to diagram and assert the diagram source mentions a Wokwi part
+    await panel.getByTestId('wokwi-panel-tab-diagram').click();
+    const diagCode = panel.getByTestId('wokwi-panel-diagram');
+    await expect(diagCode).toBeVisible();
+    const diagText = (await diagCode.textContent()) ?? '';
+    expect(diagText).toContain('wokwi-arduino-uno');
+
+    // Tab back so the screenshot evidence captures the sketch view
+    await panel.getByTestId('wokwi-panel-tab-sketch').click();
 
     // Open-in-Wokwi link present, external, target=_blank
     const link = panel.getByTestId('wokwi-panel-open-link');
@@ -31,6 +41,10 @@ for (const n of WOKWI_BRIEFS) {
     const href = await link.getAttribute('href');
     expect(href).toMatch(/^https:\/\/wokwi\.com\//);
     expect(await link.getAttribute('target')).toBe('_blank');
+
+    // Copy buttons present + clickable
+    await expect(panel.getByTestId('wokwi-panel-copy-sketch')).toBeVisible();
+    await expect(panel.getByTestId('wokwi-panel-copy-diagram')).toBeVisible();
 
     // Visual evidence
     await page.screenshot({

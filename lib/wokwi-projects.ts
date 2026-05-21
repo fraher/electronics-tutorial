@@ -49,6 +49,9 @@ export type WokwiProject = {
   slug: string;
   /** Sketch source text (the .ino file). */
   sketch: string;
+  /** Diagram JSON source text — exact contents of diagram.json. Operator pastes
+   *  this into Wokwi's diagram editor. */
+  diagram: string;
   /** Path served by Next from /public — starts with /wokwi-captures/exp-N/screenshot.png */
   screenshotPath: string;
   /** Full serial log text. */
@@ -102,6 +105,8 @@ export function getWokwiProject(briefNumber: number): WokwiProject | null {
   const sketch = readIfExists(sketchPath);
   if (sketch === null) return null;
 
+  const diagram = readIfExists(path.join(projDir, 'diagram.json')) ?? '';
+
   const metaRaw = readIfExists(path.join(projDir, 'meta.json'));
   let meta: WokwiProjectMeta = { title: slug, summary: '' };
   if (metaRaw) {
@@ -136,6 +141,7 @@ export function getWokwiProject(briefNumber: number): WokwiProject | null {
     number: briefNumber,
     slug,
     sketch,
+    diagram,
     screenshotPath,
     serialLog,
     meta,

@@ -27,6 +27,7 @@ type CircuitProp =
       briefNumber: number;
       title: string;
       sketch: string;
+      diagram: string;
       screenshotPath: string;
       serialSnippet: string;
       openInWokwiHref?: string;
@@ -141,6 +142,7 @@ export default function ExperimentClient(props: ExperimentClientProps) {
           briefNumber: props.circuit.briefNumber,
           title: props.circuit.title,
           sketch: props.circuit.sketch,
+          diagram: props.circuit.diagram,
           screenshotPath: props.circuit.screenshotPath,
           serialSnippet: props.circuit.serialSnippet,
           openInWokwiHref: props.circuit.openInWokwiHref,

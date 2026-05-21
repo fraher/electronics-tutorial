@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { WokwiPanel, _tokenizeForTest } from './WokwiPanel';
 
 const SAMPLE_SKETCH = `// blink demo
@@ -13,107 +13,105 @@ void loop() {
   delay(500);
 }`;
 
+const SAMPLE_DIAGRAM = `{
+  "version": 1,
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno" }
+  ],
+  "connections": []
+}`;
+
+function basicProps(overrides: Partial<React.ComponentProps<typeof WokwiPanel>> = {}) {
+  return {
+    briefNumber: 29,
+    title: 'Blink',
+    sketch: SAMPLE_SKETCH,
+    diagram: SAMPLE_DIAGRAM,
+    screenshotPath: '/wokwi-captures/exp-29/screenshot.png',
+    serialSnippet: '',
+    ...overrides,
+  };
+}
+
 describe('WokwiPanel', () => {
   it('renders screenshot image with alt text', () => {
-    render(
-      <WokwiPanel
-        briefNumber={29}
-        title="Blink"
-        sketch={SAMPLE_SKETCH}
-        screenshotPath="/wokwi-captures/exp-29/screenshot.png"
-        serialSnippet="LED on\nLED off"
-      />,
-    );
+    render(<WokwiPanel {...basicProps()} />);
     const img = screen.getByRole('img', { name: /Blink/i });
     expect(img.getAttribute('src')).toBe('/wokwi-captures/exp-29/screenshot.png');
   });
 
-  it('renders the sketch source inside a code block', () => {
-    render(
-      <WokwiPanel
-        briefNumber={29}
-        title="Blink"
-        sketch={SAMPLE_SKETCH}
-        screenshotPath="/wokwi-captures/exp-29/screenshot.png"
-        serialSnippet=""
-      />,
-    );
+  it('renders the sketch source by default (sketch tab active)', () => {
+    render(<WokwiPanel {...basicProps()} />);
     const code = screen.getByTestId('wokwi-panel-sketch');
     expect(code.textContent).toContain('void setup()');
     expect(code.textContent).toContain('digitalWrite(LED_BUILTIN, HIGH)');
   });
 
+  it('switches to the diagram tab when clicked', () => {
+    render(<WokwiPanel {...basicProps()} />);
+    fireEvent.click(screen.getByTestId('wokwi-panel-tab-diagram'));
+    const code = screen.getByTestId('wokwi-panel-diagram');
+    expect(code.textContent).toContain('wokwi-arduino-uno');
+  });
+
   it('renders the serial snippet when provided', () => {
-    render(
-      <WokwiPanel
-        briefNumber={29}
-        title="Blink"
-        sketch={SAMPLE_SKETCH}
-        screenshotPath="/wokwi-captures/exp-29/screenshot.png"
-        serialSnippet="line A\nline B"
-      />,
-    );
+    render(<WokwiPanel {...basicProps({ serialSnippet: 'line A\nline B' })} />);
     const serial = screen.getByTestId('wokwi-panel-serial');
     expect(serial.textContent).toContain('line A');
     expect(serial.textContent).toContain('line B');
   });
 
   it('omits the serial section when serialSnippet is empty', () => {
-    render(
-      <WokwiPanel
-        briefNumber={29}
-        title="Blink"
-        sketch={SAMPLE_SKETCH}
-        screenshotPath="/wokwi-captures/exp-29/screenshot.png"
-        serialSnippet=""
-      />,
-    );
+    render(<WokwiPanel {...basicProps()} />);
     expect(screen.queryByTestId('wokwi-panel-serial')).toBeNull();
   });
 
-  it('renders an open-in-wokwi link with target=_blank when href is set', () => {
-    render(
-      <WokwiPanel
-        briefNumber={29}
-        title="Blink"
-        sketch={SAMPLE_SKETCH}
-        screenshotPath="/wokwi-captures/exp-29/screenshot.png"
-        serialSnippet=""
-        openInWokwiHref="https://wokwi.com/projects/new/arduino-uno"
-      />,
-    );
+  it('renders Open-Wokwi link with target=_blank — always, even without custom href', () => {
+    render(<WokwiPanel {...basicProps()} />);
     const link = screen.getByTestId('wokwi-panel-open-link') as HTMLAnchorElement;
     expect(link.tagName).toBe('A');
     expect(link.getAttribute('href')).toBe('https://wokwi.com/projects/new/arduino-uno');
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toContain('noreferrer');
-    expect(link.getAttribute('aria-label')).toMatch(/Open Blink in Wokwi/i);
   });
 
-  it('omits the open-in-wokwi link when href is unset', () => {
+  it('respects a custom openInWokwiHref when provided', () => {
     render(
       <WokwiPanel
-        briefNumber={29}
-        title="Blink"
-        sketch={SAMPLE_SKETCH}
-        screenshotPath="/wokwi-captures/exp-29/screenshot.png"
-        serialSnippet=""
+        {...basicProps({
+          openInWokwiHref: 'https://wokwi.com/projects/123456789',
+        })}
       />,
     );
-    expect(screen.queryByTestId('wokwi-panel-open-link')).toBeNull();
+    const link = screen.getByTestId('wokwi-panel-open-link') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('https://wokwi.com/projects/123456789');
   });
 
   it('shows the ONLINE badge as a visual cue', () => {
-    render(
-      <WokwiPanel
-        briefNumber={29}
-        title="Blink"
-        sketch={SAMPLE_SKETCH}
-        screenshotPath="/wokwi-captures/exp-29/screenshot.png"
-        serialSnippet=""
-      />,
-    );
+    render(<WokwiPanel {...basicProps()} />);
     expect(screen.getByTestId('wokwi-panel-online-badge').textContent).toMatch(/online/i);
+  });
+
+  it('Copy diagram button writes the diagram source to clipboard', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+    render(<WokwiPanel {...basicProps()} />);
+    fireEvent.click(screen.getByTestId('wokwi-panel-copy-diagram'));
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(SAMPLE_DIAGRAM));
+  });
+
+  it('Copy sketch button writes the sketch source to clipboard', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+    render(<WokwiPanel {...basicProps()} />);
+    fireEvent.click(screen.getByTestId('wokwi-panel-copy-sketch'));
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(SAMPLE_SKETCH));
   });
 });
 

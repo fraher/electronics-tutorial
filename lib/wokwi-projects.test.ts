@@ -8,6 +8,7 @@ describe('getWokwiProject', () => {
     expect(proj!.number).toBe(29);
     expect(proj!.slug).toBe('exp-29-blink');
     expect(proj!.sketch).toContain('void setup()');
+    expect(proj!.diagram).toContain('"wokwi-arduino-uno"');
     expect(proj!.screenshotPath).toBe('/wokwi-captures/exp-29/screenshot.png');
     expect(proj!.meta.title.length).toBeGreaterThan(0);
     expect(proj!.openInWokwiHref).toMatch(/^https:\/\/wokwi\.com\//);

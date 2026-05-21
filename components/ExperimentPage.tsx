@@ -29,6 +29,7 @@ export type ExperimentCircuit =
       briefNumber: number;
       title: string;
       sketch: string;
+      diagram: string;
       screenshotPath: string;
       serialSnippet: string;
       openInWokwiHref?: string;
@@ -160,6 +161,7 @@ export function ExperimentPage({
               briefNumber={circuit.briefNumber}
               title={circuit.title}
               sketch={circuit.sketch}
+              diagram={circuit.diagram}
               screenshotPath={circuit.screenshotPath}
               serialSnippet={circuit.serialSnippet}
               openInWokwiHref={circuit.openInWokwiHref}
